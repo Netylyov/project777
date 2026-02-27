@@ -1,0 +1,13 @@
+{
+  "name": "druzya-telegram-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for DRUZYA restaurant booking system",
+  "type": "commonjs",
+  "main": "telegram.js",
+  "scripts": {
+    "start": "node telegram.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.61.0"
+  }
+}
