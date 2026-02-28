@@ -748,3 +748,150 @@ footer {
 .booking-clear:hover {
     background: #d6d6d6;
 }
+/* Базовые цвета, чтобы не было "белое на белом" */
+body {
+  background: #050509;
+  color: #ffffff;
+}
+
+/* Контейнеры */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Форма бронирования и профиль */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #111;
+  color: #fff;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #777;
+}
+
+/* Кнопки */
+.btn,
+.booking-submit,
+.booking-clear {
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.btn-primary,
+.booking-submit {
+  background: #eab308;
+  color: #000;
+}
+
+.btn-outline,
+.booking-clear {
+  background: transparent;
+  color: #eab308;
+  border: 1px solid #eab308;
+}
+
+/* Модалки */
+.modal,
+.cart-modal,
+.history-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content,
+.cart-content,
+.history-content {
+  background: #111;
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Крестики */
+.modal-close,
+.cart-close,
+.history-close {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 18px;
+  cursor: pointer;
+  float: right;
+}
+
+/* Мобильное меню */
+.burger-btn {
+  display: none;
+}
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #050509;
+  padding: 80px 24px 24px;
+  z-index: 900;
+}
+
+.mobile-menu a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+  .nav-desktop {
+    display: none;
+  }
+
+  .burger-btn {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .burger-btn span {
+    width: 22px;
+    height: 2px;
+    background: #fff;
+  }
+
+  .hero {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .hero-right {
+    width: 100%;
+  }
+}
