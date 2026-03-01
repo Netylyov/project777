@@ -1,129 +1,69 @@
-// БУРГЕР-МЕНЮ
-const burgerBtn = document.getElementById('burgerBtn');
-const mobileMenu = document.getElementById('mobileMenu');
+// ====== МОДАЛКА БРОНИРОВАНИЯ ======
+const openBooking = document.getElementById("openBooking");
+const openBookingHero = document.getElementById("openBookingHero");
+const bookingModal = document.getElementById("bookingModal");
+const closeBooking = document.getElementById("closeBooking");
+const bookingForm = document.getElementById("booking-form");
+const clearBooking = document.getElementById("clearBooking");
 
-if (burgerBtn && mobileMenu) {
-  burgerBtn.addEventListener('click', () => {
-    const isOpen = mobileMenu.style.display === 'block';
-    mobileMenu.style.display = isOpen ? 'none' : 'block';
-  });
+// Открытие модалки
+if (openBooking) openBooking.addEventListener("click", () => bookingModal.style.display = "flex");
+if (openBookingHero) openBookingHero.addEventListener("click", () => bookingModal.style.display = "flex");
 
-  mobileMenu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.style.display = 'none';
-    });
-  });
-}
-
-// МОДАЛКА БРОНИ
-const bookingModal = document.getElementById('bookingModal');
-const openBooking = document.getElementById('openBooking');
-const openBookingHero = document.getElementById('openBookingHero');
-const closeBooking = document.getElementById('closeBooking');
-const bookingForm = document.getElementById('booking-form');
-const clearBooking = document.getElementById('clearBooking');
-const guestsSelect = document.getElementById('guests');
-
-// Заполняем количество гостей
-if (guestsSelect) {
-  guestsSelect.innerHTML = '';
-  for (let i = 1; i <= 12; i++) {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = `${i} гость${i === 1 ? '' : i < 5 ? 'я' : 'ей'}`;
-    guestsSelect.appendChild(opt);
-  }
-}
-
-function openBookingModal() {
-  if (bookingModal) bookingModal.style.display = 'flex';
-}
-
-function closeBookingModal() {
-  if (bookingModal) bookingModal.style.display = 'none';
-}
-
-if (openBooking) openBooking.addEventListener('click', openBookingModal);
-if (openBookingHero) openBookingHero.addEventListener('click', openBookingModal);
-if (closeBooking) closeBooking.addEventListener('click', closeBookingModal);
-
-if (bookingModal) {
-  bookingModal.addEventListener('click', (e) => {
-    if (e.target === bookingModal) closeBookingModal();
-  });
-}
+// Закрытие модалки
+if (closeBooking) closeBooking.addEventListener("click", () => bookingModal.style.display = "none");
 
 // Очистка формы
-if (clearBooking && bookingForm) {
-  clearBooking.addEventListener('click', () => {
-    bookingForm.reset();
-  });
-}
+if (clearBooking) clearBooking.addEventListener("click", () => bookingForm.reset());
 
-// ОТПРАВКА БРОНИ (ФРОНТОВАЯ ЛОГИКА)
+// Отправка формы
 if (bookingForm) {
-  bookingForm.addEventListener('submit', async (e) => {
+  bookingForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const name = document.getElementById('name')?.value.trim();
-    const phone = document.getElementById('phone')?.value.trim();
-    const date = document.getElementById('date')?.value;
-    const time = document.getElementById('time')?.value;
-    const guests = document.getElementById('guests')?.value;
-    const comment = document.getElementById('comment')?.value.trim();
+    const payload = {
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      date: document.getElementById("date").value,
+      time: document.getElementById("time").value,
+      guests: document.getElementById("guests").value,
+      comment: document.getElementById("comment").value
+    };
 
-    if (!name || !phone || !date || !time || !guests) {
-      alert('Пожалуйста, заполните все обязательные поля.');
-      return;
-    }
+    console.log("Заявка:", payload);
+    alert("Заявка отправлена!");
 
-    // Здесь ДОЛЖЕН быть реальный backend.
-    // На GitHub Pages backend не работает, поэтому просто логируем.
-    const payload = { name, phone, date, time, guests, comment };
-    console.log('Заявка на бронь:', payload);
-
-    alert('Заявка отправлена! Мы свяжемся с вами для подтверждения.');
     bookingForm.reset();
-    closeBookingModal();
+    bookingModal.style.display = "none";
   });
 }
 
-// КОРЗИНА (минимальный функционал, чтобы не падало)
-const openCart = document.getElementById('openCart');
-const cartModal = document.getElementById('cartModal');
-const closeCart = document.getElementById('closeCart');
 
-function openCartModal() {
-  if (cartModal) cartModal.style.display = 'flex';
-}
-function closeCartModal() {
-  if (cartModal) cartModal.style.display = 'none';
-}
+// ====== КОРЗИНА ======
+const openCart = document.getElementById("openCart");
+const closeCart = document.getElementById("closeCart");
+const cartModal = document.getElementById("cartModal");
 
-if (openCart) openCart.addEventListener('click', openCartModal);
-if (closeCart) closeCart.addEventListener('click', closeCartModal);
-if (cartModal) {
-  cartModal.addEventListener('click', (e) => {
-    if (e.target === cartModal) closeCartModal();
-  });
-}
+if (openCart) openCart.addEventListener("click", () => cartModal.style.display = "flex");
+if (closeCart) closeCart.addEventListener("click", () => cartModal.style.display = "none");
 
-// ИСТОРИЯ ЗАКАЗОВ (заглушка, чтобы не ломалось)
-const openHistory = document.getElementById('openHistory');
-const historyModal = document.getElementById('historyModal');
-const closeHistory = document.getElementById('closeHistory');
 
-function openHistoryModal() {
-  if (historyModal) historyModal.style.display = 'flex';
-}
-function closeHistoryModal() {
-  if (historyModal) historyModal.style.display = 'none';
-}
+// ====== ИСТОРИЯ ЗАКАЗОВ ======
+const openHistory = document.getElementById("openHistory");
+const closeHistory = document.getElementById("closeHistory");
+const historyModal = document.getElementById("historyModal");
 
-if (openHistory) openHistory.addEventListener('click', openHistoryModal);
-if (closeHistory) closeHistory.addEventListener('click', closeHistoryModal);
-if (historyModal) {
-  historyModal.addEventListener('click', (e) => {
-    if (e.target === historyModal) closeHistoryModal();
+if (openHistory) openHistory.addEventListener("click", () => historyModal.style.display = "flex");
+if (closeHistory) closeHistory.addEventListener("click", () => historyModal.style.display = "none");
+
+
+// ====== БУРГЕР-МЕНЮ ======
+const burgerBtn = document.getElementById("burgerBtn");
+const mobileMenu = document.getElementById("mobileMenu");
+
+if (burgerBtn) {
+  burgerBtn.addEventListener("click", () => {
+    mobileMenu.classList.toggle("active");
+    burgerBtn.classList.toggle("active");
   });
 }
