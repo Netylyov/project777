@@ -894,10 +894,113 @@ textarea::placeholder {
   .hero-right {
     width: 100%;
   }
-}/* Точечный стиль ТОЛЬКО для кнопки "Очистить" */
-.booking-clear {
-  background: transparent !important; /* прозрачный фон */
-  color: #f7c325 !important;          /* жёлтый текст */
-  border: 2px solid #f7c325 !important; /* жёлтая рамка */
+}/* ===== ОФОРМЛЕНИЕ ФОРМЫ БРОНИРОВАНИЯ (ПОЛНОЕ, ЧИТАЕМОЕ) ===== */
+
+/* Контейнер модалки */
+.modal-content {
+  background: #0f0f14;
+  color: #fff;
+  border-radius: 14px;
+  padding: 22px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+/* Заголовок */
+.modal-content h2 {
+  color: #fff;
+  font-size: 22px;
+  margin-bottom: 18px;
+}
+
+/* Поля ввода */
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: 100%;
+  background: #f7c325;        /* Жёлтый фон */
+  color: #000;                /* Чёрный текст */
+  border: 2px solid #d6a000;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 16px;
   font-weight: 600;
+  margin-bottom: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Плейсхолдеры */
+.modal-content input::placeholder,
+.modal-content textarea::placeholder {
+  color: #3a3a3a;             /* Тёмно‑серый, хорошо виден */
+  opacity: 1;
+}
+
+/* Фокус */
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+  border-color: #000;
+  box-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+/* Кнопка "Отправить" */
+.booking-submit {
+  width: 100%;
+  background: #000;
+  color: #f7c325;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+/* Кнопка "Очистить" — прозрачная, но видимая */
+.booking-clear {
+  width: 100%;
+  background: transparent;
+  color: #f7c325;             /* Жёлтый текст */
+  border: 2px solid #f7c325;  /* Жёлтая рамка */
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+/* Крестик закрытия */
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 22px;
+  cursor: pointer;
+  float: right;
+}
+
+/* Мобильная версия */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    padding: 18px;
+  }
+
+  .modal-content input,
+  .modal-content select,
+  .modal-content textarea {
+    font-size: 15px;
+    padding: 10px 12px;
+  }
+
+  .booking-submit,
+  .booking-clear {
+    font-size: 15px;
+    padding: 10px 12px;
+  }
 }
