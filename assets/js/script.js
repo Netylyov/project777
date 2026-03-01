@@ -67,3 +67,76 @@ if (burgerBtn) {
     burgerBtn.classList.toggle("active");
   });
 }
+// ====== ФИЛЬТРАЦИЯ МЕНЮ ======
+const filterButtons = document.querySelectorAll(".menu-categories button");
+const menuItems = document.querySelectorAll(".menu-item");
+
+filterButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    filterButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const category = btn.dataset.filter;
+
+    menuItems.forEach(item => {
+      if (category === "all" || item.dataset.category === category) {
+        item.style.display = "block";
+      } else {
+        item.style.display = "none";
+      }
+    });
+  });
+});
+
+
+// ====== КОРЗИНА ======
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+const cartCount = document.getElementById("cartCount");
+const cartItems = document.getElementById("cartItems");
+const cartTotal = document.getElementById("cartTotal");
+
+function updateCart() {
+  cartCount.textContent = cart.length;
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  cartItems.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item, index) => {
+    total += item.price;
+
+    const div = document.createElement("div");
+    div.className = "cart-item";
+    div.innerHTML = `
+      <div>${item.title} — ${item.price} BYN</div>
+      <button data-index="${index}" class="remove-item">Удалить</button>
+    `;
+    cartItems.appendChild(div);
+  });
+
+  cartTotal.textContent = total;
+
+  document.querySelectorAll(".remove-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const i = btn.dataset.index;
+      cart.splice(i, 1);
+      updateCart();
+    });
+  });
+}
+
+updateCart();
+
+
+// ====== ДОБАВЛЕНИЕ В КОРЗИНУ ======
+document.querySelectorAll(".menu-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const item = btn.closest(".menu-item");
+    const title = item.querySelector(".menu-title").textContent;
+    const price = Number(item.querySelector(".menu-price").textContent);
+
+    cart.push({ title, price });
+    updateCart();
+  });
+});
