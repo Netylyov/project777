@@ -895,3 +895,105 @@ textarea::placeholder {
     width: 100%;
   }
 }
+/* ====== БРОНИРОВАНИЕ — ЧИТАЕМЫЕ ПОЛЯ ====== */
+
+.booking-form-wrapper,
+.modal-content {
+  background: #0f0f14 !important;
+  color: #fff !important;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+/* Поля формы */
+.booking-form-wrapper input,
+.booking-form-wrapper select,
+.booking-form-wrapper textarea,
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: 100%;
+  background: #1a1a22 !important;
+  color: #fff !important;
+  border: 1px solid #333 !important;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-bottom: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Placeholder */
+.booking-form-wrapper input::placeholder,
+.booking-form-wrapper textarea::placeholder,
+.modal-content input::placeholder,
+.modal-content textarea::placeholder {
+  color: #888 !important;
+}
+
+/* Заголовки */
+.modal-content h2,
+.booking-form-wrapper h2 {
+  color: #fff !important;
+  margin-bottom: 16px;
+  font-size: 22px;
+}
+
+/* Кнопки */
+.booking-submit {
+  width: 100%;
+  background: #eab308 !important;
+  color: #000 !important;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.booking-clear {
+  width: 100%;
+  background: transparent !important;
+  color: #eab308 !important;
+  border: 1px solid #eab308 !important;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Крестик закрытия */
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #aaa !important;
+  font-size: 22px;
+  cursor: pointer;
+  float: right;
+}
+
+/* ====== Мобильная версия ====== */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    max-width: 400px;
+    padding: 18px;
+  }
+
+  .booking-form-wrapper input,
+  .booking-form-wrapper select,
+  .booking-form-wrapper textarea {
+    font-size: 15px;
+    padding: 10px 12px;
+  }
+
+  .booking-submit,
+  .booking-clear {
+    font-size: 15px;
+    padding: 10px 12px;
+  }
+}
