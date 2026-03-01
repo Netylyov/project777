@@ -894,4 +894,8 @@ textarea::placeholder {
   .hero-right {
     width: 100%;
   }
+}/* Жёлтый текст только для кнопки "Очистить" */
+.booking-clear {
+  color: #f7c325 !important; /* ярко-жёлтый текст */
+  border: 2px solid #f7c325 !important; /* жёлтая рамка */
 }
