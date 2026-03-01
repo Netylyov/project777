@@ -1,4 +1,22 @@
-// ====== МОДАЛКА БРОНИРОВАНИЯ ======
+// ===== БУРГЕР-МЕНЮ =====
+const burgerBtn = document.getElementById("burgerBtn");
+const mobileMenu = document.getElementById("mobileMenu");
+
+if (burgerBtn && mobileMenu) {
+  burgerBtn.addEventListener("click", () => {
+    mobileMenu.classList.toggle("active");
+    burgerBtn.classList.toggle("active");
+  });
+
+  mobileMenu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      mobileMenu.classList.remove("active");
+      burgerBtn.classList.remove("active");
+    });
+  });
+}
+
+// ===== МОДАЛКА БРОНИРОВАНИЯ =====
 const openBooking = document.getElementById("openBooking");
 const openBookingHero = document.getElementById("openBookingHero");
 const bookingModal = document.getElementById("bookingModal");
@@ -6,97 +24,84 @@ const closeBooking = document.getElementById("closeBooking");
 const bookingForm = document.getElementById("booking-form");
 const clearBooking = document.getElementById("clearBooking");
 
-// Открытие модалки
-if (openBooking) openBooking.addEventListener("click", () => bookingModal.style.display = "flex");
-if (openBookingHero) openBookingHero.addEventListener("click", () => bookingModal.style.display = "flex");
+if (bookingModal) {
+  const openBookingModal = () => {
+    bookingModal.style.display = "flex";
+  };
+  const closeBookingModal = () => {
+    bookingModal.style.display = "none";
+  };
 
-// Закрытие модалки
-if (closeBooking) closeBooking.addEventListener("click", () => bookingModal.style.display = "none");
+  if (openBooking) openBooking.addEventListener("click", openBookingModal);
+  if (openBookingHero) openBookingHero.addEventListener("click", openBookingModal);
+  if (closeBooking) closeBooking.addEventListener("click", closeBookingModal);
 
-// Очистка формы
-if (clearBooking) clearBooking.addEventListener("click", () => bookingForm.reset());
+  bookingModal.addEventListener("click", (e) => {
+    if (e.target === bookingModal) closeBookingModal();
+  });
+}
 
-// Отправка формы
+if (clearBooking && bookingForm) {
+  clearBooking.addEventListener("click", () => bookingForm.reset());
+}
+
 if (bookingForm) {
   bookingForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const payload = {
-      name: document.getElementById("name").value,
-      phone: document.getElementById("phone").value,
+      name: document.getElementById("name").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
       date: document.getElementById("date").value,
       time: document.getElementById("time").value,
       guests: document.getElementById("guests").value,
-      comment: document.getElementById("comment").value
+      comment: document.getElementById("comment").value.trim()
     };
 
-    console.log("Заявка:", payload);
+    console.log("Заявка на бронь:", payload);
     alert("Заявка отправлена!");
 
     bookingForm.reset();
-    bookingModal.style.display = "none";
+    if (bookingModal) bookingModal.style.display = "none";
   });
 }
 
-
-// ====== КОРЗИНА ======
-const openCart = document.getElementById("openCart");
-const closeCart = document.getElementById("closeCart");
-const cartModal = document.getElementById("cartModal");
-
-if (openCart) openCart.addEventListener("click", () => cartModal.style.display = "flex");
-if (closeCart) closeCart.addEventListener("click", () => cartModal.style.display = "none");
-
-
-// ====== ИСТОРИЯ ЗАКАЗОВ ======
-const openHistory = document.getElementById("openHistory");
-const closeHistory = document.getElementById("closeHistory");
-const historyModal = document.getElementById("historyModal");
-
-if (openHistory) openHistory.addEventListener("click", () => historyModal.style.display = "flex");
-if (closeHistory) closeHistory.addEventListener("click", () => historyModal.style.display = "none");
-
-
-// ====== БУРГЕР-МЕНЮ ======
-const burgerBtn = document.getElementById("burgerBtn");
-const mobileMenu = document.getElementById("mobileMenu");
-
-if (burgerBtn) {
-  burgerBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("active");
-    burgerBtn.classList.toggle("active");
-  });
-}
-// ====== ФИЛЬТРАЦИЯ МЕНЮ ======
+// ===== ФИЛЬТРАЦИЯ МЕНЮ =====
 const filterButtons = document.querySelectorAll(".menu-categories button");
 const menuItems = document.querySelectorAll(".menu-item");
 
-filterButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    filterButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+if (filterButtons.length && menuItems.length) {
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
 
-    const category = btn.dataset.filter;
+      const category = btn.dataset.filter;
 
-    menuItems.forEach(item => {
-      if (category === "all" || item.dataset.category === category) {
-        item.style.display = "block";
-      } else {
-        item.style.display = "none";
-      }
+      menuItems.forEach(item => {
+        if (category === "all" || item.dataset.category === category) {
+          item.style.display = "block";
+        } else {
+          item.style.display = "none";
+        }
+      });
     });
   });
-});
+}
 
-
-// ====== КОРЗИНА ======
+// ===== КОРЗИНА =====
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 const cartCount = document.getElementById("cartCount");
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
+const openCart = document.getElementById("openCart");
+const closeCart = document.getElementById("closeCart");
+const cartModal = document.getElementById("cartModal");
 
 function updateCart() {
+  if (!cartCount || !cartItems || !cartTotal) return;
+
   cartCount.textContent = cart.length;
   localStorage.setItem("cart", JSON.stringify(cart));
 
@@ -117,9 +122,9 @@ function updateCart() {
 
   cartTotal.textContent = total;
 
-  document.querySelectorAll(".remove-item").forEach(btn => {
+  cartItems.querySelectorAll(".remove-item").forEach(btn => {
     btn.addEventListener("click", () => {
-      const i = btn.dataset.index;
+      const i = Number(btn.dataset.index);
       cart.splice(i, 1);
       updateCart();
     });
@@ -128,15 +133,59 @@ function updateCart() {
 
 updateCart();
 
+if (openCart && cartModal) {
+  openCart.addEventListener("click", () => {
+    cartModal.style.display = "flex";
+  });
+}
 
-// ====== ДОБАВЛЕНИЕ В КОРЗИНУ ======
+if (closeCart && cartModal) {
+  closeCart.addEventListener("click", () => {
+    cartModal.style.display = "none";
+  });
+
+  cartModal.addEventListener("click", (e) => {
+    if (e.target === cartModal) cartModal.style.display = "none";
+  });
+}
+
 document.querySelectorAll(".menu-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const item = btn.closest(".menu-item");
-    const title = item.querySelector(".menu-title").textContent;
-    const price = Number(item.querySelector(".menu-price").textContent);
+    if (!item) return;
+
+    const titleEl = item.querySelector(".menu-title");
+    const priceEl = item.querySelector(".menu-price");
+
+    if (!titleEl || !priceEl) return;
+
+    const title = titleEl.textContent.trim();
+    const price = Number(priceEl.textContent.trim());
+
+    if (!title || isNaN(price)) return;
 
     cart.push({ title, price });
     updateCart();
   });
 });
+
+// ===== ИСТОРИЯ ЗАКАЗОВ (заглушка) =====
+const openHistory = document.getElementById("openHistory");
+const closeHistory = document.getElementById("closeHistory");
+const historyModal = document.getElementById("historyModal");
+
+if (openHistory && historyModal) {
+  openHistory.addEventListener("click", () => {
+    historyModal.style.display = "flex";
+  });
+}
+
+if (closeHistory && historyModal) {
+  closeHistory.addEventListener("click", () => {
+    historyModal.style.display = "none";
+  });
+
+  historyModal.addEventListener("click", (e) => {
+    if (e.target === historyModal) historyModal.style.display = "none";
+  });
+}
