@@ -1019,3 +1019,12 @@ textarea::placeholder {
     padding: 10px 12px;
   }
 }
+.modal-content {
+    overflow: visible !important;
+    max-height: none !important;
+}
+
+.modal-content select {
+    position: relative !important;
+    z-index: 99999 !important;
+}
