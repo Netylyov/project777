@@ -1,4 +1,4 @@
-/* Фон интерьера вверху страницы */
+/* Фон интерьера */
 .hero-bg {
     width: 100%;
     height: 420px;
@@ -13,8 +13,7 @@
     z-index: -1;
 }
 
-
-
+/* Базовые настройки */
 html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
@@ -39,8 +38,7 @@ img {
     border-radius: 10px;
 }
 
-/* VARIABLES */
-
+/* Переменные */
 :root {
     --bg-main: #101218;
     --bg-elevated: #171920;
@@ -65,7 +63,6 @@ img {
 }
 
 /* HEADER */
-
 header {
     position: fixed;
     top: 0;
@@ -122,7 +119,6 @@ header {
 }
 
 /* BURGER */
-
 .burger-btn {
     display: none;
     flex-direction: column;
@@ -140,7 +136,6 @@ header {
 }
 
 /* MOBILE MENU */
-
 .mobile-menu {
     position: fixed;
     top: 60px;
@@ -170,7 +165,6 @@ header {
 }
 
 /* CART BUTTON */
-
 .cart-btn {
     background: none;
     border: 1px solid var(--border-soft);
@@ -183,7 +177,6 @@ header {
 }
 
 /* LAYOUT */
-
 .container {
     max-width: 1120px;
     margin: 0 auto;
@@ -195,7 +188,6 @@ main {
 }
 
 /* HERO */
-
 .hero {
     padding: 80px 0 60px;
     display: grid;
@@ -255,7 +247,6 @@ main {
     border: 1px solid var(--border-soft);
     box-shadow: var(--shadow-soft);
 }
-/* HERO RIGHT CARD */
 
 .hero-card-title {
     font-size: 14px;
@@ -300,7 +291,6 @@ main {
 }
 
 /* ABOUT */
-
 .about-grid {
     display: grid;
     grid-template-columns: 1.6fr 1fr;
@@ -316,7 +306,6 @@ main {
 }
 
 /* MENU */
-
 .menu-section {
     padding: 60px 0 70px;
 }
@@ -411,7 +400,6 @@ main {
 }
 
 /* PROFILE */
-
 .profile-card {
     margin-top: 18px;
     padding: 18px;
@@ -432,7 +420,6 @@ main {
 }
 
 /* FOOTER */
-
 footer {
     padding: 40px 0 50px;
     border-top: 1px solid var(--border-soft);
@@ -458,7 +445,6 @@ footer {
 }
 
 /* MODALS */
-
 .modal,
 .history-modal,
 .cart-modal {
@@ -482,23 +468,7 @@ footer {
     border: 1px solid var(--border-soft);
     box-shadow: var(--shadow-soft);
     position: relative;
-}
-
-.modal-content input {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 9px 11px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.16);
-    background: #11131a;
-    color: #fff;
-}
-
-.modal-content label {
-    font-size: 13px;
-    color: var(--text-soft);
-    margin-bottom: 4px;
-    display: block;
+    overflow: visible !important;
 }
 
 .modal-close,
@@ -517,7 +487,6 @@ footer {
 }
 
 /* CART */
-
 .cart-modal {
     justify-content: flex-end;
     align-items: stretch;
@@ -599,7 +568,6 @@ footer {
 }
 
 /* HISTORY */
-
 .history-content {
     max-height: 90vh;
     overflow-y: auto;
@@ -621,433 +589,7 @@ footer {
     font-size: 13px;
 }
 
-/* RESPONSIVE */
-
-@media (max-width: 900px) {
-    header {
-        padding: 12px 18px;
-    }
-
-    .nav-desktop {
-        display: none;
-    }
-
-    .burger-btn {
-        display: flex;
-    }
-
-    .hero {
-        grid-template-columns: 1fr;
-    }
-
-    .about-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 600px) {
-    .menu-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .cart-content {
-        width: 100%;
-    }
-}
-.tg-button {
-    display: inline-block;
-    background: #2AABEE;
-    color: white;
-    padding: 14px 22px;
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: 0.2s;
-    box-shadow: 0 4px 12px rgba(42, 171, 238, 0.4);
-}
-
-.tg-button:hover {
-    background: #229ED9;
-    box-shadow: 0 6px 16px rgba(42, 171, 238, 0.55);
-}
-.booking-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.booking-submit {
-    background: #000;
-    color: #fff;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.booking-clear {
-    background: #eee;
-    color: #333;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.booking-clear:hover {
-    background: #ddd;
-}
-/* Общий стиль для всех полей формы */
-#booking-form input,
-#booking-form select,
-#booking-form textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 10px;
-    border: 1px solid #dcdcdc;
-    background: #f7f7f7; /* светло-серый фон */
-    font-size: 16px;
-    margin-bottom: 15px;
-    transition: 0.2s ease;
-}
-
-/* При фокусе */
-#booking-form input:focus,
-#booking-form select:focus,
-#booking-form textarea:focus {
-    background: #fff;
-    border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
-    outline: none;
-}
-
-/* Текстовое поле "Комментарий" */
-#booking-form textarea {
-    min-height: 90px;
-    resize: vertical;
-}
-
-/* Селект "Выберите" */
-#booking-form select {
-    cursor: pointer;
-}
-
-/* Кнопки */
-.booking-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.booking-submit {
-    background: #000;
-    color: #fff;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.booking-clear {
-    background: #e5e5e5;
-    color: #333;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.booking-clear:hover {
-    background: #d6d6d6;
-}
-/* Базовые цвета, чтобы не было "белое на белом" */
-body {
-  background: #050509;
-  color: #ffffff;
-}
-
-/* Контейнеры */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-/* Форма бронирования и профиль */
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #111;
-  color: #fff;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #777;
-}
-
-/* Кнопки */
-.btn,
-.booking-submit,
-.booking-clear {
-  cursor: pointer;
-  border-radius: 8px;
-  border: none;
-  padding: 10px 16px;
-  font-size: 14px;
-}
-
-.btn-primary,
-.booking-submit {
-  background: #eab308;
-  color: #000;
-}
-
-.btn-outline,
-.booking-clear {
-  background: transparent;
-  color: #eab308;
-  border: 1px solid #eab308;
-}
-
-/* Модалки */
-.modal,
-.cart-modal,
-.history-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content,
-.cart-content,
-.history-content {
-  background: #111;
-  color: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 420px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-/* Крестики */
-.modal-close,
-.cart-close,
-.history-close {
-  background: transparent;
-  border: none;
-  color: #aaa;
-  font-size: 18px;
-  cursor: pointer;
-  float: right;
-}
-
-/* Мобильное меню */
-.burger-btn {
-  display: none;
-}
-
-.mobile-menu {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #050509;
-  padding: 80px 24px 24px;
-  z-index: 900;
-}
-
-.mobile-menu a {
-  display: block;
-  color: #fff;
-  text-decoration: none;
-  font-size: 18px;
-  margin-bottom: 16px;
-}
-
-/* Адаптив */
-@media (max-width: 768px) {
-  .nav-desktop {
-    display: none;
-  }
-
-  .burger-btn {
-    display: inline-flex;
-    flex-direction: column;
-    gap: 4px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-  }
-
-  .burger-btn span {
-    width: 22px;
-    height: 2px;
-    background: #fff;
-  }
-
-  .hero {
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .hero-right {
-    width: 100%;
-  }
-}/* ===== ОФОРМЛЕНИЕ ФОРМЫ БРОНИРОВАНИЯ (ПОЛНОЕ, ЧИТАЕМОЕ) ===== */
-
-/* Контейнер модалки */
-.modal-content {
-  background: #0f0f14;
-  color: #fff;
-  border-radius: 14px;
-  padding: 22px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-}
-
-/* Заголовок */
-.modal-content h2 {
-  color: #fff;
-  font-size: 22px;
-  margin-bottom: 18px;
-}
-
-/* Поля ввода */
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-  width: 100%;
-  background: #f7c325;        /* Жёлтый фон */
-  color: #000;                /* Чёрный текст */
-  border: 2px solid #d6a000;
-  padding: 12px 14px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 14px;
-  outline: none;
-  box-sizing: border-box;
-}
-
-/* Плейсхолдеры */
-.modal-content input::placeholder,
-.modal-content textarea::placeholder {
-  color: #3a3a3a;             /* Тёмно‑серый, хорошо виден */
-  opacity: 1;
-}
-
-/* Фокус */
-.modal-content input:focus,
-.modal-content select:focus,
-.modal-content textarea:focus {
-  border-color: #000;
-  box-shadow: 0 0 6px rgba(0,0,0,0.4);
-}
-
-/* Кнопка "Отправить" */
-.booking-submit {
-  width: 100%;
-  background: #000;
-  color: #f7c325;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
-  font-weight: 700;
-}
-
-/* Кнопка "Очистить" — прозрачная, но видимая */
-.booking-clear {
-  width: 100%;
-  background: transparent;
-  color: #f7c325;             /* Жёлтый текст */
-  border: 2px solid #f7c325;  /* Жёлтая рамка */
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
-  font-weight: 700;
-}
-
-/* Крестик закрытия */
-.modal-close {
-  background: transparent;
-  border: none;
-  color: #aaa;
-  font-size: 22px;
-  cursor: pointer;
-  float: right;
-}
-
-/* Мобильная версия */
-@media (max-width: 768px) {
-  .modal-content {
-    width: 90%;
-    padding: 18px;
-  }
-
-  .modal-content input,
-  .modal-content select,
-  .modal-content textarea {
-    font-size: 15px;
-    padding: 10px 12px;
-  }
-
-  .booking-submit,
-  .booking-clear {
-    font-size: 15px;
-    padding: 10px 12px;
-  }
-}
-.modal-content {
-    overflow: visible !important;
-    max-height: none !important;
-}
-
-.modal-content select {
-    position: relative !important;
-    z-index: 99999 !important;
-}
-/* ===== ФИКС РАСКРЫТИЯ СПИСКА ГОСТЕЙ ===== */
-.modal-content {
-    overflow: visible !important;
-    max-height: none !important;
-}
-
-.modal-content select {
-    position: relative !important;
-    z-index: 999999 !important;
-}
-#booking-form {
-    max-width: 420px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
+/* BOOKING FORM */
 #booking-form input,
 #booking-form select,
 #booking-form textarea {
@@ -1102,13 +644,36 @@ textarea::placeholder {
     cursor: pointer;
     font-weight: 500;
 }
-/* Фикс модалки, чтобы select раскрывался */
-.modal-content {
-    overflow: visible !important;
-    max-height: none !important;
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    header {
+        padding: 12px 18px;
+    }
+
+    .nav-desktop {
+        display: none;
+    }
+
+    .burger-btn {
+        display: flex;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.modal-content select {
-    position: relative !important;
-    z-index: 99999 !important;
+@media (max-width: 600px) {
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-content {
+        width: 100%;
+    }
 }

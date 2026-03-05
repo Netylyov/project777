@@ -1,225 +1,267 @@
-// ===============================
-// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
-// ===============================
+/* ============================
+   ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+============================ */
 
-// Текущие позиции корзины (заполняются твоей логикой)
-let cartItems = [];          // сюда ты должен класть товары при добавлении в корзину
-let currentOrderItems = [];  // временное хранилище заказа при переходе к брони
+let cartItems = [];
+let currentOrderItems = [];
 
-// ===============================
-// УТИЛИТЫ
-// ===============================
+/* ============================
+   МОБИЛЬНОЕ МЕНЮ
+============================ */
 
-// Безопасное чтение истории заказов
-function loadOrderHistory() {
-  try {
-    const raw = localStorage.getItem('orderHistory');
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    console.error('Ошибка чтения истории заказов:', e);
-    return [];
-  }
-}
+const burgerBtn = document.getElementById("burgerBtn");
+const mobileMenu = document.getElementById("mobileMenu");
 
-// Сохранение истории заказов
-function saveOrderHistory(history) {
-  try {
-    localStorage.setItem('orderHistory', JSON.stringify(history));
-  } catch (e) {
-    console.error('Ошибка сохранения истории заказов:', e);
-  }
-}
-
-// Отрисовка истории заказов
-function renderOrderHistory() {
-  const container = document.getElementById('history-list');
-  if (!container) return;
-
-  const history = loadOrderHistory();
-
-  if (!history.length) {
-    container.innerHTML = '<p>Пока нет заказов.</p>';
-    return;
-  }
-
-  container.innerHTML = history
-    .map((order, index) => {
-      const itemsHtml = order.items
-        .map(item => `<li>${item.title} × ${item.qty}</li>`)
-        .join('');
-
-      return `
-        <div class="history-item">
-          <h4>Заказ #${index + 1} от ${order.date}</h4>
-          <p>Гостей: ${order.guests || '-'}</p>
-          <ul>${itemsHtml}</ul>
-        </div>
-      `;
-    })
-    .join('');
-}
-
-// ===============================
-// КОРЗИНА
-// ===============================
-
-// Пример функции, которая должна возвращать текущие товары корзины
-// ТЫ ДОЛЖЕН ПОДСТРОИТЬ ЭТУ ФУНКЦИЮ ПОД СВОЮ СТРУКТУРУ
-function getCartItems() {
-  // Если у тебя уже есть глобальный массив с товарами — используй его
-  // Например, если ты хранишь в window.cartItems:
-  if (Array.isArray(window.cartItems)) {
-    return window.cartItems;
-  }
-
-  // Если нет — возвращаем cartItems (локальный массив)
-  return cartItems;
-}
-
-// Очистка корзины (адаптируй под свою логику)
-function clearCart() {
-  cartItems = [];
-  if (Array.isArray(window.cartItems)) {
-    window.cartItems = [];
-  }
-
-  const cartContainer = document.querySelector('.cart-items');
-  if (cartContainer) {
-    cartContainer.innerHTML = '<p>Корзина пуста.</p>';
-  }
-}
-
-// Обработчик кнопки "Оформить заказ" в корзине
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('cart-checkout-btn')) {
-    e.preventDefault();
-
-    // забираем текущие позиции корзины
-    currentOrderItems = getCartItems();
-
-    if (!currentOrderItems || !currentOrderItems.length) {
-      alert('Сначала добавьте блюда в корзину.');
-      return;
-    }
-
-    // закрываем модалку корзины, если есть
-    const cartModal = document.querySelector('.cart-modal');
-    if (cartModal) {
-      cartModal.style.display = 'none';
-    }
-
-    // скроллим к блоку бронирования
-    const bookingSection = document.querySelector('#booking');
-    if (bookingSection) {
-      bookingSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-});
-
-// ===============================
-// БРОНИРОВАНИЕ
-// ===============================
-
-const bookingForm = document.getElementById('booking-form');
-const bookingClearBtn = document.querySelector('.booking-clear');
-
-if (bookingForm) {
-  // Жёсткое форматирование/валидация при отправке
-  bookingForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const nameInput = document.getElementById('booking-name');
-    const phoneInput = document.getElementById('booking-phone');
-    const datetimeInput = document.getElementById('booking-datetime');
-    const guestsSelect = document.getElementById('booking-guests');
-    const commentInput = document.getElementById('booking-comment');
-
-    const name = nameInput?.value.trim();
-    const phone = phoneInput?.value.trim();
-    const datetime = datetimeInput?.value;
-    const guests = guestsSelect?.value;
-
-    // Простая валидация
-    if (!name) {
-      alert('Введите имя.');
-      nameInput?.focus();
-      return;
-    }
-
-    if (!phone) {
-      alert('Введите телефон.');
-      phoneInput?.focus();
-      return;
-    }
-
-    if (!datetime) {
-      alert('Выберите дату и время.');
-      datetimeInput?.focus();
-      return;
-    }
-
-    if (!guests) {
-      alert('Выберите количество гостей.');
-      guestsSelect?.focus();
-      return;
-    }
-
-    // Загружаем текущую историю
-    const history = loadOrderHistory();
-
-    // Добавляем новый заказ
-    history.push({
-      date: new Date().toLocaleString('ru-RU'),
-      name,
-      phone,
-      datetime,
-      guests,
-      comment: commentInput?.value.trim() || '',
-      items: currentOrderItems || []
+if (burgerBtn && mobileMenu) {
+    burgerBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("open");
     });
 
-    // Сохраняем историю
-    saveOrderHistory(history);
+    mobileMenu.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => mobileMenu.classList.remove("open"));
+    });
+}
 
-    // Перерисовываем историю
+/* ============================
+   ФИЛЬТР МЕНЮ
+============================ */
+
+document.querySelectorAll(".menu-categories button").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelector(".menu-categories button.active")?.classList.remove("active");
+        btn.classList.add("active");
+
+        const filter = btn.dataset.filter;
+        document.querySelectorAll(".menu-item").forEach(item => {
+            item.style.display = (filter === "all" || item.dataset.category === filter) ? "block" : "none";
+        });
+    });
+});
+
+/* ============================
+   КОРЗИНА
+============================ */
+
+const openCart = document.getElementById("openCart");
+const cartModal = document.getElementById("cartModal");
+const closeCart = document.getElementById("closeCart");
+const cartCount = document.getElementById("cartCount");
+const cartItemsContainer = document.getElementById("cartItems");
+const cartTotal = document.getElementById("cartTotal");
+const checkoutBtn = document.getElementById("checkoutBtn");
+
+function updateCartUI() {
+    cartItemsContainer.innerHTML = "";
+    let total = 0;
+
+    cartItems.forEach((item, index) => {
+        total += item.price * item.qty;
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+            <div class="cart-item-main">
+                <div class="cart-item-title">${item.title}</div>
+                <div class="cart-item-controls">
+                    <button class="qty-btn" data-index="${index}" data-action="minus">−</button>
+                    <div class="qty-value">${item.qty}</div>
+                    <button class="qty-btn" data-index="${index}" data-action="plus">+</button>
+                </div>
+            </div>
+            <div class="cart-item-right">
+                <div class="cart-item-price">${item.price * item.qty} BYN</div>
+                <button class="cart-remove" data-index="${index}">Удалить</button>
+            </div>
+        `;
+        cartItemsContainer.appendChild(div);
+    });
+
+    cartTotal.textContent = total;
+    cartCount.textContent = cartItems.reduce((s, i) => s + i.qty, 0);
+}
+
+document.querySelectorAll(".menu-btn").forEach((btn, index) => {
+    btn.addEventListener("click", () => {
+        const item = btn.closest(".menu-item");
+        const title = item.querySelector(".menu-title").textContent;
+        const price = Number(item.querySelector(".menu-price").textContent);
+
+        const existing = cartItems.find(i => i.title === title);
+        if (existing) existing.qty++;
+        else cartItems.push({ title, price, qty: 1 });
+
+        updateCartUI();
+    });
+});
+
+openCart.addEventListener("click", () => {
+    cartModal.style.display = "flex";
+});
+
+closeCart.addEventListener("click", () => {
+    cartModal.style.display = "none";
+});
+
+cartItemsContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("qty-btn")) {
+        const index = e.target.dataset.index;
+        const action = e.target.dataset.action;
+
+        if (action === "plus") cartItems[index].qty++;
+        if (action === "minus" && cartItems[index].qty > 1) cartItems[index].qty--;
+
+        updateCartUI();
+    }
+
+    if (e.target.classList.contains("cart-remove")) {
+        const index = e.target.dataset.index;
+        cartItems.splice(index, 1);
+        updateCartUI();
+    }
+});
+
+/* ============================
+   ПЕРЕХОД К БРОНИРОВАНИЮ
+============================ */
+
+const bookingModal = document.getElementById("bookingModal");
+const openBooking = document.getElementById("openBooking");
+const openBookingHero = document.getElementById("openBookingHero");
+const closeBooking = document.getElementById("closeBooking");
+
+function openBookingForm() {
+    bookingModal.style.display = "flex";
+
+    const profile = JSON.parse(localStorage.getItem("profile") || "{}");
+    if (profile.name) document.getElementById("name").value = profile.name;
+    if (profile.phone) document.getElementById("phone").value = profile.phone;
+}
+
+openBooking?.addEventListener("click", openBookingForm);
+openBookingHero?.addEventListener("click", openBookingForm);
+
+closeBooking?.addEventListener("click", () => {
+    bookingModal.style.display = "none";
+});
+
+checkoutBtn.addEventListener("click", () => {
+    if (!cartItems.length) {
+        alert("Корзина пуста.");
+        return;
+    }
+
+    currentOrderItems = JSON.parse(JSON.stringify(cartItems));
+
+    cartModal.style.display = "none";
+    openBookingForm();
+});
+
+/* ============================
+   ПРОФИЛЬ
+============================ */
+
+const saveProfile = document.getElementById("saveProfile");
+
+saveProfile.addEventListener("click", () => {
+    const name = document.getElementById("profileName").value.trim();
+    const phone = document.getElementById("profilePhone").value.trim();
+
+    localStorage.setItem("profile", JSON.stringify({ name, phone }));
+});
+
+/* ============================
+   ИСТОРИЯ ЗАКАЗОВ
+============================ */
+
+const openHistory = document.getElementById("openHistory");
+const historyModal = document.getElementById("historyModal");
+const closeHistory = document.getElementById("closeHistory");
+const historyList = document.getElementById("historyList");
+
+function loadOrderHistory() {
+    return JSON.parse(localStorage.getItem("orderHistory") || "[]");
+}
+
+function saveOrderHistory(history) {
+    localStorage.setItem("orderHistory", JSON.stringify(history));
+}
+
+function renderOrderHistory() {
+    const history = loadOrderHistory();
+
+    if (!history.length) {
+        historyList.innerHTML = "<p>Пока нет заказов.</p>";
+        return;
+    }
+
+    historyList.innerHTML = history.map((order, i) => `
+        <div class="history-item">
+            <h4>Заказ #${i + 1} от ${order.date}</h4>
+            <p>Гостей: ${order.guests}</p>
+            <ul>
+                ${order.items.map(item => `<li>${item.title} × ${item.qty}</li>`).join("")}
+            </ul>
+        </div>
+    `).join("");
+}
+
+openHistory.addEventListener("click", () => {
+    renderOrderHistory();
+    historyModal.style.display = "flex";
+});
+
+closeHistory.addEventListener("click", () => {
+    historyModal.style.display = "none";
+});
+
+/* ============================
+   ОТПРАВКА БРОНИ
+============================ */
+
+const bookingForm = document.getElementById("booking-form");
+
+bookingForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+    const guests = document.getElementById("guests").value;
+    const comment = document.getElementById("comment").value.trim();
+
+    if (!name || !phone || !date || !time || !guests) {
+        alert("Заполните все обязательные поля.");
+        return;
+    }
+
+    const history = loadOrderHistory();
+
+    history.push({
+        date: new Date().toLocaleString("ru-RU"),
+        name,
+        phone,
+        datetime: `${date} ${time}`,
+        guests,
+        comment,
+        items: currentOrderItems
+    });
+
+    saveOrderHistory(history);
     renderOrderHistory();
 
-    // Очищаем корзину
-    clearCart();
+    cartItems = [];
+    updateCartUI();
 
-    // Можно очистить форму
     bookingForm.reset();
+    bookingModal.style.display = "none";
 
-    alert('Бронь оформлена, заказ сохранён в истории.');
-  });
-}
-
-// Кнопка "Очистить" в форме бронирования
-if (bookingClearBtn && bookingForm) {
-  bookingClearBtn.addEventListener('click', () => {
-    bookingForm.reset();
-  });
-}
-
-// ===============================
-// ФИКС МОДАЛКИ ДЛЯ СПИСКА ГОСТЕЙ
-// ===============================
-
-// На случай, если CSS где-то режет overflow, подстрахуемся JS-классом
-function fixModalSelectOverflow() {
-  const modalContent = document.querySelector('.modal-content');
-  if (!modalContent) return;
-
-  modalContent.style.overflow = 'visible';
-  modalContent.style.maxHeight = 'none';
-}
-
-document.addEventListener('DOMContentLoaded', fixModalSelectOverflow);
-
-// ===============================
-// ИСТОРИЯ ПРИ ЗАГРУЗКЕ
-// ===============================
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderOrderHistory();
+    alert("Бронь оформлена и добавлена в историю.");
 });
+
+/* ============================
+   ИНИЦИАЛИЗАЦИЯ
+============================ */
+
+renderOrderHistory();
+updateCartUI();
