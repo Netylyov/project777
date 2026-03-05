@@ -281,20 +281,6 @@ staticForm.addEventListener("submit", (e) => {
 /* ============================
    ИНИЦИАЛИЗАЦИЯ
 ============================ */
-function initGuestsSelect(id) {
-    const select = document.getElementById(id);
-    if (!select) return;
-    select.innerHTML = "";
-    for (let i = 1; i <= 12; i++) {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = `${i} гость${i === 1 ? "" : (i < 5 ? "я" : "ей")}`;
-        select.appendChild(opt);
-    }
-}
-
-initGuestsSelect("guests");
-initGuestsSelect("static-guests");
 
 renderOrderHistory();
 updateCartUI();
