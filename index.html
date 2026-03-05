@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DRUZYA • Restaurant & Lounge</title>
+
+  <!-- Стили -->
   <link rel="stylesheet" href="assets/css/style.css">
 
-
+  <!-- Google Auth -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
-
-<div class="hero-bg"></div>
 
 <header>
   <div class="logo">DRUZYA</div>
@@ -135,7 +136,7 @@
 
     <div class="menu-grid">
 
-      <!-- Пример блюда -->
+      <!-- Пример блюд (можно расширить) -->
       <article class="menu-item" data-category="закуски">
         <img src="assets/images/appetizer.jpg" class="menu-thumb" alt="">
         <div class="menu-title-row">
@@ -149,10 +150,36 @@
         </div>
       </article>
 
+      <article class="menu-item" data-category="горячее">
+        <img src="assets/images/hot.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Горячее блюдо</div>
+          <div class="menu-weight">320 г</div>
+        </div>
+        <div class="menu-desc">Сытное горячее блюдо.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">28</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="салаты">
+        <img src="assets/images/salad.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Салат</div>
+          <div class="menu-weight">250 г</div>
+        </div>
+        <div class="menu-desc">Свежий салат.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">16</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
     </div>
   </section>
 
-  <!-- BOOKING SECTION (STATIC FORM) -->
+  <!-- BOOKING SECTION -->
   <section class="section container" id="booking">
     <h2 class="section-title">Бронирование</h2>
 
@@ -184,6 +211,15 @@
 
       <label>Телефон</label>
       <input id="profilePhone" placeholder="+375...">
+
+      <div id="g_id_onload"
+           data-client_id="YOUR_GOOGLE_CLIENT_ID"
+           data-context="signin"
+           data-ux_mode="popup"
+           data-callback="onGoogleLogin">
+      </div>
+
+      <div class="g_id_signin" data-type="standard"></div>
 
       <button class="btn btn-primary" id="saveProfile">Сохранить профиль</button>
     </div>
@@ -258,7 +294,7 @@
   </div>
 </div>
 
-<script src="script.js"></script>
+<script src="assets/js/script.js"></script>
 
 </body>
 </html>
