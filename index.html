@@ -51,6 +51,7 @@
 <body>
   <div class="hero-bg"></div>
 
+  
 
 <header>
   <div class="logo">DRUZYA</div>
@@ -444,5 +445,45 @@
 </script>
 
 <script src="assets/js/script.js"></script>
+<!-- Кнопка открытия корзины -->
+<button class="cart-open-btn">Корзина</button>
+
+<!-- Модалка корзины -->
+<div class="cart-modal">
+  <div class="cart-content">
+    <div class="cart-items"></div>
+    <button class="cart-checkout-btn">Оформить заказ</button>
+  </div>
+</div>
+
+<!-- Блок бронирования -->
+<section id="booking">
+  <form id="booking-form">
+    <input type="text" id="booking-name" placeholder="Ваше имя">
+    <input type="tel" id="booking-phone" placeholder="Телефон">
+    <input type="datetime-local" id="booking-datetime">
+    <select id="booking-guests">
+      <option value="">Количество гостей</option>
+      <option value="1">1 гость</option>
+      <option value="2">2 гостя</option>
+      <option value="3">3 гостя</option>
+      <option value="4">4 гостя</option>
+      <option value="5">5 гостей</option>
+      <option value="6">6 гостей</option>
+    </select>
+    <textarea id="booking-comment" placeholder="Комментарий"></textarea>
+
+    <div class="booking-buttons">
+      <button type="submit" class="booking-submit">Забронировать</button>
+      <button type="button" class="booking-clear">Очистить</button>
+    </div>
+  </form>
+</section>
+
+<!-- История заказов -->
+<section id="history">
+  <div id="history-list"></div>
+</section>
+
 </body>
 </html>
