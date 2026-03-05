@@ -397,4 +397,26 @@
 
     <button class="btn btn-primary" id="checkoutBtn">Оформить заказ</button>
   </div>
-</div
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="history-modal" id="historyModal">
+  <div class="history-content">
+    <button class="history-close" id="closeHistory">✕</button>
+    <h2>История заказов</h2>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- GOOGLE LOGIN CALLBACK -->
+<script>
+  window.onGoogleLogin = (response) => {
+    console.log("Google login:", response);
+  };
+</script>
+
+<!-- MAIN SCRIPT -->
+<script src="assets/js/script.js"></script>
+
+</body>
+</html>
