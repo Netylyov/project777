@@ -1,22 +1,30 @@
 /* ============================
-   ГЛОБАЛЬНЫЙ ФОН
+   ГЛОБАЛЬНЫЙ ФОН — ТЁПЛОЕ ДЕРЕВО
 ============================ */
 
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
-  background: url("https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1920")
+  background: url("https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=1920")
               center/cover fixed no-repeat;
   color: #fff;
+  position: relative; /* важно */
+  min-height: 100vh;
 }
 
-/* Затемнение поверх фона */
+/* Мягкое затемнение поверх фона */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.55);
-  z-index: -1;
+  z-index: 0; /* важно */
+}
+
+/* Чтобы весь контент был поверх затемнения */
+* {
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================
