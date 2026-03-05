@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DRUZYA • Restaurant & Lounge</title>
 
-  <!-- Стили -->
   <link rel="stylesheet" href="assets/css/style.css">
 
   <!-- Google Auth -->
@@ -21,6 +20,7 @@
     <a href="#top" class="active">Главная</a>
     <a href="#about">О ресторане</a>
     <a href="#menu">Меню</a>
+    <a href="#map">Карта</a>
     <a href="#booking">Бронь</a>
     <a href="#profile">Профиль</a>
     <a href="#contacts">Контакты</a>
@@ -37,6 +37,7 @@
   <a href="#top">Главная</a>
   <a href="#about">О ресторане</a>
   <a href="#menu">Меню</a>
+  <a href="#map">Карта</a>
   <a href="#booking">Бронь</a>
   <a href="#profile">Профиль</a>
   <a href="#contacts">Контакты</a>
@@ -136,42 +137,282 @@
 
     <div class="menu-grid">
 
-      <!-- Пример блюд (можно расширить) -->
+      <!-- ЗАКУСКИ -->
       <article class="menu-item" data-category="закуски">
         <img src="assets/images/appetizer.jpg" class="menu-thumb" alt="">
         <div class="menu-title-row">
-          <div class="menu-title">Закуска</div>
+          <div class="menu-title">Эдамаме с морской солью</div>
           <div class="menu-weight">180 г</div>
         </div>
-        <div class="menu-desc">Лёгкая закуска.</div>
+        <div class="menu-desc">Тёплые стручки сои с крупной морской солью.</div>
         <div class="menu-bottom">
-          <div class="menu-price">18</div>
+          <div class="menu-price">14</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="закуски">
+        <img src="assets/images/appetizer2.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Креветки в темпуре</div>
+          <div class="menu-weight">160 г</div>
+        </div>
+        <div class="menu-desc">Хрустящие креветки с соусом спайси.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">22</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="закуски">
+        <img src="assets/images/appetizer3.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Тартар из лосося</div>
+          <div class="menu-weight">150 г</div>
+        </div>
+        <div class="menu-desc">Лосось, авокадо, соус понзу, хрустящие тосты.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">24</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <!-- ГОРЯЧЕЕ -->
+      <article class="menu-item" data-category="горячее">
+        <img src="assets/images/hot.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Рамен с курицей</div>
+          <div class="menu-weight">420 г</div>
+        </div>
+        <div class="menu-desc">Насыщенный бульон, лапша, курица, яйцо, овощи.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">26</div>
           <button class="menu-btn">Добавить</button>
         </div>
       </article>
 
       <article class="menu-item" data-category="горячее">
-        <img src="assets/images/hot.jpg" class="menu-thumb" alt="">
+        <img src="assets/images/hot2.jpg" class="menu-thumb" alt="">
         <div class="menu-title-row">
-          <div class="menu-title">Горячее блюдо</div>
+          <div class="menu-title">Удон с говядиной</div>
+          <div class="menu-weight">380 г</div>
+        </div>
+        <div class="menu-desc">Обжаренная лапша удон с говядиной и овощами.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">27</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="горячее">
+        <img src="assets/images/hot3.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Карри с креветками</div>
+          <div class="menu-weight">360 г</div>
+        </div>
+        <div class="menu-desc">Кокосовое карри, тигровые креветки, жасминовый рис.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">29</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <!-- САЛАТЫ -->
+      <article class="menu-item" data-category="салаты">
+        <img src="assets/images/salad.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Салат с тунцом</div>
+          <div class="menu-weight">230 г</div>
+        </div>
+        <div class="menu-desc">Тунец, микс салатов, томаты, кунжутная заправка.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">21</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="салаты">
+        <img src="assets/images/salad2.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Салат с креветками</div>
+          <div class="menu-weight">220 г</div>
+        </div>
+        <div class="menu-desc">Креветки, авокадо, огурец, лаймовая заправка.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">23</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="салаты">
+        <img src="assets/images/salad3.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Хрустящий салат с курицей</div>
+          <div class="menu-weight">240 г</div>
+        </div>
+        <div class="menu-desc">Курица, овощи, ореховый соус, хрустящий топпинг.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">19</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <!-- МЯСО -->
+      <article class="menu-item" data-category="мясо">
+        <img src="assets/images/meat1.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Стейк рибай</div>
           <div class="menu-weight">320 г</div>
         </div>
-        <div class="menu-desc">Сытное горячее блюдо.</div>
+        <div class="menu-desc">Мраморная говядина, соус демиглас, овощи гриль.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">45</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="мясо">
+        <img src="assets/images/meat2.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Утка терияки</div>
+          <div class="menu-weight">300 г</div>
+        </div>
+        <div class="menu-desc">Утиная грудка, соус терияки, рис, овощи.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">34</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="мясо">
+        <img src="assets/images/meat3.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Свинина в кисло-сладком соусе</div>
+          <div class="menu-weight">310 г</div>
+        </div>
+        <div class="menu-desc">Обжаренная свинина, овощи, кисло-сладкий соус.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">25</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <!-- РЫБА -->
+      <article class="menu-item" data-category="рыба">
+        <img src="assets/images/fish1.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Лосось терияки</div>
+          <div class="menu-weight">280 г</div>
+        </div>
+        <div class="menu-desc">Филе лосося, соус терияки, рис, овощи.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">32</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="рыба">
+        <img src="assets/images/fish2.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Треска на пару</div>
+          <div class="menu-weight">260 г</div>
+        </div>
+        <div class="menu-desc">Нежная треска, овощи, соус юдзу.</div>
         <div class="menu-bottom">
           <div class="menu-price">28</div>
           <button class="menu-btn">Добавить</button>
         </div>
       </article>
 
-      <article class="menu-item" data-category="салаты">
-        <img src="assets/images/salad.jpg" class="menu-thumb" alt="">
+      <article class="menu-item" data-category="рыба">
+        <img src="assets/images/fish3.jpg" class="menu-thumb" alt="">
         <div class="menu-title-row">
-          <div class="menu-title">Салат</div>
-          <div class="menu-weight">250 г</div>
+          <div class="menu-title">Тунец на гриле</div>
+          <div class="menu-weight">270 г</div>
         </div>
-        <div class="menu-desc">Свежий салат.</div>
+        <div class="menu-desc">Стейк тунца, овощи гриль, соус понзу.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">36</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <!-- ДЕСЕРТЫ -->
+      <article class="menu-item" data-category="десерты">
+        <img src="assets/images/dessert1.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Чизкейк матча</div>
+          <div class="menu-weight">140 г</div>
+        </div>
+        <div class="menu-desc">Нежный чизкейк с чаем матча.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">14</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="десерты">
+        <img src="assets/images/dessert2.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Моти ассорти</div>
+          <div class="menu-weight">130 г</div>
+        </div>
+        <div class="menu-desc">Японские рисовые пирожные с разными начинками.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">15</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="десерты">
+        <img src="assets/images/dessert3.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Шоколадный фондан</div>
+          <div class="menu-weight">150 г</div>
+        </div>
+        <div class="menu-desc">Тёплый фондан с жидкой серединкой и мороженым.</div>
         <div class="menu-bottom">
           <div class="menu-price">16</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <!-- НАПИТКИ -->
+      <article class="menu-item" data-category="напитки">
+        <img src="assets/images/drink1.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Авторский коктейль DRUZYA</div>
+          <div class="menu-weight">250 мл</div>
+        </div>
+        <div class="menu-desc">Фирменный коктейль бара DRUZYA.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">18</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="напитки">
+        <img src="assets/images/drink2.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Домашний лимонад</div>
+          <div class="menu-weight">300 мл</div>
+        </div>
+        <div class="menu-desc">Цитрусовый лимонад с мятой.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">9</div>
+          <button class="menu-btn">Добавить</button>
+        </div>
+      </article>
+
+      <article class="menu-item" data-category="напитки">
+        <img src="assets/images/drink3.jpg" class="menu-thumb" alt="">
+        <div class="menu-title-row">
+          <div class="menu-title">Матча латте</div>
+          <div class="menu-weight">250 мл</div>
+        </div>
+        <div class="menu-desc">Матча, молоко, лёгкая сладость.</div>
+        <div class="menu-bottom">
+          <div class="menu-price">11</div>
           <button class="menu-btn">Добавить</button>
         </div>
       </article>
@@ -179,7 +420,25 @@
     </div>
   </section>
 
-  <!-- BOOKING SECTION -->
+  <!-- MAP -->
+  <section class="section container" id="map">
+    <h2 class="section-title">Как нас найти</h2>
+    <p class="section-sub">Мы находимся по адресу: ул. Приморская 10</p>
+
+    <div class="map-wrapper">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2433.123456789!2d4.895168!3d52.370216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c609c123456789%3A0xabcdef123456789!2sPrimorskaya%2010!5e0!3m2!1sru!2snl!4v1700000000000"
+        width="100%"
+        height="380"
+        style="border:0;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
   <section class="section container" id="booking">
     <h2 class="section-title">Бронирование</h2>
 
