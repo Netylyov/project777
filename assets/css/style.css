@@ -369,3 +369,114 @@ footer {
   padding: 40px 0 50px;
   border-top: 1px solid rgba(255,255,255,0.1);
 }
+/* ===== ПРОФИЛЬ + КАРТА (две колонки) ===== */
+.profile-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: flex-start;
+  margin-top: 30px;
+}
+
+/* ===== КАРТОЧКИ ПРОФИЛЯ И ИНФО ===== */
+.profile-card,
+.profile-info {
+  background: rgba(0,0,0,0.55);
+  border-radius: 18px;
+  padding: 22px 24px;
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.profile-card label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.profile-card input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+}
+
+/* ===== КАРТА ===== */
+.map-wrapper {
+  margin: 18px 0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+/* ===== МОДАЛКА БРОНИРОВАНИЯ ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.7);
+  z-index: 50;
+}
+
+.modal--open {
+  display: flex;
+}
+
+.modal-content {
+  max-width: 420px;
+  width: 100%;
+  background: rgba(0,0,0,0.55);
+  padding: 24px;
+  border-radius: 18px;
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ===== КНОПКА TELEGRAM ===== */
+.btn-telegram {
+  margin-top: 12px;
+  width: 100%;
+  background: #229ED9;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ===== КНОПКИ ===== */
+.btn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: #f4d06f;
+  color: #000;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+}
