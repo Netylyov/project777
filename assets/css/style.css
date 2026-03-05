@@ -1,30 +1,37 @@
-/* Фон */
-.hero-bg {
-  width: 100%;
-  height: 420px;
-  background-image: url("https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1920");
-  background-size: cover;
-  background-position: center;
-  filter: brightness(0.55);
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-}
+/* ============================
+   ГЛОБАЛЬНЫЙ ФОН
+============================ */
 
-/* Базовые */
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
-  background: #0b0c10;
+  background: url("https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1920")
+              center/cover fixed no-repeat;
   color: #fff;
 }
+
+/* Затемнение поверх фона */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: -1;
+}
+
+/* ============================
+   КОНТЕЙНЕР
+============================ */
 
 .container {
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 24px;
 }
+
+/* ============================
+   HEADER
+============================ */
 
 header {
   position: fixed;
@@ -34,7 +41,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(10, 11, 16, 0.96);
+  background: rgba(10, 11, 16, 0.85);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255,255,255,0.1);
   z-index: 20;
@@ -85,9 +92,39 @@ header {
   background: #fff;
 }
 
-/* HERO */
+/* ============================
+   MOBILE MENU
+============================ */
+
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: rgba(10,10,14,0.95);
+  position: fixed;
+  top: 70px;
+  right: 0;
+  width: 240px;
+  padding: 20px;
+  gap: 16px;
+  z-index: 30;
+}
+
+.mobile-menu.open {
+  display: flex;
+}
+
+.mobile-menu a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+/* ============================
+   HERO
+============================ */
+
 .hero {
-  padding: 120px 0 60px;
+  padding: 140px 0 60px;
   display: grid;
   grid-template-columns: 1.5fr 1fr;
   gap: 40px;
@@ -95,7 +132,7 @@ header {
 
 .hero-sub {
   font-size: 12px;
-  color: #c89b3c;
+  color: #f7c325;
   letter-spacing: 0.22em;
 }
 
@@ -105,7 +142,7 @@ header {
 }
 
 .hero-desc {
-  color: #ccc;
+  color: #ddd;
   max-width: 520px;
 }
 
@@ -118,24 +155,51 @@ header {
 }
 
 .btn-primary {
-  background: #c89b3c;
+  background: #f7c325;
   color: #000;
 }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
   color: #fff;
 }
 
-/* ABOUT */
+/* ============================
+   ABOUT
+============================ */
+
+.section {
+  padding: 80px 0;
+}
+
+.section-title {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.section-sub {
+  color: #ccc;
+  margin-bottom: 30px;
+}
+
 .about-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
   gap: 40px;
 }
 
-/* MENU */
+.about-card {
+  background: rgba(0,0,0,0.35);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ============================
+   MENU
+============================ */
+
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -143,13 +207,46 @@ header {
 }
 
 .menu-item {
-  background: #181a22;
+  background: rgba(0,0,0,0.45);
   padding: 10px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* Жёлто‑чёрная форма */
+.menu-thumb {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.menu-title-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.menu-desc {
+  color: #ccc;
+  margin: 6px 0 10px;
+}
+
+.menu-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-btn {
+  background: #f7c325;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* ============================
+   ЖЁЛТО-ЧЁРНАЯ ФОРМА
+============================ */
+
 .yellow-form input,
 .yellow-form select,
 .yellow-form textarea {
@@ -190,17 +287,19 @@ header {
   font-weight: 700;
 }
 
-/* STATIC FORM */
+/* ============================
+   STATIC FORM
+============================ */
+
 #staticBookingWrapper {
   margin-top: 20px;
   display: none;
 }
 
-.static-booking-hidden {
-  display: none;
-}
+/* ============================
+   MODALS
+============================ */
 
-/* MODALS */
 .modal,
 .cart-modal,
 .history-modal {
@@ -214,7 +313,7 @@ header {
 
 .modal-content,
 .history-content {
-  background: #181a22;
+  background: rgba(0,0,0,0.55);
   padding: 22px;
   border-radius: 14px;
   width: 360px;
@@ -237,7 +336,10 @@ header {
   cursor: pointer;
 }
 
-/* CART */
+/* ============================
+   CART
+============================ */
+
 .cart-modal {
   justify-content: flex-end;
 }
@@ -245,13 +347,16 @@ header {
 .cart-content {
   width: 360px;
   height: 100%;
-  background: #181a22;
+  background: rgba(0,0,0,0.55);
   padding: 22px;
   border-left: 1px solid rgba(255,255,255,0.1);
   overflow-y: auto;
 }
 
-/* FOOTER */
+/* ============================
+   FOOTER
+============================ */
+
 footer {
   padding: 40px 0 50px;
   border-top: 1px solid rgba(255,255,255,0.1);
