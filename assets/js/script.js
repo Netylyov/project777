@@ -80,7 +80,7 @@ function updateCartUI() {
     cartCount.textContent = cartItems.reduce((s, i) => s + i.qty, 0);
 }
 
-document.querySelectorAll(".menu-btn").forEach((btn, index) => {
+document.querySelectorAll(".menu-btn").forEach(btn => {
     btn.addEventListener("click", () => {
         const item = btn.closest(".menu-item");
         const title = item.querySelector(".menu-title").textContent;
@@ -121,11 +121,10 @@ cartItemsContainer.addEventListener("click", (e) => {
 });
 
 /* ============================
-   ПЕРЕХОД К БРОНИРОВАНИЮ
+   ОТКРЫТИЕ МОДАЛКИ БРОНИ
 ============================ */
 
 const bookingModal = document.getElementById("bookingModal");
-const openBooking = document.getElementById("openBooking");
 const openBookingHero = document.getElementById("openBookingHero");
 const closeBooking = document.getElementById("closeBooking");
 
@@ -137,23 +136,19 @@ function openBookingForm() {
     if (profile.phone) document.getElementById("phone").value = profile.phone;
 }
 
-openBooking?.addEventListener("click", openBookingForm);
 openBookingHero?.addEventListener("click", openBookingForm);
+closeBooking?.addEventListener("click", () => bookingModal.style.display = "none");
 
-closeBooking?.addEventListener("click", () => {
-    bookingModal.style.display = "none";
-});
+/* ============================
+   СТАТИЧНАЯ ФОРМА (РАСКРЫТИЕ)
+============================ */
 
-checkoutBtn.addEventListener("click", () => {
-    if (!cartItems.length) {
-        alert("Корзина пуста.");
-        return;
-    }
+const openStaticBooking = document.getElementById("openStaticBooking");
+const staticBookingWrapper = document.getElementById("staticBookingWrapper");
 
-    currentOrderItems = JSON.parse(JSON.stringify(cartItems));
-
-    cartModal.style.display = "none";
-    openBookingForm();
+openStaticBooking.addEventListener("click", () => {
+    staticBookingWrapper.style.display =
+        staticBookingWrapper.style.display === "block" ? "none" : "block";
 });
 
 /* ============================
@@ -215,26 +210,10 @@ closeHistory.addEventListener("click", () => {
 });
 
 /* ============================
-   ОТПРАВКА БРОНИ
+   ОБРАБОТЧИК БРОНИ (ОБЩИЙ)
 ============================ */
 
-const bookingForm = document.getElementById("booking-form");
-
-bookingForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const date = document.getElementById("date").value;
-    const time = document.getElementById("time").value;
-    const guests = document.getElementById("guests").value;
-    const comment = document.getElementById("comment").value.trim();
-
-    if (!name || !phone || !date || !time || !guests) {
-        alert("Заполните все обязательные поля.");
-        return;
-    }
-
+function handleBookingSubmit(name, phone, date, time, guests, comment) {
     const history = loadOrderHistory();
 
     history.push({
@@ -253,10 +232,50 @@ bookingForm.addEventListener("submit", (e) => {
     cartItems = [];
     updateCartUI();
 
+    alert("Бронь оформлена и добавлена в историю.");
+}
+
+/* ============================
+   МОДАЛЬНАЯ ФОРМА
+============================ */
+
+const bookingForm = document.getElementById("booking-form");
+
+bookingForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    handleBookingSubmit(
+        document.getElementById("name").value.trim(),
+        document.getElementById("phone").value.trim(),
+        document.getElementById("date").value,
+        document.getElementById("time").value,
+        document.getElementById("guests").value,
+        document.getElementById("comment").value.trim()
+    );
+
     bookingForm.reset();
     bookingModal.style.display = "none";
+});
 
-    alert("Бронь оформлена и добавлена в историю.");
+/* ============================
+   СТАТИЧНАЯ ФОРМА
+============================ */
+
+const staticForm = document.getElementById("static-booking-form");
+
+staticForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    handleBookingSubmit(
+        document.getElementById("static-name").value.trim(),
+        document.getElementById("static-phone").value.trim(),
+        document.getElementById("static-date").value,
+        document.getElementById("static-time").value,
+        document.getElementById("static-guests").value,
+        document.getElementById("static-comment").value.trim()
+    );
+
+    staticForm.reset();
 });
 
 /* ============================
