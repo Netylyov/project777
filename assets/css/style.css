@@ -480,3 +480,17 @@ footer {
   border: 1px solid rgba(255,255,255,0.25);
   color: #fff;
 }
+.cart-btn {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  padding: 8px 14px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 9999 !important;
+  position: relative !important;
+  color: #000 !important;
+}
