@@ -305,3 +305,12 @@ if (checkoutBtn) {
     }
   };
 }
+const guestsSelect = document.getElementById('guests');
+if (guestsSelect) {
+  [2, 4, 6, 8, 10].forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = `${n} гостей`;
+    guestsSelect.appendChild(opt);
+  });
+}
