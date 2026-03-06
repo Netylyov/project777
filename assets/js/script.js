@@ -25,7 +25,7 @@ if (openBookingModal) openBookingModal.onclick = openBooking;
 if (openBookingHero) openBookingHero.onclick = openBooking;
 
 if (closeBooking) {
-  closeBooking.onclick = () => bookingModal && bookingModal.classList.remove('modal--open');
+  closeBooking.onclick = () => bookingModal.classList.remove('modal--open');
 }
 
 if (bookingModal) {
@@ -76,7 +76,7 @@ function saveCart() {
 }
 
 function updateCart() {
-  if (!cartItems || !cartTotal || !cartCount) return;
+  if (!cartItems) return;
 
   cartItems.innerHTML = '';
   let total = 0;
@@ -94,8 +94,8 @@ function updateCart() {
     cartItems.appendChild(div);
   });
 
-  cartTotal.textContent = total;
-  cartCount.textContent = cart.length;
+  if (cartTotal) cartTotal.textContent = total;
+  if (cartCount) cartCount.textContent = cart.length;
 
   document.querySelectorAll('.remove-item').forEach(btn => {
     btn.onclick = () => {
@@ -111,12 +111,8 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
     const item = btn.closest('.menu-item');
     if (!item) return;
 
-    const titleEl = item.querySelector('.menu-title');
-    const priceEl = item.querySelector('.menu-price');
-    if (!titleEl || !priceEl) return;
-
-    const title = titleEl.textContent;
-    const price = Number(priceEl.textContent);
+    const title = item.querySelector('.menu-title').textContent;
+    const price = Number(item.querySelector('.menu-price').textContent);
 
     cart.push({ title, price });
     saveCart();
@@ -124,8 +120,8 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
   };
 });
 
-if (openCart && cartModal) openCart.onclick = () => cartModal.classList.add('modal--open');
-if (closeCart && cartModal) closeCart.onclick = () => cartModal.classList.remove('modal--open');
+if (openCart) openCart.onclick = () => cartModal.classList.add('modal--open');
+if (closeCart) closeCart.onclick = () => cartModal.classList.remove('modal--open');
 
 if (cartModal) {
   cartModal.onclick = (e) => {
@@ -149,7 +145,7 @@ if (window.firebase) {
     auth = firebase.auth();
     provider = new firebase.auth.GoogleAuthProvider();
   } catch (e) {
-    console.error('Firebase init error:', e);
+    console.error("Firebase init error:", e);
   }
 }
 
@@ -173,7 +169,7 @@ function loadProfile() {
 loadProfile();
 
 // Сохранение профиля вручную
-if (saveProfile && profileName && profilePhone) {
+if (saveProfile) {
   saveProfile.onclick = () => {
     profile = {
       name: profileName.value,
@@ -185,35 +181,33 @@ if (saveProfile && profileName && profilePhone) {
 }
 
 // Вход через Google
-if (googleLoginBtn && auth && provider && profileName) {
+if (googleLoginBtn && auth && provider) {
   googleLoginBtn.onclick = () => {
     auth.signInWithPopup(provider)
       .then(result => {
         const user = result.user;
 
-        if (user?.displayName) {
+        if (user.displayName) {
           profileName.value = user.displayName;
           profile.name = user.displayName;
         }
 
-        if (avatar && user?.photoURL) {
+        if (avatar && user.photoURL) {
           avatar.src = user.photoURL;
           avatar.style.display = 'block';
         }
 
         localStorage.setItem('profile', JSON.stringify(profile));
       })
-      .catch(err => {
-        console.error('Google login error:', err);
-      });
+      .catch(err => console.error("Google login error:", err));
   };
 }
 
 // Отслеживание авторизации
 if (auth) {
   auth.onAuthStateChanged(user => {
-    if (user) {
-      if (logoutBtn) logoutBtn.style.display = 'block';
+    if (user && logoutBtn) {
+      logoutBtn.style.display = 'block';
       if (avatar && user.photoURL) {
         avatar.src = user.photoURL;
         avatar.style.display = 'block';
@@ -228,7 +222,7 @@ if (logoutBtn && auth) {
     auth.signOut().then(() => {
       localStorage.removeItem('profile');
       location.reload();
-    }).catch(err => console.error('Logout error:', err));
+    });
   };
 }
 
@@ -257,35 +251,20 @@ function loadHistory() {
         const div = document.createElement('div');
         div.className = 'history-item';
         div.innerHTML = `
-          <div><b>Имя:</b> ${order.name || '-'}</div>
-          <div><b>Телефон:</b> ${order.phone || '-'}</div>
+          <div><b>Имя:</b> ${order.name}</div>
+          <div><b>Телефон:</b> ${order.phone}</div>
           <div><b>Сумма:</b> ${order.total} BYN</div>
           <div><b>Дата:</b> ${order.timestamp ? order.timestamp.toDate().toLocaleString() : '-'}</div>
           <hr>
         `;
         historyList.appendChild(div);
       });
-    })
-    .catch(err => console.error('History load error:', err));
+    });
 }
 
-if (openHistory && historyModal) {
-  openHistory.onclick = () => {
-    loadHistory();
-    historyModal.classList.add('modal--open');
-  };
-}
-
-if (openHistoryFooter && historyModal) {
-  openHistoryFooter.onclick = () => {
-    loadHistory();
-    historyModal.classList.add('modal--open');
-  };
-}
-
-if (closeHistory && historyModal) {
-  closeHistory.onclick = () => historyModal.classList.remove('modal--open');
-}
+if (openHistory) openHistory.onclick = () => { loadHistory(); historyModal.classList.add('modal--open'); };
+if (openHistoryFooter) openHistoryFooter.onclick = () => { loadHistory(); historyModal.classList.add('modal--open'); };
+if (closeHistory) closeHistory.onclick = () => historyModal.classList.remove('modal--open');
 
 if (historyModal) {
   historyModal.onclick = (e) => {
@@ -295,7 +274,7 @@ if (historyModal) {
 
 
 /* ===========================
-   ОФОРМЛЕНИЕ ЗАКАЗА (Firebase)
+   ОФОРМЛЕНИЕ ЗАКАЗА
 =========================== */
 const checkoutBtn = document.getElementById('checkoutBtn');
 
@@ -303,14 +282,11 @@ if (checkoutBtn) {
   checkoutBtn.onclick = () => {
     if (cart.length === 0) return;
 
-    const nameVal = profileName ? profileName.value : '';
-    const phoneVal = profilePhone ? profilePhone.value : '';
-
     const order = {
       items: cart.map(i => i.title),
       total: cart.reduce((a, b) => a + b.price, 0),
-      name: nameVal,
-      phone: phoneVal,
+      name: profileName ? profileName.value : "",
+      phone: profilePhone ? profilePhone.value : "",
       timestamp: db ? firebase.firestore.FieldValue.serverTimestamp() : null
     };
 
@@ -320,10 +296,9 @@ if (checkoutBtn) {
         cart = [];
         saveCart();
         updateCart();
-      }).catch(err => console.error('Order save error:', err));
+      });
     } else {
-      // fallback: только локально
-      alert('Заказ оформлен (локально, без Firebase)!');
+      alert('Заказ оформлен (локально)');
       cart = [];
       saveCart();
       updateCart();
