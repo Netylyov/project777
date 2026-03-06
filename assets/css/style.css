@@ -1,5 +1,5 @@
 /* ============================
-   ГЛОБАЛЬНЫЙ ФОН — ТЁПЛОЕ ДЕРЕВО
+   ГЛОБАЛЬНЫЙ ФОН
 ============================ */
 
 body {
@@ -8,21 +8,21 @@ body {
   background: url("https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=1920")
               center/cover fixed no-repeat;
   color: #fff;
-  position: relative; /* важно */
   min-height: 100vh;
+  position: relative;
 }
 
-/* Мягкое затемнение поверх фона */
+/* затемнение */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.55);
-  z-index: 0; /* важно */
+  z-index: 0;
 }
 
-/* Чтобы весь контент был поверх затемнения */
-* {
+/* контент поверх затемнения */
+body * {
   position: relative;
   z-index: 1;
 }
@@ -52,7 +52,7 @@ header {
   background: rgba(10, 11, 16, 0.85);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255,255,255,0.1);
-  z-index: 20;
+  z-index: 50;
 }
 
 .logo {
@@ -77,15 +77,22 @@ header {
   color: #fff;
 }
 
+/* КНОПКА КОРЗИНЫ */
 .cart-btn {
-  background: none;
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  padding: 8px 16px;
+  background: #fff;
+  border: 1px solid #ccc;
   border-radius: 999px;
-  color: #fff;
   cursor: pointer;
+  color: #000;
+  z-index: 9999;
 }
 
+/* БУРГЕР */
 .burger-btn {
   display: none;
   flex-direction: column;
@@ -114,7 +121,7 @@ header {
   width: 240px;
   padding: 20px;
   gap: 16px;
-  z-index: 30;
+  z-index: 40;
 }
 
 .mobile-menu.open {
@@ -160,6 +167,7 @@ header {
   padding: 11px 22px;
   border-radius: 999px;
   font-size: 14px;
+  font-weight: 600;
 }
 
 .btn-primary {
@@ -252,139 +260,21 @@ header {
 }
 
 /* ============================
-   ЖЁЛТО-ЧЁРНАЯ ФОРМА
+   PROFILE
 ============================ */
 
-.yellow-form input,
-.yellow-form select,
-.yellow-form textarea {
-  width: 100%;
-  background: #f7c325;
-  color: #000;
-  border: 2px solid #d6a000;
-  padding: 12px 14px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 14px;
-}
-
-.yellow-form textarea {
-  min-height: 90px;
-}
-
-.booking-submit {
-  width: 100%;
-  background: #000;
-  color: #f7c325;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.booking-clear {
-  width: 100%;
-  background: transparent;
-  color: #f7c325;
-  border: 2px solid #f7c325;
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-/* ============================
-   STATIC FORM
-============================ */
-
-#staticBookingWrapper {
-  margin-top: 20px;
-  display: none;
-}
-
-/* ============================
-   MODALS
-============================ */
-
-.modal,
-.cart-modal,
-.history-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content,
-.history-content {
-  background: rgba(0,0,0,0.55);
-  padding: 22px;
-  border-radius: 14px;
-  width: 360px;
-  max-width: 90vw;
-  position: relative;
-}
-
-.modal-close,
-.cart-close,
-.history-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(255,255,255,0.1);
-  border: none;
-  color: #fff;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-/* ============================
-   CART
-============================ */
-
-.cart-modal {
-  justify-content: flex-end;
-}
-
-.cart-content {
-  width: 360px;
-  height: 100%;
-  background: rgba(0,0,0,0.55);
-  padding: 22px;
-  border-left: 1px solid rgba(255,255,255,0.1);
-  overflow-y: auto;
-}
-
-/* ============================
-   FOOTER
-============================ */
-
-footer {
-  padding: 40px 0 50px;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}
-/* ===== ПРОФИЛЬ + КАРТА (две колонки) ===== */
 .profile-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
-  align-items: flex-start;
   margin-top: 30px;
 }
 
-/* ===== КАРТОЧКИ ПРОФИЛЯ И ИНФО ===== */
 .profile-card,
 .profile-info {
   background: rgba(0,0,0,0.55);
   border-radius: 18px;
   padding: 22px 24px;
-  backdrop-filter: blur(18px);
   border: 1px solid rgba(255,255,255,0.08);
 }
 
@@ -405,7 +295,10 @@ footer {
   color: #fff;
 }
 
-/* ===== КАРТА ===== */
+/* ============================
+   MAP
+============================ */
+
 .map-wrapper {
   margin: 18px 0;
   border-radius: 14px;
@@ -413,84 +306,95 @@ footer {
   box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
-/* ===== МОДАЛКА БРОНИРОВАНИЯ ===== */
-.modal {
+/* ============================
+   MODALS
+============================ */
+
+.modal,
+.cart-modal,
+.history-modal {
   position: fixed;
   inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
   background: rgba(0,0,0,0.7);
-  z-index: 50;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
 }
 
 .modal--open {
   display: flex;
 }
 
-.modal-content {
-  max-width: 420px;
-  width: 100%;
+.modal-content,
+.history-content {
   background: rgba(0,0,0,0.55);
-  padding: 24px;
-  border-radius: 18px;
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,0.08);
+  padding: 22px;
+  border-radius: 14px;
+  width: 360px;
+  max-width: 90vw;
   position: relative;
 }
 
-.modal-close {
+.cart-content {
+  width: 360px;
+  height: 100%;
+  background: rgba(0,0,0,0.55);
+  padding: 22px;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  overflow-y: auto;
+}
+
+.modal-close,
+.cart-close,
+.history-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  background: transparent;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.1);
   border: none;
-  font-size: 22px;
   color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
   cursor: pointer;
 }
 
-/* ===== КНОПКА TELEGRAM ===== */
-.btn-telegram {
-  margin-top: 12px;
-  width: 100%;
-  background: #229ED9;
-  color: #fff;
-  border-radius: 12px;
-  padding: 12px 0;
-  text-align: center;
+/* ============================
+   FOOTER
+============================ */
+
+footer {
+  padding: 40px 0 50px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.footer-title {
+  font-size: 18px;
   font-weight: 600;
 }
 
-/* ===== КНОПКИ ===== */
-.btn {
-  padding: 12px 20px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
+.footer-muted {
+  color: #ccc;
+  margin-top: 4px;
 }
 
-.btn-primary {
-  background: #f4d06f;
-  color: #000;
+.footer-extra {
+  margin-top: 30px;
 }
 
+/* ============================
+   TELEGRAM BUTTON
+============================ */
+
+.btn-telegram,
+.btn-primary,
 .btn-outline {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.25);
-  color: #fff;
-}
-.cart-btn {
-  display: flex !important;
-  align-items: center;
-  gap: 6px;
-  font-size: 20px;
-  padding: 8px 14px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 9999 !important;
-  position: relative !important;
-  color: #000 !important;
+  font-weight: 600;
 }
