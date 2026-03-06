@@ -460,6 +460,39 @@
 
 <!-- MAIN SCRIPT -->
 <script src="assets/js/script.js"></script>
+<!-- PROFILE EXTRA ELEMENTS -->
+<img id="profileAvatar" 
+     style="width:60px;height:60px;border-radius:50%;display:none;margin-top:10px;">
+
+<button class="btn btn-outline" id="logoutBtn" style="display:none;margin-top:10px;">
+  Выйти
+</button>
+
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBjEZy_GzaBbBmSWBRHuv06LYWaEUcLf4Q",
+    authDomain: "restourant-4cd4f.firebaseapp.com",
+    projectId: "restourant-4cd4f",
+    storageBucket: "restourant-4cd4f.appspot.com",
+    messagingSenderId: "974391844735",
+    appId: "1:974391844735:web:b46a3f11161626a6e1044a"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<!-- MAIN SCRIPT -->
+<script src="assets/js/script.js"></script>
+
+</body>
+</html>
+
 
 </body>
 </html>
