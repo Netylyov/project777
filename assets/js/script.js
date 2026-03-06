@@ -129,85 +129,33 @@ updateCart();
 
 
 /* ===========================
-   ИСТОРИЯ ЗАКАЗОВ
+   FIREBASE
 =========================== */
-let history = JSON.parse(localStorage.getItem('history') || '[]');
-
-const historyModal = document.getElementById('historyModal');
-const openHistory = document.getElementById('openHistory');
-const openHistoryFooter = document.getElementById('openHistoryFooter');
-const closeHistory = document.getElementById('closeHistory');
-const historyList = document.getElementById('historyList');
-
-function updateHistory() {
-  historyList.innerHTML = '';
-
-  history.forEach(order => {
-    const div = document.createElement('div');
-    div.className = 'history-item';
-    div.innerHTML = `
-      <div>${order.date}</div>
-      <div>${order.items.join(', ')}</div>
-      <div>${order.total} BYN</div>
-    `;
-    historyList.appendChild(div);
-  });
-}
-
-if (openHistory) openHistory.onclick = () => historyModal.classList.add('modal--open');
-if (openHistoryFooter) openHistoryFooter.onclick = () => historyModal.classList.add('modal--open');
-if (closeHistory) closeHistory.onclick = () => historyModal.classList.remove('modal--open');
-
-if (historyModal) {
-  historyModal.onclick = (e) => {
-    if (e.target === historyModal) historyModal.classList.remove('modal--open');
-  };
-}
-
-updateHistory();
+const db = firebase.firestore();
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
 
 
 /* ===========================
-   ОФОРМЛЕНИЕ ЗАКАЗА
-=========================== */
-const checkoutBtn = document.getElementById('checkoutBtn');
-
-if (checkoutBtn) {
-  checkoutBtn.onclick = () => {
-    if (cart.length === 0) return;
-
-    const order = {
-      date: new Date().toLocaleString(),
-      items: cart.map(i => i.title),
-      total: cart.reduce((a, b) => a + b.price, 0)
-    };
-
-    history.push(order);
-    localStorage.setItem('history', JSON.stringify(history));
-
-    cart = [];
-    saveCart();
-    updateCart();
-
-    alert('Заказ оформлен!');
-  };
-}
-
-
-/* ===========================
-   ПРОФИЛЬ
+   ПРОФИЛЬ + GOOGLE LOGIN
 =========================== */
 const profileName = document.getElementById('profileName');
 const profilePhone = document.getElementById('profilePhone');
 const saveProfile = document.getElementById('saveProfile');
+const googleLoginBtn = document.getElementById('googleLoginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const avatar = document.getElementById('profileAvatar');
 
+// Загрузка профиля из localStorage
 let profile = JSON.parse(localStorage.getItem('profile') || '{}');
 
 function loadProfile() {
   if (profile.name) profileName.value = profile.name;
   if (profile.phone) profilePhone.value = profile.phone;
 }
+loadProfile();
 
+// Сохранение профиля вручную
 if (saveProfile) {
   saveProfile.onclick = () => {
     profile = {
@@ -219,4 +167,121 @@ if (saveProfile) {
   };
 }
 
-loadProfile();
+// Вход через Google
+if (googleLoginBtn) {
+  googleLoginBtn.onclick = () => {
+    auth.signInWithPopup(provider)
+      .then(result => {
+        const user = result.user;
+
+        // Имя
+        if (user.displayName) {
+          profileName.value = user.displayName;
+          profile.name = user.displayName;
+        }
+
+        // Аватарка
+        if (avatar && user.photoURL) {
+          avatar.src = user.photoURL;
+          avatar.style.display = 'block';
+        }
+
+        localStorage.setItem('profile', JSON.stringify(profile));
+      })
+      .catch(console.error);
+  };
+}
+
+// Отслеживание авторизации
+auth.onAuthStateChanged(user => {
+  if (user) {
+    if (logoutBtn) logoutBtn.style.display = 'block';
+
+    if (user.photoURL && avatar) {
+      avatar.src = user.photoURL;
+      avatar.style.display = 'block';
+    }
+  }
+});
+
+// Выход
+if (logoutBtn) {
+  logoutBtn.onclick = () => {
+    auth.signOut().then(() => {
+      localStorage.removeItem('profile');
+      location.reload();
+    });
+  };
+}
+
+
+/* ===========================
+   ИСТОРИЯ ЗАКАЗОВ (Firebase)
+=========================== */
+const historyModal = document.getElementById('historyModal');
+const openHistory = document.getElementById('openHistory');
+const openHistoryFooter = document.getElementById('openHistoryFooter');
+const closeHistory = document.getElementById('closeHistory');
+const historyList = document.getElementById('historyList');
+
+function loadHistory() {
+  historyList.innerHTML = '';
+
+  db.collection('orders')
+    .orderBy('timestamp', 'desc')
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const order = doc.data();
+
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div><b>Имя:</b> ${order.name}</div>
+          <div><b>Телефон:</b> ${order.phone}</div>
+          <div><b>Сумма:</b> ${order.total} BYN</div>
+          <div><b>Дата:</b> ${order.timestamp?.toDate().toLocaleString()}</div>
+          <hr>
+        `;
+        historyList.appendChild(div);
+      });
+    });
+}
+
+if (openHistory) openHistory.onclick = () => { loadHistory(); historyModal.classList.add('modal--open'); };
+if (openHistoryFooter) openHistoryFooter.onclick = () => { loadHistory(); historyModal.classList.add('modal--open'); };
+if (closeHistory) closeHistory.onclick = () => historyModal.classList.remove('modal--open');
+
+if (historyModal) {
+  historyModal.onclick = (e) => {
+    if (e.target === historyModal) historyModal.classList.remove('modal--open');
+  };
+}
+
+
+/* ===========================
+   ОФОРМЛЕНИЕ ЗАКАЗА (Firebase)
+=========================== */
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+if (checkoutBtn) {
+  checkoutBtn.onclick = () => {
+    if (cart.length === 0) return;
+
+    const order = {
+      items: cart.map(i => i.title),
+      total: cart.reduce((a, b) => a + b.price, 0),
+      name: profileName.value,
+      phone: profilePhone.value,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    db.collection('orders').add(order).then(() => {
+      alert('Заказ оформлен!');
+
+      cart = [];
+      saveCart();
+      updateCart();
+    });
+  };
+}

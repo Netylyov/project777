@@ -6,7 +6,6 @@
   <title>DRUZYA • Restaurant & Lounge</title>
 
   <link rel="stylesheet" href="assets/css/style.css">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -408,11 +407,55 @@
   </div>
 </div>
 
-<!-- GOOGLE LOGIN CALLBACK -->
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
 <script>
-  window.onGoogleLogin = (response) => {
-    console.log("Google login:", response);
+  const firebaseConfig = {
+    apiKey: "AIzaSyBjEZy_GzaBbBmSWBRHuv06LYWaEUcLf4Q",
+    auth
+        authDomain: "restourant-4cd4f.firebaseapp.com",
+    projectId: "restourant-4cd4f",
+    storageBucket: "restourant-4cd4f.appspot.com",
+    messagingSenderId: "974391844735",
+    appId: "1:974391844735:web:b46a3f11161626a6e1044a"
   };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const googleBtn = document.getElementById('googleLoginBtn');
+    const nameInput = document.getElementById('profileName');
+
+    if (googleBtn) {
+      googleBtn.addEventListener('click', () => {
+        auth.signInWithPopup(provider)
+          .then(result => {
+            const user = result.user;
+
+            // Автоподстановка имени
+            if (user && user.displayName && nameInput) {
+              nameInput.value = user.displayName;
+            }
+
+            // Сохраняем имя в localStorage
+            localStorage.setItem('profileName', user.displayName);
+          })
+          .catch(err => {
+            console.error('Firebase auth error:', err);
+          });
+      });
+    }
+
+    // Подставляем имя из localStorage при загрузке
+    const savedName = localStorage.getItem('profileName');
+    if (savedName && nameInput) {
+      nameInput.value = savedName;
+    }
+  });
 </script>
 
 <!-- MAIN SCRIPT -->
