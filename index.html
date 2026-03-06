@@ -132,7 +132,7 @@
 
     <div class="menu-grid">
 
-      <!-- ЗАКУСКИ -->
+      <!-- Пример блюда -->
       <article class="menu-item" data-category="закуски">
         <img src="assets/images/appetizer.jpg" class="menu-thumb" alt="">
         <div class="menu-title-row">
@@ -146,129 +146,7 @@
         </div>
       </article>
 
-      <article class="menu-item" data-category="закуски">
-        <img src="assets/images/hot_appetizer.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Горячая закуска</div>
-          <div class="menu-weight">200 г</div>
-        </div>
-        <div class="menu-desc">Хрустящая горячая подача.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">21</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <!-- ГОРЯЧЕЕ -->
-      <article class="menu-item" data-category="горячее">
-        <img src="assets/images/grill.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Гриль‑ассорти</div>
-          <div class="menu-weight">350 г</div>
-        </div>
-        <div class="menu-desc">Мясо и овощи, приготовленные на гриле.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">32</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <article class="menu-item" data-category="горячее">
-        <img src="assets/images/side.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Гарнир</div>
-          <div class="menu-weight">220 г</div>
-        </div>
-        <div class="menu-desc">Тёплый гарнир к основным блюдам.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">12</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <!-- САЛАТЫ -->
-      <article class="menu-item" data-category="салаты">
-        <img src="assets/images/salad.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Салат свежий</div>
-          <div class="menu-weight">200 г</div>
-        </div>
-        <div class="menu-desc">Свежие овощи и зелень.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">16</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <!-- МЯСО -->
-      <article class="menu-item" data-category="мясо">
-        <img src="assets/images/meat.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Мясо на гриле</div>
-          <div class="menu-weight">280 г</div>
-        </div>
-        <div class="menu-desc">Сочное мясо, приготовленное на огне.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">34</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <!-- РЫБА -->
-      <article class="menu-item" data-category="рыба">
-        <img src="assets/images/fish.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Рыба на пару</div>
-          <div class="menu-weight">260 г</div>
-        </div>
-        <div class="menu-desc">Нежная рыба с соусом.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">29</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <!-- ДЕСЕРТЫ -->
-      <article class="menu-item" data-category="десерты">
-        <img src="assets/images/dessert.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Десерт</div>
-          <div class="menu-weight">150 г</div>
-        </div>
-        <div class="menu-desc">Сладкое завершение вечера.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">14</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <!-- НАПИТКИ -->
-      <article class="menu-item" data-category="напитки">
-        <img src="assets/images/drink.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Напиток</div>
-          <div class="menu-weight">250 мл</div>
-        </div>
-        <div class="menu-desc">Освежающий напиток.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">9</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <!-- СОУСЫ -->
-      <article class="menu-item" data-category="закуски">
-        <img src="assets/images/sauce.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Соусы ассорти</div>
-          <div class="menu-weight">120 г</div>
-        </div>
-        <div class="menu-desc">Набор фирменных соусов.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">7</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
+      <!-- ... остальные блюда ... -->
 
     </div>
   </section>
@@ -303,6 +181,14 @@
         <button class="btn btn-primary" id="saveProfile">
           Сохранить профиль
         </button>
+
+        <!-- Аватарка + выход -->
+        <img id="profileAvatar" 
+             style="width:60px;height:60px;border-radius:50%;display:none;margin-top:10px;">
+
+        <button class="btn btn-outline" id="logoutBtn" style="display:none;margin-top:10px;">
+          Выйти
+        </button>
       </div>
 
       <div class="profile-info">
@@ -315,24 +201,8 @@
         <div class="footer-title">Телефон</div>
         <div class="footer-muted">+375 00 0000000</div>
 
-        <div class="map-wrapper">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2433.123456789!2d4.895168!3d52.370216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c609c123456789%3A0xabcdef123456789!2sPrimorskaya%2010!5e0!3m2!1sru!2snl!4v1700000000000"
-            width="100%"
-            height="260"
-            style="border:0;"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
-        </div>
-
         <button class="btn btn-outline" id="openHistory">
           История заказов
-        </button>
-
-        <button class="btn btn-telegram" id="telegramBtn">
-          Получить чек-лист в Telegram
         </button>
       </div>
     </div>
@@ -410,68 +280,6 @@
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBjEZy_GzaBbBmSWBRHuv06LYWaEUcLf4Q",
-    auth
-        authDomain: "restourant-4cd4f.firebaseapp.com",
-    projectId: "restourant-4cd4f",
-    storageBucket: "restourant-4cd4f.appspot.com",
-    messagingSenderId: "974391844735",
-    appId: "1:974391844735:web:b46a3f11161626a6e1044a"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const provider = new firebase.auth.GoogleAuthProvider();
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const googleBtn = document.getElementById('googleLoginBtn');
-    const nameInput = document.getElementById('profileName');
-
-    if (googleBtn) {
-      googleBtn.addEventListener('click', () => {
-        auth.signInWithPopup(provider)
-          .then(result => {
-            const user = result.user;
-
-            // Автоподстановка имени
-            if (user && user.displayName && nameInput) {
-              nameInput.value = user.displayName;
-            }
-
-            // Сохраняем имя в localStorage
-            localStorage.setItem('profileName', user.displayName);
-          })
-          .catch(err => {
-            console.error('Firebase auth error:', err);
-          });
-      });
-    }
-
-    // Подставляем имя из localStorage при загрузке
-    const savedName = localStorage.getItem('profileName');
-    if (savedName && nameInput) {
-      nameInput.value = savedName;
-    }
-  });
-</script>
-
-<!-- MAIN SCRIPT -->
-<script src="assets/js/script.js"></script>
-<!-- PROFILE EXTRA ELEMENTS -->
-<img id="profileAvatar" 
-     style="width:60px;height:60px;border-radius:50%;display:none;margin-top:10px;">
-
-<button class="btn btn-outline" id="logoutBtn" style="display:none;margin-top:10px;">
-  Выйти
-</button>
-
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
@@ -489,10 +297,6 @@
 
 <!-- MAIN SCRIPT -->
 <script src="assets/js/script.js"></script>
-
-</body>
-</html>
-
 
 </body>
 </html>
