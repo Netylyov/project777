@@ -18,14 +18,14 @@ const openBookingHero = document.getElementById('openBookingHero');
 const closeBooking = document.getElementById('closeBooking');
 
 function openBooking() {
-  bookingModal.classList.add('modal--open');
+  if (bookingModal) bookingModal.classList.add('modal--open');
 }
 
 if (openBookingModal) openBookingModal.onclick = openBooking;
 if (openBookingHero) openBookingHero.onclick = openBooking;
 
 if (closeBooking) {
-  closeBooking.onclick = () => bookingModal.classList.remove('modal--open');
+  closeBooking.onclick = () => bookingModal && bookingModal.classList.remove('modal--open');
 }
 
 if (bookingModal) {
@@ -76,6 +76,8 @@ function saveCart() {
 }
 
 function updateCart() {
+  if (!cartItems || !cartTotal || !cartCount) return;
+
   cartItems.innerHTML = '';
   let total = 0;
 
@@ -107,8 +109,14 @@ function updateCart() {
 document.querySelectorAll('.menu-btn').forEach(btn => {
   btn.onclick = () => {
     const item = btn.closest('.menu-item');
-    const title = item.querySelector('.menu-title').textContent;
-    const price = Number(item.querySelector('.menu-price').textContent);
+    if (!item) return;
+
+    const titleEl = item.querySelector('.menu-title');
+    const priceEl = item.querySelector('.menu-price');
+    if (!titleEl || !priceEl) return;
+
+    const title = titleEl.textContent;
+    const price = Number(priceEl.textContent);
 
     cart.push({ title, price });
     saveCart();
@@ -116,8 +124,8 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
   };
 });
 
-if (openCart) openCart.onclick = () => cartModal.classList.add('modal--open');
-if (closeCart) closeCart.onclick = () => cartModal.classList.remove('modal--open');
+if (openCart && cartModal) openCart.onclick = () => cartModal.classList.add('modal--open');
+if (closeCart && cartModal) closeCart.onclick = () => cartModal.classList.remove('modal--open');
 
 if (cartModal) {
   cartModal.onclick = (e) => {
@@ -129,11 +137,21 @@ updateCart();
 
 
 /* ===========================
-   FIREBASE
+   FIREBASE (безопасная инициализация)
 =========================== */
-const db = firebase.firestore();
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
+let db = null;
+let auth = null;
+let provider = null;
+
+if (window.firebase) {
+  try {
+    db = firebase.firestore();
+    auth = firebase.auth();
+    provider = new firebase.auth.GoogleAuthProvider();
+  } catch (e) {
+    console.error('Firebase init error:', e);
+  }
+}
 
 
 /* ===========================
@@ -146,17 +164,16 @@ const googleLoginBtn = document.getElementById('googleLoginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const avatar = document.getElementById('profileAvatar');
 
-// Загрузка профиля из localStorage
 let profile = JSON.parse(localStorage.getItem('profile') || '{}');
 
 function loadProfile() {
-  if (profile.name) profileName.value = profile.name;
-  if (profile.phone) profilePhone.value = profile.phone;
+  if (profileName && profile.name) profileName.value = profile.name;
+  if (profilePhone && profile.phone) profilePhone.value = profile.phone;
 }
 loadProfile();
 
 // Сохранение профиля вручную
-if (saveProfile) {
+if (saveProfile && profileName && profilePhone) {
   saveProfile.onclick = () => {
     profile = {
       name: profileName.value,
@@ -168,49 +185,50 @@ if (saveProfile) {
 }
 
 // Вход через Google
-if (googleLoginBtn) {
+if (googleLoginBtn && auth && provider && profileName) {
   googleLoginBtn.onclick = () => {
     auth.signInWithPopup(provider)
       .then(result => {
         const user = result.user;
 
-        // Имя
-        if (user.displayName) {
+        if (user?.displayName) {
           profileName.value = user.displayName;
           profile.name = user.displayName;
         }
 
-        // Аватарка
-        if (avatar && user.photoURL) {
+        if (avatar && user?.photoURL) {
           avatar.src = user.photoURL;
           avatar.style.display = 'block';
         }
 
         localStorage.setItem('profile', JSON.stringify(profile));
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error('Google login error:', err);
+      });
   };
 }
 
 // Отслеживание авторизации
-auth.onAuthStateChanged(user => {
-  if (user) {
-    if (logoutBtn) logoutBtn.style.display = 'block';
-
-    if (user.photoURL && avatar) {
-      avatar.src = user.photoURL;
-      avatar.style.display = 'block';
+if (auth) {
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      if (logoutBtn) logoutBtn.style.display = 'block';
+      if (avatar && user.photoURL) {
+        avatar.src = user.photoURL;
+        avatar.style.display = 'block';
+      }
     }
-  }
-});
+  });
+}
 
 // Выход
-if (logoutBtn) {
+if (logoutBtn && auth) {
   logoutBtn.onclick = () => {
     auth.signOut().then(() => {
       localStorage.removeItem('profile');
       location.reload();
-    });
+    }).catch(err => console.error('Logout error:', err));
   };
 }
 
@@ -225,6 +243,8 @@ const closeHistory = document.getElementById('closeHistory');
 const historyList = document.getElementById('historyList');
 
 function loadHistory() {
+  if (!db || !historyList) return;
+
   historyList.innerHTML = '';
 
   db.collection('orders')
@@ -237,20 +257,35 @@ function loadHistory() {
         const div = document.createElement('div');
         div.className = 'history-item';
         div.innerHTML = `
-          <div><b>Имя:</b> ${order.name}</div>
-          <div><b>Телефон:</b> ${order.phone}</div>
+          <div><b>Имя:</b> ${order.name || '-'}</div>
+          <div><b>Телефон:</b> ${order.phone || '-'}</div>
           <div><b>Сумма:</b> ${order.total} BYN</div>
-          <div><b>Дата:</b> ${order.timestamp?.toDate().toLocaleString()}</div>
+          <div><b>Дата:</b> ${order.timestamp ? order.timestamp.toDate().toLocaleString() : '-'}</div>
           <hr>
         `;
         historyList.appendChild(div);
       });
-    });
+    })
+    .catch(err => console.error('History load error:', err));
 }
 
-if (openHistory) openHistory.onclick = () => { loadHistory(); historyModal.classList.add('modal--open'); };
-if (openHistoryFooter) openHistoryFooter.onclick = () => { loadHistory(); historyModal.classList.add('modal--open'); };
-if (closeHistory) closeHistory.onclick = () => historyModal.classList.remove('modal--open');
+if (openHistory && historyModal) {
+  openHistory.onclick = () => {
+    loadHistory();
+    historyModal.classList.add('modal--open');
+  };
+}
+
+if (openHistoryFooter && historyModal) {
+  openHistoryFooter.onclick = () => {
+    loadHistory();
+    historyModal.classList.add('modal--open');
+  };
+}
+
+if (closeHistory && historyModal) {
+  closeHistory.onclick = () => historyModal.classList.remove('modal--open');
+}
 
 if (historyModal) {
   historyModal.onclick = (e) => {
@@ -268,20 +303,30 @@ if (checkoutBtn) {
   checkoutBtn.onclick = () => {
     if (cart.length === 0) return;
 
+    const nameVal = profileName ? profileName.value : '';
+    const phoneVal = profilePhone ? profilePhone.value : '';
+
     const order = {
       items: cart.map(i => i.title),
       total: cart.reduce((a, b) => a + b.price, 0),
-      name: profileName.value,
-      phone: profilePhone.value,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      name: nameVal,
+      phone: phoneVal,
+      timestamp: db ? firebase.firestore.FieldValue.serverTimestamp() : null
     };
 
-    db.collection('orders').add(order).then(() => {
-      alert('Заказ оформлен!');
-
+    if (db) {
+      db.collection('orders').add(order).then(() => {
+        alert('Заказ оформлен!');
+        cart = [];
+        saveCart();
+        updateCart();
+      }).catch(err => console.error('Order save error:', err));
+    } else {
+      // fallback: только локально
+      alert('Заказ оформлен (локально, без Firebase)!');
       cart = [];
       saveCart();
       updateCart();
-    });
+    }
   };
 }
