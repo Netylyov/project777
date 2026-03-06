@@ -111,45 +111,167 @@
   </section>
 
   <!-- MENU -->
-  <section class="menu-section container" id="menu">
-    <div class="menu-header">
-      <div>
-        <h2 class="section-title">Меню</h2>
-        <p class="section-sub">Закуски, горячее, салаты, мясо, рыба, десерты, напитки.</p>
-      </div>
-
-      <div class="menu-categories">
-        <button class="active" data-filter="all">Все</button>
-        <button data-filter="закуски">Закуски</button>
-        <button data-filter="горячее">Горячее</button>
-        <button data-filter="салаты">Салаты</button>
-        <button data-filter="мясо">Мясо</button>
-        <button data-filter="рыба">Рыба</button>
-        <button data-filter="десерты">Десерты</button>
-        <button data-filter="напитки">Напитки</button>
-      </div>
+<section class="menu-section container" id="menu">
+  <div class="menu-header">
+    <div>
+      <h2 class="section-title">Меню</h2>
+      <p class="section-sub">Закуски, горячее, салаты, мясо, рыба, десерты, напитки.</p>
     </div>
 
-    <div class="menu-grid">
-
-      <!-- Пример блюда -->
-      <article class="menu-item" data-category="закуски">
-        <img src="assets/images/appetizer.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Холодная закуска</div>
-          <div class="menu-weight">180 г</div>
-        </div>
-        <div class="menu-desc">Лёгкая закуска к напиткам.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">18</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
-      </article>
-
-      <!-- ... остальные блюда ... -->
-
+    <div class="menu-categories">
+      <button class="active" data-filter="all">Все</button>
+      <button data-filter="закуски">Закуски</button>
+      <button data-filter="горячее">Горячее</button>
+      <button data-filter="салаты">Салаты</button>
+      <button data-filter="мясо">Мясо</button>
+      <button data-filter="рыба">Рыба</button>
+      <button data-filter="десерты">Десерты</button>
+      <button data-filter="напитки">Напитки</button>
     </div>
-  </section>
+  </div>
+
+  <div class="menu-grid">
+
+    <!-- ЗАКУСКИ -->
+    <article class="menu-item" data-category="закуски">
+      <img src="assets/images/appetizer.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Холодная закуска</div>
+        <div class="menu-weight">180 г</div>
+      </div>
+      <div class="menu-desc">Лёгкая закуска к напиткам.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">18</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <article class="menu-item" data-category="закуски">
+      <img src="assets/images/hot_appetizer.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Горячая закуска</div>
+        <div class="menu-weight">220 г</div>
+      </div>
+      <div class="menu-desc">Подаётся горячей, идеально к вину.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">22</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <article class="menu-item" data-category="закуски">
+      <img src="assets/images/sauce.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Ассорти соусов</div>
+        <div class="menu-weight">90 г</div>
+      </div>
+      <div class="menu-desc">Три фирменных соуса.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">8</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <!-- САЛАТЫ -->
+    <article class="menu-item" data-category="салаты">
+      <img src="assets/images/salad.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Фирменный салат</div>
+        <div class="menu-weight">250 г</div>
+      </div>
+      <div class="menu-desc">Свежие овощи и авторская заправка.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">16</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <!-- ГОРЯЧЕЕ -->
+    <article class="menu-item" data-category="горячее">
+      <img src="assets/images/grill.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Гриль‑ассорти</div>
+        <div class="menu-weight">350 г</div>
+      </div>
+      <div class="menu-desc">Мясо и овощи на гриле.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">32</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <article class="menu-item" data-category="горячее">
+      <img src="assets/images/side.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Гарнир</div>
+        <div class="menu-weight">200 г</div>
+      </div>
+      <div class="menu-desc">Идеальное дополнение к горячему.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">10</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <!-- МЯСО -->
+    <article class="menu-item" data-category="мясо">
+      <img src="assets/images/meat.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Мясное блюдо</div>
+        <div class="menu-weight">300 г</div>
+      </div>
+      <div class="menu-desc">Сочное мясо с гарниром.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">28</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <!-- РЫБА -->
+    <article class="menu-item" data-category="рыба">
+      <img src="assets/images/fish.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Рыбное блюдо</div>
+        <div class="menu-weight">280 г</div>
+      </div>
+      <div class="menu-desc">Свежая рыба, приготовленная на пару.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">26</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <!-- ДЕСЕРТЫ -->
+    <article class="menu-item" data-category="десерты">
+      <img src="assets/images/dessert.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Десерт</div>
+        <div class="menu-weight">150 г</div>
+      </div>
+      <div class="menu-desc">Сладкое завершение вечера.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">14</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+    <!-- НАПИТКИ -->
+    <article class="menu-item" data-category="напитки">
+      <img src="assets/images/drink.jpg" class="menu-thumb" alt="">
+      <div class="menu-title-row">
+        <div class="menu-title">Авторский напиток</div>
+        <div class="menu-weight">250 мл</div>
+      </div>
+      <div class="menu-desc">Освежающий коктейль.</div>
+      <div class="menu-bottom">
+        <div class="menu-price">12</div>
+        <button class="menu-btn">Добавить</button>
+      </div>
+    </article>
+
+  </div>
+</section>
+
 
   <!-- BOOKING -->
   <section class="section container" id="booking">
