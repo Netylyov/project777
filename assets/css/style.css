@@ -428,3 +428,36 @@ header {
   border-bottom: 1px solid rgba(255,255,255,0.1);
   z-index: 50;
 }
+/* ===== ФИКС КОРЗИНЫ — НЕ ДВИГАЕТСЯ ===== */
+
+.cart-modal {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch; /* растягиваем по высоте */
+}
+
+.cart-content {
+  width: 360px;
+  height: 100%;
+  background: rgba(0,0,0,0.55);
+  padding: 22px;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column; /* важный момент */
+}
+
+/* список товаров — прокручивается */
+#cartItems {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+/* кнопка заказа — всегда внизу */
+.cart-total {
+  margin-bottom: 12px;
+}
+
+#checkoutBtn {
+  width: 100%;
+}
