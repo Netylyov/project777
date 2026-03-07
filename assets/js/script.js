@@ -21,16 +21,17 @@ function openBooking() {
   if (bookingModal) bookingModal.classList.add('modal--open');
 }
 
+function closeBookingFn() {
+  if (bookingModal) bookingModal.classList.remove('modal--open');
+}
+
 if (openBookingModal) openBookingModal.onclick = openBooking;
 if (openBookingHero) openBookingHero.onclick = openBooking;
-
-if (closeBooking) {
-  closeBooking.onclick = () => bookingModal.classList.remove('modal--open');
-}
+if (closeBooking) closeBooking.onclick = closeBookingFn;
 
 if (bookingModal) {
   bookingModal.onclick = (e) => {
-    if (e.target === bookingModal) bookingModal.classList.remove('modal--open');
+    if (e.target === bookingModal) closeBookingFn();
   };
 }
 
@@ -120,12 +121,20 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
   };
 });
 
-if (openCart) openCart.onclick = () => cartModal.classList.add('modal--open');
-if (closeCart) closeCart.onclick = () => cartModal.classList.remove('modal--open');
+function openCartFn() {
+  if (cartModal) cartModal.classList.add('modal--open');
+}
+
+function closeCartFn() {
+  if (cartModal) cartModal.classList.remove('modal--open');
+}
+
+if (openCart) openCart.onclick = openCartFn;
+if (closeCart) closeCart.onclick = closeCartFn;
 
 if (cartModal) {
   cartModal.onclick = (e) => {
-    if (e.target === cartModal) cartModal.classList.remove('modal--open');
+    if (e.target === cartModal) closeCartFn();
   };
 }
 
@@ -168,7 +177,6 @@ function loadProfile() {
 }
 loadProfile();
 
-// Сохранение профиля вручную
 if (saveProfile) {
   saveProfile.onclick = () => {
     profile = {
@@ -180,7 +188,6 @@ if (saveProfile) {
   };
 }
 
-// Вход через Google
 if (googleLoginBtn && auth && provider) {
   googleLoginBtn.onclick = () => {
     auth.signInWithPopup(provider)
@@ -203,7 +210,6 @@ if (googleLoginBtn && auth && provider) {
   };
 }
 
-// Отслеживание авторизации
 if (auth) {
   auth.onAuthStateChanged(user => {
     if (user && logoutBtn) {
@@ -216,7 +222,6 @@ if (auth) {
   });
 }
 
-// Выход
 if (logoutBtn && auth) {
   logoutBtn.onclick = () => {
     auth.signOut().then(() => {
@@ -228,7 +233,7 @@ if (logoutBtn && auth) {
 
 
 /* ===========================
-   ИСТОРИЯ ЗАКАЗОВ (Firebase)
+   ИСТОРИЯ ЗАКАЗОВ
 =========================== */
 const historyModal = document.getElementById('historyModal');
 const openHistory = document.getElementById('openHistory');
@@ -262,13 +267,24 @@ function loadHistory() {
     });
 }
 
-if (openHistory) openHistory.onclick = () => { loadHistory(); historyModal.classList.add('modal--open'); };
-if (openHistoryFooter) openHistoryFooter.onclick = () => { loadHistory(); historyModal.classList.add('modal--open'); };
-if (closeHistory) closeHistory.onclick = () => historyModal.classList.remove('modal--open');
+function openHistoryFn() {
+  if (historyModal) {
+    loadHistory();
+    historyModal.classList.add('modal--open');
+  }
+}
+
+function closeHistoryFn() {
+  if (historyModal) historyModal.classList.remove('modal--open');
+}
+
+if (openHistory) openHistory.onclick = openHistoryFn;
+if (openHistoryFooter) openHistoryFooter.onclick = openHistoryFn;
+if (closeHistory) closeHistory.onclick = closeHistoryFn;
 
 if (historyModal) {
   historyModal.onclick = (e) => {
-    if (e.target === historyModal) historyModal.classList.remove('modal--open');
+    if (e.target === historyModal) closeHistoryFn();
   };
 }
 
@@ -305,6 +321,11 @@ if (checkoutBtn) {
     }
   };
 }
+
+
+/* ===========================
+   ГОСТИ В СТАТИЧЕСКОЙ ФОРМЕ
+=========================== */
 const guestsSelect = document.getElementById('guests');
 if (guestsSelect) {
   [2, 4, 6, 8, 10].forEach(n => {
