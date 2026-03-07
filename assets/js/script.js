@@ -10,80 +10,6 @@ if (burgerBtn && mobileMenu) {
 
 
 /* ===========================
-   МОДАЛКА БРОНИРОВАНИЯ (ПРЕМИУМ)
-=========================== */
-const bookingModal = document.getElementById('bookingModal');
-const openBookingModal = document.getElementById('openBookingModal');
-const openBookingHero = document.getElementById('openBookingHero');
-const closeBooking = document.getElementById('closeBooking');
-const bookingForm = document.getElementById('booking-form');
-const guestsSelect = document.getElementById('guests');
-
-function openBooking() {
-  if (bookingModal) bookingModal.classList.add('modal--open');
-
-  // автоподстановка из профиля
-  const nameField = document.getElementById('name');
-  const phoneField = document.getElementById('phone');
-
-  if (profileName && nameField) {
-    nameField.value = profileName.value || "";
-  }
-  if (profilePhone && phoneField) {
-    phoneField.value = profilePhone.value || "";
-  }
-}
-
-function closeBookingFn() {
-  if (bookingModal) bookingModal.classList.remove('modal--open');
-}
-
-if (openBookingModal) openBookingModal.onclick = openBooking;
-if (openBookingHero) openBookingHero.onclick = openBooking;
-if (closeBooking) closeBooking.onclick = closeBookingFn;
-
-if (bookingModal) {
-  bookingModal.onclick = (e) => {
-    if (e.target === bookingModal) closeBookingFn();
-  };
-}
-
-// отправка формы
-if (bookingForm) {
-  bookingForm.onsubmit = (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const guests = guestsSelect ? guestsSelect.value : "";
-    const comment = document.getElementById('comment').value.trim();
-
-    if (!name || !phone || !date || !time || !guests) {
-      alert('Пожалуйста, заполните все обязательные поля.');
-      return;
-    }
-
-    // здесь можно отправить в Firebase / Telegram / backend
-    console.log('Бронь:', { name, phone, date, time, guests, comment });
-
-    alert('Заявка на бронирование отправлена. Мы свяжемся с вами для подтверждения.');
-    bookingForm.reset();
-    closeBookingFn();
-  };
-}
-
-// очистка формы
-const clearBookingBtn = document.getElementById('clearBooking');
-if (clearBookingBtn && bookingForm) {
-  clearBookingBtn.onclick = () => bookingForm.reset();
-}
-
-
-
-
-/* ===========================
    ФИЛЬТР МЕНЮ
 =========================== */
 const filterButtons = document.querySelectorAll('.menu-categories button');
@@ -227,8 +153,8 @@ loadProfile();
 if (saveProfile) {
   saveProfile.onclick = () => {
     profile = {
-      name: profileName.value,
-      phone: profilePhone.value
+      name: profileName ? profileName.value : "",
+      phone: profilePhone ? profilePhone.value : ""
     };
     localStorage.setItem('profile', JSON.stringify(profile));
     alert('Профиль сохранён');
@@ -241,7 +167,7 @@ if (googleLoginBtn && auth && provider) {
       .then(result => {
         const user = result.user;
 
-        if (user.displayName) {
+        if (user.displayName && profileName) {
           profileName.value = user.displayName;
           profile.name = user.displayName;
         }
@@ -276,6 +202,74 @@ if (logoutBtn && auth) {
       location.reload();
     });
   };
+}
+
+
+/* ===========================
+   МОДАЛКА БРОНИРОВАНИЯ (ПРЕМИУМ)
+=========================== */
+const bookingModal = document.getElementById('bookingModal');
+const openBookingModal = document.getElementById('openBookingModal');
+const openBookingHero = document.getElementById('openBookingHero');
+const closeBooking = document.getElementById('closeBooking');
+const bookingForm = document.getElementById('booking-form');
+const guestsSelect = document.getElementById('guests');
+
+function openBooking() {
+  if (bookingModal) bookingModal.classList.add('modal--open');
+
+  const nameField = document.getElementById('name');
+  const phoneField = document.getElementById('phone');
+
+  if (profileName && nameField) {
+    nameField.value = profileName.value || "";
+  }
+  if (profilePhone && phoneField) {
+    phoneField.value = profilePhone.value || "";
+  }
+}
+
+function closeBookingFn() {
+  if (bookingModal) bookingModal.classList.remove('modal--open');
+}
+
+if (openBookingModal) openBookingModal.onclick = openBooking;
+if (openBookingHero) openBookingHero.onclick = openBooking;
+if (closeBooking) closeBooking.onclick = closeBookingFn;
+
+if (bookingModal) {
+  bookingModal.onclick = (e) => {
+    if (e.target === bookingModal) closeBookingFn();
+  };
+}
+
+if (bookingForm) {
+  bookingForm.onsubmit = (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const guests = guestsSelect ? guestsSelect.value : "";
+    const comment = document.getElementById('comment').value.trim();
+
+    if (!name || !phone || !date || !time || !guests) {
+      alert('Пожалуйста, заполните все обязательные поля.');
+      return;
+    }
+
+    console.log('Бронь:', { name, phone, date, time, guests, comment });
+
+    alert('Заявка на бронирование отправлена. Мы свяжемся с вами для подтверждения.');
+    bookingForm.reset();
+    closeBookingFn();
+  };
+}
+
+const clearBookingBtn = document.getElementById('clearBooking');
+if (clearBookingBtn && bookingForm) {
+  clearBookingBtn.onclick = () => bookingForm.reset();
 }
 
 
@@ -367,18 +361,4 @@ if (checkoutBtn) {
       updateCart();
     }
   };
-}
-
-
-/* ===========================
-   ГОСТИ В СТАТИЧЕСКОЙ ФОРМЕ
-=========================== */
-const guestsSelect = document.getElementById('guests');
-if (guestsSelect) {
-  [2, 4, 6, 8, 10].forEach(n => {
-    const opt = document.createElement('option');
-    opt.value = n;
-    opt.textContent = `${n} гостей`;
-    guestsSelect.appendChild(opt);
-  });
 }
