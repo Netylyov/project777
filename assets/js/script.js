@@ -23,11 +23,10 @@ filterButtons.forEach(btn => {
     const category = btn.dataset.filter;
 
     menuItems.forEach(item => {
-      if (category === 'all' || item.dataset.category === category) {
-        item.style.display = 'flex';
-      } else {
-        item.style.display = 'none';
-      }
+      item.style.display =
+        category === 'all' || item.dataset.category === category
+          ? 'flex'
+          : 'none';
     });
   };
 });
@@ -50,8 +49,6 @@ function saveCart() {
 }
 
 function updateCart() {
-  if (!cartItems) return;
-
   cartItems.innerHTML = '';
   let total = 0;
 
@@ -68,8 +65,8 @@ function updateCart() {
     cartItems.appendChild(div);
   });
 
-  if (cartTotal) cartTotal.textContent = total;
-  if (cartCount) cartCount.textContent = cart.length;
+  cartTotal.textContent = total;
+  cartCount.textContent = cart.length;
 
   document.querySelectorAll('.remove-item').forEach(btn => {
     btn.onclick = () => {
@@ -83,8 +80,6 @@ function updateCart() {
 document.querySelectorAll('.menu-btn').forEach(btn => {
   btn.onclick = () => {
     const item = btn.closest('.menu-item');
-    if (!item) return;
-
     const title = item.querySelector('.menu-title').textContent;
     const price = Number(item.querySelector('.menu-price').textContent);
 
@@ -94,46 +89,32 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
   };
 });
 
-function openCartFn() {
-  if (cartModal) cartModal.classList.add('modal--open');
-}
+openCart.onclick = () => cartModal.classList.add('modal--open');
+closeCart.onclick = () => cartModal.classList.remove('modal--open');
 
-function closeCartFn() {
-  if (cartModal) cartModal.classList.remove('modal--open');
-}
-
-if (openCart) openCart.onclick = openCartFn;
-if (closeCart) closeCart.onclick = closeCartFn;
-
-if (cartModal) {
-  cartModal.onclick = (e) => {
-    if (e.target === cartModal) closeCartFn();
-  };
-}
+cartModal.onclick = e => {
+  if (e.target === cartModal) cartModal.classList.remove('modal--open');
+};
 
 updateCart();
 
 
 /* ===========================
-   FIREBASE (безопасная инициализация)
+   FIREBASE
 =========================== */
 let db = null;
 let auth = null;
 let provider = null;
 
 if (window.firebase) {
-  try {
-    db = firebase.firestore();
-    auth = firebase.auth();
-    provider = new firebase.auth.GoogleAuthProvider();
-  } catch (e) {
-    console.error("Firebase init error:", e);
-  }
+  db = firebase.firestore();
+  auth = firebase.auth();
+  provider = new firebase.auth.GoogleAuthProvider();
 }
 
 
 /* ===========================
-   ПРОФИЛЬ + GOOGLE LOGIN
+   ПРОФИЛЬ
 =========================== */
 const profileName = document.getElementById('profileName');
 const profilePhone = document.getElementById('profilePhone');
@@ -145,49 +126,45 @@ const avatar = document.getElementById('profileAvatar');
 let profile = JSON.parse(localStorage.getItem('profile') || '{}');
 
 function loadProfile() {
-  if (profileName && profile.name) profileName.value = profile.name;
-  if (profilePhone && profile.phone) profilePhone.value = profile.phone;
+  if (profile.name) profileName.value = profile.name;
+  if (profile.phone) profilePhone.value = profile.phone;
 }
 loadProfile();
 
-if (saveProfile) {
-  saveProfile.onclick = () => {
-    profile = {
-      name: profileName ? profileName.value : "",
-      phone: profilePhone ? profilePhone.value : ""
-    };
-    localStorage.setItem('profile', JSON.stringify(profile));
-    alert('Профиль сохранён');
+saveProfile.onclick = () => {
+  profile = {
+    name: profileName.value,
+    phone: profilePhone.value
   };
-}
+  localStorage.setItem('profile', JSON.stringify(profile));
+  alert('Профиль сохранён');
+};
 
-if (googleLoginBtn && auth && provider) {
+if (googleLoginBtn && auth) {
   googleLoginBtn.onclick = () => {
-    auth.signInWithPopup(provider)
-      .then(result => {
-        const user = result.user;
+    auth.signInWithPopup(provider).then(result => {
+      const user = result.user;
 
-        if (user.displayName && profileName) {
-          profileName.value = user.displayName;
-          profile.name = user.displayName;
-        }
+      if (user.displayName) {
+        profileName.value = user.displayName;
+        profile.name = user.displayName;
+      }
 
-        if (avatar && user.photoURL) {
-          avatar.src = user.photoURL;
-          avatar.style.display = 'block';
-        }
+      if (user.photoURL) {
+        avatar.src = user.photoURL;
+        avatar.style.display = 'block';
+      }
 
-        localStorage.setItem('profile', JSON.stringify(profile));
-      })
-      .catch(err => console.error("Google login error:", err));
+      localStorage.setItem('profile', JSON.stringify(profile));
+    });
   };
 }
 
 if (auth) {
   auth.onAuthStateChanged(user => {
-    if (user && logoutBtn) {
+    if (user) {
       logoutBtn.style.display = 'block';
-      if (avatar && user.photoURL) {
+      if (user.photoURL) {
         avatar.src = user.photoURL;
         avatar.style.display = 'block';
       }
@@ -195,18 +172,16 @@ if (auth) {
   });
 }
 
-if (logoutBtn && auth) {
-  logoutBtn.onclick = () => {
-    auth.signOut().then(() => {
-      localStorage.removeItem('profile');
-      location.reload();
-    });
-  };
-}
+logoutBtn.onclick = () => {
+  auth.signOut().then(() => {
+    localStorage.removeItem('profile');
+    location.reload();
+  });
+};
 
 
 /* ===========================
-   МОДАЛКА БРОНИРОВАНИЯ (ПРЕМИУМ)
+   БРОНИРОВАНИЕ
 =========================== */
 const bookingModal = document.getElementById('bookingModal');
 const openBookingModal = document.getElementById('openBookingModal');
@@ -216,61 +191,27 @@ const bookingForm = document.getElementById('booking-form');
 const guestsSelect = document.getElementById('guests');
 
 function openBooking() {
-  if (bookingModal) bookingModal.classList.add('modal--open');
+  bookingModal.classList.add('modal--open');
 
-  const nameField = document.getElementById('name');
-  const phoneField = document.getElementById('phone');
-
-  if (profileName && nameField) {
-    nameField.value = profileName.value || "";
-  }
-  if (profilePhone && phoneField) {
-    phoneField.value = profilePhone.value || "";
-  }
+  document.getElementById('name').value = profileName.value || "";
+  document.getElementById('phone').value = profilePhone.value || "";
 }
 
-function closeBookingFn() {
-  if (bookingModal) bookingModal.classList.remove('modal--open');
-}
+openBookingModal.onclick = openBooking;
+openBookingHero.onclick = openBooking;
+closeBooking.onclick = () => bookingModal.classList.remove('modal--open');
 
-if (openBookingModal) openBookingModal.onclick = openBooking;
-if (openBookingHero) openBookingHero.onclick = openBooking;
-if (closeBooking) closeBooking.onclick = closeBookingFn;
+bookingModal.onclick = e => {
+  if (e.target === bookingModal) bookingModal.classList.remove('modal--open');
+};
 
-if (bookingModal) {
-  bookingModal.onclick = (e) => {
-    if (e.target === bookingModal) closeBookingFn();
-  };
-}
+bookingForm.onsubmit = e => {
+  e.preventDefault();
 
-if (bookingForm) {
-  bookingForm.onsubmit = (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const guests = guestsSelect ? guestsSelect.value : "";
-    const comment = document.getElementById('comment').value.trim();
-
-    if (!name || !phone || !date || !time || !guests) {
-      alert('Пожалуйста, заполните все обязательные поля.');
-      return;
-    }
-
-    console.log('Бронь:', { name, phone, date, time, guests, comment });
-
-    alert('Заявка на бронирование отправлена. Мы свяжемся с вами для подтверждения.');
-    bookingForm.reset();
-    closeBookingFn();
-  };
-}
-
-const clearBookingBtn = document.getElementById('clearBooking');
-if (clearBookingBtn && bookingForm) {
-  clearBookingBtn.onclick = () => bookingForm.reset();
-}
+  alert('Заявка отправлена! Мы свяжемся с вами.');
+  bookingForm.reset();
+  bookingModal.classList.remove('modal--open');
+};
 
 
 /* ===========================
@@ -283,7 +224,7 @@ const closeHistory = document.getElementById('closeHistory');
 const historyList = document.getElementById('historyList');
 
 function loadHistory() {
-  if (!db || !historyList) return;
+  if (!db) return;
 
   historyList.innerHTML = '';
 
@@ -309,25 +250,17 @@ function loadHistory() {
 }
 
 function openHistoryFn() {
-  if (historyModal) {
-    loadHistory();
-    historyModal.classList.add('modal--open');
-  }
+  loadHistory();
+  historyModal.classList.add('modal--open');
 }
 
-function closeHistoryFn() {
-  if (historyModal) historyModal.classList.remove('modal--open');
-}
+openHistory.onclick = openHistoryFn;
+openHistoryFooter.onclick = openHistoryFn;
+closeHistory.onclick = () => historyModal.classList.remove('modal--open');
 
-if (openHistory) openHistory.onclick = openHistoryFn;
-if (openHistoryFooter) openHistoryFooter.onclick = openHistoryFn;
-if (closeHistory) closeHistory.onclick = closeHistoryFn;
-
-if (historyModal) {
-  historyModal.onclick = (e) => {
-    if (e.target === historyModal) closeHistoryFn();
-  };
-}
+historyModal.onclick = e => {
+  if (e.target === historyModal) historyModal.classList.remove('modal--open');
+};
 
 
 /* ===========================
@@ -335,30 +268,28 @@ if (historyModal) {
 =========================== */
 const checkoutBtn = document.getElementById('checkoutBtn');
 
-if (checkoutBtn) {
-  checkoutBtn.onclick = () => {
-    if (cart.length === 0) return;
+checkoutBtn.onclick = () => {
+  if (cart.length === 0) return;
 
-    const order = {
-      items: cart.map(i => i.title),
-      total: cart.reduce((a, b) => a + b.price, 0),
-      name: profileName ? profileName.value : "",
-      phone: profilePhone ? profilePhone.value : "",
-      timestamp: db ? firebase.firestore.FieldValue.serverTimestamp() : null
-    };
+  const order = {
+    items: cart.map(i => i.title),
+    total: cart.reduce((a, b) => a + b.price, 0),
+    name: profileName.value,
+    phone: profilePhone.value,
+    timestamp: db ? firebase.firestore.FieldValue.serverTimestamp() : null
+  };
 
-    if (db) {
-      db.collection('orders').add(order).then(() => {
-        alert('Заказ оформлен!');
-        cart = [];
-        saveCart();
-        updateCart();
-      });
-    } else {
-      alert('Заказ оформлен (локально)');
+  if (db) {
+    db.collection('orders').add(order).then(() => {
+      alert('Заказ оформлен!');
       cart = [];
       saveCart();
       updateCart();
-    }
-  };
-}
+    });
+  } else {
+    alert('Заказ оформлен (локально)');
+    cart = [];
+    saveCart();
+    updateCart();
+  }
+};
