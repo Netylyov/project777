@@ -11,6 +11,20 @@
 <body>
 
 <header>
+  header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 16px 24px; /* уменьшаем, чтобы всё помещалось */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(10, 11, 16, 0.85);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  z-index: 50;
+}
+
   <div class="logo">DRUZYA</div>
 
   <nav class="nav-desktop">
