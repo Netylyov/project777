@@ -806,3 +806,51 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+/* ===== Премиальный стиль списка гостей ===== */
+
+#bookingModal select {
+  appearance: none;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px;
+}
+
+#bookingModal select:hover {
+  border-color: #f7c325;
+  background: rgba(255,255,255,0.08);
+}
+
+#bookingModal select:focus {
+  border-color: #f7c325;
+  background: rgba(0,0,0,0.55);
+  box-shadow: 0 0 0 1px rgba(247,195,37,0.35);
+}
+
+/* Сами строки гостей */
+#bookingModal select option {
+  background: #0f0f12;
+  color: #fff;
+  padding: 10px;
+  font-size: 14px;
+}
+
+/* Ховер строки (работает в Chrome/Edge) */
+#bookingModal select option:hover {
+  background: #1a1a1f;
+}
+
+/* Выбранная строка */
+#bookingModal select option:checked {
+  background: #f7c325;
+  color: #000;
+}

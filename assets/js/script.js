@@ -10,7 +10,7 @@ if (burgerBtn && mobileMenu) {
 
 
 /* ===========================
-   МОДАЛКА БРОНИРОВАНИЯ
+   МОДАЛКА БРОНИРОВАНИЯ (ПРЕМИУМ)
 =========================== */
 const bookingModal = document.getElementById('bookingModal');
 const openBookingModal = document.getElementById('openBookingModal');
@@ -22,12 +22,15 @@ const guestsSelect = document.getElementById('guests');
 function openBooking() {
   if (bookingModal) bookingModal.classList.add('modal--open');
 
-  // автоподстановка из профиля, если есть
-  if (profileName && document.getElementById('name')) {
-    document.getElementById('name').value = profileName.value || profileName.placeholder || "";
+  // автоподстановка из профиля
+  const nameField = document.getElementById('name');
+  const phoneField = document.getElementById('phone');
+
+  if (profileName && nameField) {
+    nameField.value = profileName.value || "";
   }
-  if (profilePhone && document.getElementById('phone')) {
-    document.getElementById('phone').value = profilePhone.value || "";
+  if (profilePhone && phoneField) {
+    phoneField.value = profilePhone.value || "";
   }
 }
 
@@ -43,16 +46,6 @@ if (bookingModal) {
   bookingModal.onclick = (e) => {
     if (e.target === bookingModal) closeBookingFn();
   };
-}
-
-// заполнение гостей (если ещё не заполнили где-то выше)
-if (guestsSelect && !guestsSelect.options.length) {
-  [2, 3, 4, 5, 6, 8, 10].forEach(n => {
-    const opt = document.createElement('option');
-    opt.value = n;
-    opt.textContent = `${n} гостей`;
-    guestsSelect.appendChild(opt);
-  });
 }
 
 // отправка формы
@@ -86,6 +79,7 @@ const clearBookingBtn = document.getElementById('clearBooking');
 if (clearBookingBtn && bookingForm) {
   clearBookingBtn.onclick = () => bookingForm.reset();
 }
+
 
 
 
