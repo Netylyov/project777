@@ -878,17 +878,113 @@ footer {
   transform: translateY(0);
 }
 /* ============================================
-   АДАПТАЦИЯ ВСЕХ МОДАЛОК ПОД МОБИЛЬНЫЕ УСТРОЙСТВА
+   ГЛОБАЛЬНАЯ АДАПТАЦИЯ ПОД МОБИЛЬНЫЕ
 ============================================ */
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
 
-  /* Контейнеры модалок */
+  /* Контейнер */
+  .container {
+    padding: 0 16px;
+  }
+
+  /* HEADER */
+  header {
+    padding: 12px 16px;
+    gap: 14px;
+  }
+
+  .logo {
+    font-size: 16px;
+  }
+
+  .cart-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  /* HERO */
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 40px 0 40px;
+    gap: 24px;
+  }
+
+  .hero-left h1 {
+    font-size: 28px;
+  }
+
+  .hero-desc {
+    font-size: 14px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-right {
+    padding: 16px;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* MENU */
+  .menu-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-item {
+    padding: 12px;
+  }
+
+  /* PROFILE */
+  .profile-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* FOOTER */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  footer {
+    padding: 30px 0 40px;
+  }
+
+  /* ============================================
+     МОДАЛКИ — ПОЛНАЯ МОБИЛЬНАЯ АДАПТАЦИЯ
+  ============================================ */
+
+  .modal,
+  .cart-modal,
+  .history-modal {
+    padding: 20px;
+    align-items: flex-start;
+  }
+
   .modal-content,
   .history-content,
   .cart-content,
   .booking-modal {
-    width: 92% !important;
+    width: 100% !important;
     max-width: none;
     margin: 0 auto;
     border-radius: 16px;
@@ -897,23 +993,15 @@ footer {
     overflow-y: auto;
   }
 
-  /* Чтобы модалка не прилипала к краям */
-  .modal,
-  .cart-modal,
-  .history-modal {
-    padding: 20px;
-    align-items: flex-start;
-  }
-
-  /* Крестики — ВСЕГДА видимые */
+  /* Крестики */
   .modal-close,
   .cart-close,
   .history-close {
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     font-size: 22px;
     display: flex;
     align-items: center;
@@ -923,20 +1011,27 @@ footer {
     z-index: 9999;
   }
 
-  /* Форма бронирования — мобильная сетка */
+  /* Бронирование — мобильная сетка */
   .booking-grid {
     grid-template-columns: 1fr !important;
     gap: 12px;
   }
 
-  /* Кнопки внизу — вертикально */
   .booking-footer {
     flex-direction: column;
+    gap: 10px;
   }
 
   .booking-submit,
   .booking-clear {
     width: 100%;
+  }
+
+  /* CART MODAL */
+  .cart-content {
+    width: 100% !important;
+    height: auto;
+    max-height: 85vh;
   }
 }
 
