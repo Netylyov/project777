@@ -243,6 +243,37 @@ bookingForm.onsubmit = e => {
 
 
 /* ===========================
+   ОФОРМЛЕНИЕ ЗАКАЗА → БРОНИРОВАНИЕ
+=========================== */
+
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+checkoutBtn.onclick = () => {
+  // Если корзина пустая — не пускаем
+  if (cartItems.length === 0) {
+    showToast("Корзина пуста");
+    return;
+  }
+
+  // Закрываем корзину
+  cartModal.classList.remove('modal--open');
+
+  // Открываем бронирование
+  openBooking();
+
+  // Передаём данные корзины в комментарий
+  const commentField = document.getElementById('comment');
+
+  let orderText = "Заказ:\n";
+  cartItems.forEach(item => {
+    orderText += `• ${item.name} — ${item.price} BYN\n`;
+  });
+
+  commentField.value = orderText;
+};
+
+
+/* ===========================
    ИСТОРИЯ ЗАКАЗОВ
 =========================== */
 const historyModal = document.getElementById('historyModal');
