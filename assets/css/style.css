@@ -1,10 +1,16 @@
 /* ============================
-   ГЛОБАЛЬНЫЙ ФОН
+   БАЗА
 ============================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: url("https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=1920")
               center/cover fixed no-repeat;
   color: #fff;
@@ -12,7 +18,7 @@ body {
   position: relative;
 }
 
-/* затемнение */
+/* затемнение фона */
 body::before {
   content: "";
   position: fixed;
@@ -21,10 +27,15 @@ body::before {
   z-index: 0;
 }
 
-/* контент поверх затемнения */
+/* весь контент поверх затемнения */
 body * {
   position: relative;
   z-index: 1;
+}
+
+img {
+  max-width: 100%;
+  display: block;
 }
 
 /* ============================
@@ -44,11 +55,12 @@ body * {
 header {
   position: fixed;
   top: 0;
-  width: 100%;
-  padding: 16px 60px;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 24px;
   background: rgba(10, 11, 16, 0.85);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -69,7 +81,8 @@ header {
 .nav-desktop a {
   color: #aaa;
   text-decoration: none;
-  transition: .2s;
+  font-size: 14px;
+  transition: 0.2s;
 }
 
 .nav-desktop a:hover,
@@ -77,28 +90,29 @@ header {
   color: #fff;
 }
 
-/* КНОПКА КОРЗИНЫ */
+/* Кнопка корзины в хедере */
 .cart-btn {
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 18px;
+  font-size: 16px;
   padding: 8px 16px;
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 999px;
   cursor: pointer;
   color: #000;
-  z-index: 9999;
 }
 
-/* БУРГЕР */
+/* Бургер */
 .burger-btn {
   display: none;
   flex-direction: column;
   gap: 4px;
   background: none;
   border: none;
+  cursor: pointer;
 }
 
 .burger-btn span {
@@ -116,7 +130,7 @@ header {
   flex-direction: column;
   background: rgba(10,10,14,0.95);
   position: fixed;
-  top: 70px;
+  top: 64px;
   right: 0;
   width: 240px;
   padding: 20px;
@@ -131,35 +145,12 @@ header {
 .mobile-menu a {
   color: #fff;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 /* ============================
-   HERO
+   КНОПКИ
 ============================ */
-
-.hero {
-  padding: 140px 0 60px;
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 40px;
-}
-
-.hero-sub {
-  font-size: 12px;
-  color: #f7c325;
-  letter-spacing: 0.22em;
-}
-
-.hero-left h1 {
-  font-size: 38px;
-  margin: 10px 0 18px;
-}
-
-.hero-desc {
-  color: #ddd;
-  max-width: 520px;
-}
 
 .btn {
   border: none;
@@ -182,7 +173,102 @@ header {
 }
 
 /* ============================
-   ABOUT
+   HERO
+============================ */
+
+main {
+  padding-top: 90px;
+}
+
+.hero {
+  padding: 60px 0 60px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+}
+
+.hero-sub {
+  font-size: 12px;
+  color: #f7c325;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.hero-left h1 {
+  font-size: 38px;
+  margin: 10px 0 18px;
+}
+
+.hero-desc {
+  color: #ddd;
+  max-width: 520px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.hero-right {
+  background: rgba(0,0,0,0.45);
+  border-radius: 16px;
+  padding: 20px 22px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.hero-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.hero-card-text {
+  color: #ddd;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.tag {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+.hero-card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2ecc71;
+  margin-right: 6px;
+}
+
+/* ============================
+   SECTIONS
 ============================ */
 
 .section {
@@ -199,10 +285,23 @@ header {
   margin-bottom: 30px;
 }
 
+/* ============================
+   ABOUT
+============================ */
+
 .about-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
   gap: 40px;
+}
+
+.about-text {
+  background: rgba(0,0,0,0.35);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 15px;
+  color: #ddd;
 }
 
 .about-card {
@@ -215,6 +314,40 @@ header {
 /* ============================
    MENU
 ============================ */
+
+.menu-section {
+  padding: 80px 0;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.menu-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.menu-categories button {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.menu-categories button.active {
+  background: #f7c325;
+  color: #000;
+  border-color: #f7c325;
+}
 
 .menu-grid {
   display: grid;
@@ -238,11 +371,13 @@ header {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+  font-size: 14px;
 }
 
 .menu-desc {
   color: #ccc;
   margin: 6px 0 10px;
+  font-size: 13px;
 }
 
 .menu-bottom {
@@ -251,12 +386,25 @@ header {
   align-items: center;
 }
 
+.menu-price {
+  font-weight: 600;
+}
+
 .menu-btn {
   background: #f7c325;
   border: none;
   padding: 8px 14px;
   border-radius: 999px;
   cursor: pointer;
+  font-size: 13px;
+}
+
+/* ============================
+   BOOKING SECTION
+============================ */
+
+#booking .btn-primary {
+  margin-top: 10px;
 }
 
 /* ============================
@@ -307,7 +455,7 @@ header {
 }
 
 /* ============================
-   MODALS
+   MODALS (общая логика)
 ============================ */
 
 .modal,
@@ -326,6 +474,7 @@ header {
   display: flex;
 }
 
+/* Бронирование и история — центр */
 .modal-content,
 .history-content {
   background: rgba(0,0,0,0.55);
@@ -334,17 +483,60 @@ header {
   width: 360px;
   max-width: 90vw;
   position: relative;
+  border: 1px solid rgba(255,255,255,0.12);
 }
 
-.cart-content {
-  width: 360px;
-  height: 100%;
-  background: rgba(0,0,0,0.55);
-  padding: 22px;
-  border-left: 1px solid rgba(255,255,255,0.1);
-  overflow-y: auto;
+/* Жёлтая форма брони */
+.yellow-form {
+  background: rgba(0,0,0,0.65);
 }
 
+/* Поля в модалке брони */
+#bookingModal input,
+#bookingModal select,
+#bookingModal textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+#bookingModal textarea {
+  min-height: 80px;
+  resize: none;
+}
+
+.booking-submit {
+  width: 100%;
+  background: #f7c325;
+  color: #000;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.booking-clear {
+  width: 100%;
+  background: transparent;
+  color: #f7c325;
+  border: 1px solid #f7c325;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+/* Крестики */
 .modal-close,
 .cart-close,
 .history-close {
@@ -361,6 +553,71 @@ header {
 }
 
 /* ============================
+   CART MODAL (справа)
+============================ */
+
+.cart-modal {
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.cart-content {
+  width: 360px;
+  height: 100%;
+  background: rgba(0,0,0,0.55);
+  padding: 22px;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+#cartItems {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.cart-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.cart-row button {
+  background: transparent;
+  border: none;
+  color: #f7c325;
+  cursor: pointer;
+}
+
+.cart-total {
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+#checkoutBtn {
+  width: 100%;
+}
+
+/* ============================
+   HISTORY MODAL
+============================ */
+
+.history-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.history-item {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* ============================
    FOOTER
 ============================ */
 
@@ -373,6 +630,7 @@ footer {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+  align-items: flex-start;
 }
 
 .footer-title {
@@ -398,81 +656,47 @@ footer {
 .btn-outline {
   font-weight: 600;
 }
-.cart-btn {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 18px;
-  padding: 8px 16px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 999px;
-  cursor: pointer;
-  color: #000;
-  z-index: 9999;
-}
-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  padding: 16px 24px; /* уменьшаем, чтобы всё помещалось */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(10, 11, 16, 0.85);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  z-index: 50;
-}
-/* ===== ФИКС КОРЗИНЫ — НЕ ДВИГАЕТСЯ ===== */
 
-.cart-modal {
-  display: flex;
-  justify-content: flex-end;
-  align-items: stretch; /* растягиваем по высоте */
+/* ============================
+   АДАПТИВ
+============================ */
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nav-desktop {
+    display: none;
+  }
+
+  .burger-btn {
+    display: flex;
+  }
+
+  .cart-btn {
+    order: 10;
+  }
 }
 
-.cart-content {
-  width: 360px;
-  height: 100%;
-  background: rgba(0,0,0,0.55);
-  padding: 22px;
-  border-left: 1px solid rgba(255,255,255,0.1);
-  display: flex;
-  flex-direction: column; /* важный момент */
-}
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
 
-/* список товаров — прокручивается */
-#cartItems {
-  flex: 1;
-  overflow-y: auto;
-  margin-bottom: 20px;
-}
+  .hero {
+    padding-top: 40px;
+  }
 
-/* кнопка заказа — всегда внизу */
-.cart-total {
-  margin-bottom: 12px;
-}
-
-#checkoutBtn {
-  width: 100%;
-}
-/* Корзина по умолчанию скрыта */
-.cart-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  justify-content: flex-end;
-  align-items: stretch;
-  background: rgba(0,0,0,0.65);
-  z-index: 9999;
-}
-
-/* Когда открыта */
-.cart-modal.modal--open {
-  display: flex;
+  header {
+    padding-inline: 16px;
+  }
 }
