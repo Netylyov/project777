@@ -195,36 +195,50 @@ logoutBtn.onclick = () => {
 
 
 /* ===========================
-   БРОНИРОВАНИЕ
+   БРОНИРОВАНИЕ (bottom‑sheet)
 =========================== */
+
 const bookingModal = document.getElementById('bookingModal');
 const openBookingModal = document.getElementById('openBookingModal');
 const openBookingHero = document.getElementById('openBookingHero');
 const closeBooking = document.getElementById('closeBooking');
 const bookingForm = document.getElementById('booking-form');
-const guestsSelect = document.getElementById('guests');
 
 function openBooking() {
   bookingModal.classList.add('modal--open');
+  document.body.style.overflow = "hidden"; // блокируем фон
 
+  // автозаполнение из профиля
   document.getElementById('name').value = profileName.value || "";
   document.getElementById('phone').value = profilePhone.value || "";
 }
 
 openBookingModal.onclick = openBooking;
-openBookingHero.onclick = openBooking;
-closeBooking.onclick = () => bookingModal.classList.remove('modal--open');
+if (openBookingHero) openBookingHero.onclick = openBooking;
 
-bookingModal.onclick = e => {
-  if (e.target === bookingModal) bookingModal.classList.remove('modal--open');
+// Крестик
+closeBooking.onclick = () => {
+  bookingModal.classList.remove('modal--open');
+  document.body.style.overflow = "";
 };
 
+// Клик по фону
+bookingModal.onclick = e => {
+  if (e.target === bookingModal) {
+    bookingModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
+  }
+};
+
+// Отправка формы
 bookingForm.onsubmit = e => {
   e.preventDefault();
 
   alert('Заявка отправлена! Мы свяжемся с вами.');
-  bookingForm.reset();
+
   bookingModal.classList.remove('modal--open');
+  document.body.style.overflow = "";
+  bookingForm.reset();
 };
 
 
