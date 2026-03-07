@@ -877,34 +877,66 @@ footer {
   opacity: 1;
   transform: translateY(0);
 }
-/* ===== АДАПТАЦИЯ МОДАЛКИ ПОД МОБИЛЬНЫЕ ===== */
+/* ============================================
+   АДАПТАЦИЯ ВСЕХ МОДАЛОК ПОД МОБИЛЬНЫЕ УСТРОЙСТВА
+============================================ */
+
 @media (max-width: 480px) {
-  .modal__content {
+
+  /* Контейнеры модалок */
+  .modal-content,
+  .history-content,
+  .cart-content,
+  .booking-modal {
     width: 92% !important;
     max-width: none;
     margin: 0 auto;
     border-radius: 16px;
     padding: 20px 18px;
-  }
-
-  /* Чтобы модалка не прилипала к краям */
-  .modal {
-    padding: 20px;
-    align-items: flex-start;
-  }
-}
-@media (max-width: 480px) {
-  .modal__close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 26px;
-    z-index: 9999;
-  }
-}
-@media (max-width: 480px) {
-  .modal__content {
     max-height: 85vh;
     overflow-y: auto;
   }
+
+  /* Чтобы модалка не прилипала к краям */
+  .modal,
+  .cart-modal,
+  .history-modal {
+    padding: 20px;
+    align-items: flex-start;
+  }
+
+  /* Крестики — ВСЕГДА видимые */
+  .modal-close,
+  .cart-close,
+  .history-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.15);
+    border-radius: 999px;
+    z-index: 9999;
+  }
+
+  /* Форма бронирования — мобильная сетка */
+  .booking-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* Кнопки внизу — вертикально */
+  .booking-footer {
+    flex-direction: column;
+  }
+
+  .booking-submit,
+  .booking-clear {
+    width: 100%;
+  }
 }
+
