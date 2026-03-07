@@ -854,3 +854,26 @@ footer {
   background: #f7c325;
   color: #000;
 }
+/* ===== TOAST УВЕДОМЛЕНИЕ ===== */
+#toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: 0.3s ease;
+  z-index: 9999;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}

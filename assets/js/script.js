@@ -8,6 +8,19 @@ if (burgerBtn && mobileMenu) {
   burgerBtn.onclick = () => mobileMenu.classList.toggle('open');
 }
 
+/* ===========================
+   TOAST УВЕДОМЛЕНИЕ
+=========================== */
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  toast.textContent = text;
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 1500);
+}
+
 
 /* ===========================
    ФИЛЬТР МЕНЮ
@@ -44,6 +57,17 @@ const cartItems = document.getElementById('cartItems');
 const cartTotal = document.getElementById('cartTotal');
 const cartCount = document.getElementById('cartCount');
 
+/* ===== TOAST ===== */
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  toast.textContent = text;
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 1500);
+}
+
 function saveCart() {
   localStorage.setItem('cart', JSON.stringify(cart));
 }
@@ -77,6 +101,7 @@ function updateCart() {
   });
 }
 
+/* ===== ДОБАВЛЕНИЕ В КОРЗИНУ + TOAST ===== */
 document.querySelectorAll('.menu-btn').forEach(btn => {
   btn.onclick = () => {
     const item = btn.closest('.menu-item');
@@ -86,6 +111,8 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
     cart.push({ title, price });
     saveCart();
     updateCart();
+
+    showToast(`«${title}» добавлено в корзину`);
   };
 });
 
