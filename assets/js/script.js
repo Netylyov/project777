@@ -16,9 +16,19 @@ const bookingModal = document.getElementById('bookingModal');
 const openBookingModal = document.getElementById('openBookingModal');
 const openBookingHero = document.getElementById('openBookingHero');
 const closeBooking = document.getElementById('closeBooking');
+const bookingForm = document.getElementById('booking-form');
+const guestsSelect = document.getElementById('guests');
 
 function openBooking() {
   if (bookingModal) bookingModal.classList.add('modal--open');
+
+  // автоподстановка из профиля, если есть
+  if (profileName && document.getElementById('name')) {
+    document.getElementById('name').value = profileName.value || profileName.placeholder || "";
+  }
+  if (profilePhone && document.getElementById('phone')) {
+    document.getElementById('phone').value = profilePhone.value || "";
+  }
 }
 
 function closeBookingFn() {
@@ -34,6 +44,49 @@ if (bookingModal) {
     if (e.target === bookingModal) closeBookingFn();
   };
 }
+
+// заполнение гостей (если ещё не заполнили где-то выше)
+if (guestsSelect && !guestsSelect.options.length) {
+  [2, 3, 4, 5, 6, 8, 10].forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = `${n} гостей`;
+    guestsSelect.appendChild(opt);
+  });
+}
+
+// отправка формы
+if (bookingForm) {
+  bookingForm.onsubmit = (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const guests = guestsSelect ? guestsSelect.value : "";
+    const comment = document.getElementById('comment').value.trim();
+
+    if (!name || !phone || !date || !time || !guests) {
+      alert('Пожалуйста, заполните все обязательные поля.');
+      return;
+    }
+
+    // здесь можно отправить в Firebase / Telegram / backend
+    console.log('Бронь:', { name, phone, date, time, guests, comment });
+
+    alert('Заявка на бронирование отправлена. Мы свяжемся с вами для подтверждения.');
+    bookingForm.reset();
+    closeBookingFn();
+  };
+}
+
+// очистка формы
+const clearBookingBtn = document.getElementById('clearBooking');
+if (clearBookingBtn && bookingForm) {
+  clearBookingBtn.onclick = () => bookingForm.reset();
+}
+
 
 
 /* ===========================
