@@ -10,7 +10,7 @@ if (burgerBtn && mobileMenu) {
 
 
 /* ===========================
-   ФИЛЬТР МЕНЮ
+   ФИЛЬТР МЕНЮ (ИСПРАВЛЕНО)
 =========================== */
 const filterButtons = document.querySelectorAll('.menu-categories button');
 const menuItems = document.querySelectorAll('.menu-item');
@@ -23,10 +23,11 @@ filterButtons.forEach(btn => {
     const category = btn.dataset.filter;
 
     menuItems.forEach(item => {
-      item.style.display =
-        category === 'all' || item.dataset.category === category
-          ? 'flex'
-          : 'none';
+      const match =
+        category === 'all' || item.dataset.category === category;
+
+      // ВАЖНО: не меняем тип display, только скрываем/показываем
+      item.style.display = match ? '' : 'none';
     });
   };
 });
@@ -254,26 +255,28 @@ bookingForm.onsubmit = e => {
 
 const checkoutBtn = document.getElementById('checkoutBtn');
 
-checkoutBtn.onclick = () => {
-  if (cart.length === 0) {
-    showToast("Корзина пуста");
-    return;
-  }
+if (checkoutBtn) {
+  checkoutBtn.onclick = () => {
+    if (cart.length === 0) {
+      showToast("Корзина пуста");
+      return;
+    }
 
-  cartModal.classList.remove('modal--open');
-  document.body.style.overflow = "";
+    cartModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
 
-  openBooking();
+    openBooking();
 
-  const commentField = document.getElementById('comment');
+    const commentField = document.getElementById('comment');
 
-  let orderText = "Заказ:\n";
-  cart.forEach(item => {
-    orderText += `• ${item.title} — ${item.price} BYN\n`;
-  });
+    let orderText = "Заказ:\n";
+    cart.forEach(item => {
+      orderText += `• ${item.title} — ${item.price} BYN\n`;
+    });
 
-  commentField.value = orderText;
-};
+    commentField.value = orderText;
+  };
+}
 
 
 /* ===========================
@@ -316,10 +319,14 @@ function openHistoryFn() {
   historyModal.classList.add('modal--open');
 }
 
-openHistory.onclick = openHistoryFn;
-openHistoryFooter.onclick = openHistoryFn;
-closeHistory.onclick = () => historyModal.classList.remove('modal--open');
+if (openHistory) openHistory.onclick = openHistoryFn;
+if (openHistoryFooter) openHistoryFooter.onclick = openHistoryFn;
+if (closeHistory) {
+  closeHistory.onclick = () => historyModal.classList.remove('modal--open');
+}
 
-historyModal.onclick = e => {
-  if (e.target === historyModal) historyModal.classList.remove('modal--open');
-};
+if (historyModal) {
+  historyModal.onclick = e => {
+    if (e.target === historyModal) historyModal.classList.remove('modal--open');
+  };
+}
