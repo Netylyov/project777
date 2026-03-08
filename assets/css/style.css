@@ -1108,3 +1108,10 @@ footer {
   }
 }
 
+/* Фикс для placeholder у date/time */
+input[type="date"],
+input[type="time"] {
+  line-height: normal;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
