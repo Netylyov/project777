@@ -1108,7 +1108,14 @@ footer {
   }
 }
 
-/* Фикс для placeholder у date/time */
+.booking-sheet__window {
+  position: relative;
+  overflow: visible;
+}
+
+.booking-sheet__close {
+  z-index: 9999;
+}
 input[type="date"],
 input[type="time"] {
   line-height: normal;

@@ -26,7 +26,7 @@ filterButtons.forEach(btn => {
       const match =
         category === 'all' || item.dataset.category === category;
 
-      // ВАЖНО: не меняем тип display, только скрываем/показываем
+      // ВАЖНО: не меняем тип display, только скрываем
       item.style.display = match ? '' : 'none';
     });
   };
