@@ -1108,13 +1108,6 @@ footer {
   }
 }
 
-.booking-sheet__window {
-  position: relative;
-  overflow: visible;
-}
-
-.booking-sheet__close {
-  z-index: 9999;
 }
 input[type="date"],
 input[type="time"] {
