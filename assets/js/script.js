@@ -10,7 +10,7 @@ if (burgerBtn && mobileMenu) {
 
 
 /* ===========================
-   ФИЛЬТР МЕНЮ (ИСПРАВЛЕНО)
+   ФИЛЬТР МЕНЮ
 =========================== */
 const filterButtons = document.querySelectorAll('.menu-categories button');
 const menuItems = document.querySelectorAll('.menu-item');
@@ -25,7 +25,7 @@ filterButtons.forEach(btn => {
     menuItems.forEach(item => {
       item.style.display =
         category === 'all' || item.dataset.category === category
-          ? 'block'
+          ? 'flex'
           : 'none';
     });
   };
@@ -50,7 +50,9 @@ function showToast(text) {
   toast.textContent = text;
   toast.classList.add('show');
 
-  setTimeout(() => toast.classList.remove('show'), 1500);
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 1500);
 }
 
 function saveCart() {
@@ -86,7 +88,7 @@ function updateCart() {
   });
 }
 
-/* ===== ДОБАВЛЕНИЕ В КОРЗИНУ ===== */
+/* ===== ДОБАВЛЕНИЕ В КОРЗИНУ + TOAST ===== */
 document.querySelectorAll('.menu-btn').forEach(btn => {
   btn.onclick = () => {
     const item = btn.closest('.menu-item');
