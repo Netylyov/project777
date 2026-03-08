@@ -322,33 +322,3 @@ historyModal.onclick = e => {
 };
 
 
-/* ===========================
-   ОФОРМЛЕНИЕ ЗАКАЗА
-=========================== */
-const checkoutBtn = document.getElementById('checkoutBtn');
-
-checkoutBtn.onclick = () => {
-  if (cart.length === 0) return;
-
-  const order = {
-    items: cart.map(i => i.title),
-    total: cart.reduce((a, b) => a + b.price, 0),
-    name: profileName.value,
-    phone: profilePhone.value,
-    timestamp: db ? firebase.firestore.FieldValue.serverTimestamp() : null
-  };
-
-  if (db) {
-    db.collection('orders').add(order).then(() => {
-      alert('Заказ оформлен!');
-      cart = [];
-      saveCart();
-      updateCart();
-    });
-  } else {
-    alert('Заказ оформлен (локально)');
-    cart = [];
-    saveCart();
-    updateCart();
-  }
-};
