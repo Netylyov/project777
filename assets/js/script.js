@@ -103,11 +103,21 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
   };
 });
 
-openCart.onclick = () => cartModal.classList.add('modal--open');
-closeCart.onclick = () => cartModal.classList.remove('modal--open');
+openCart.onclick = () => {
+  cartModal.classList.add('modal--open');
+  document.body.style.overflow = "hidden";
+};
+
+closeCart.onclick = () => {
+  cartModal.classList.remove('modal--open');
+  document.body.style.overflow = "";
+};
 
 cartModal.onclick = e => {
-  if (e.target === cartModal) cartModal.classList.remove('modal--open');
+  if (e.target === cartModal) {
+    cartModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
+  }
 };
 
 updateCart();
@@ -206,9 +216,8 @@ const bookingForm = document.getElementById('booking-form');
 
 function openBooking() {
   bookingModal.classList.add('modal--open');
-  document.body.style.overflow = "hidden"; // блокируем фон
+  document.body.style.overflow = "hidden";
 
-  // автозаполнение из профиля
   document.getElementById('name').value = profileName.value || "";
   document.getElementById('phone').value = profilePhone.value || "";
 }
@@ -216,13 +225,11 @@ function openBooking() {
 openBookingModal.onclick = openBooking;
 if (openBookingHero) openBookingHero.onclick = openBooking;
 
-// Крестик
 closeBooking.onclick = () => {
   bookingModal.classList.remove('modal--open');
   document.body.style.overflow = "";
 };
 
-// Клик по фону
 bookingModal.onclick = e => {
   if (e.target === bookingModal) {
     bookingModal.classList.remove('modal--open');
@@ -230,7 +237,6 @@ bookingModal.onclick = e => {
   }
 };
 
-// Отправка формы
 bookingForm.onsubmit = e => {
   e.preventDefault();
 
@@ -249,24 +255,21 @@ bookingForm.onsubmit = e => {
 const checkoutBtn = document.getElementById('checkoutBtn');
 
 checkoutBtn.onclick = () => {
-  // Если корзина пустая — не пускаем
-  if (cartItems.length === 0) {
+  if (cart.length === 0) {
     showToast("Корзина пуста");
     return;
   }
 
-  // Закрываем корзину
   cartModal.classList.remove('modal--open');
+  document.body.style.overflow = "";
 
-  // Открываем бронирование
   openBooking();
 
-  // Передаём данные корзины в комментарий
   const commentField = document.getElementById('comment');
 
   let orderText = "Заказ:\n";
-  cartItems.forEach(item => {
-    orderText += `• ${item.name} — ${item.price} BYN\n`;
+  cart.forEach(item => {
+    orderText += `• ${item.title} — ${item.price} BYN\n`;
   });
 
   commentField.value = orderText;
@@ -320,5 +323,3 @@ closeHistory.onclick = () => historyModal.classList.remove('modal--open');
 historyModal.onclick = e => {
   if (e.target === historyModal) historyModal.classList.remove('modal--open');
 };
-
-
