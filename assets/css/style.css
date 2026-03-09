@@ -1116,3 +1116,62 @@ input[type="time"] {
   padding-bottom: 12px;
 }
 
+/* Сдвигаем крестик левее, чтобы не попадал под верхнюю полосу */
+.booking-sheet__close {
+  position: absolute;
+  top: 12px;
+  right: auto;   /* убираем привязку справа */
+  left: 12px;    /* ставим крестик слева */
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+/* ===========================
+   ЕДИНЫЙ СТИЛЬ КАРТОЧЕК МЕНЮ
+=========================== */
+
+/* Карточка — ровная, одинаковая высота */
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fff;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  height: 100%;
+}
+
+/* Изображения — одинаковый размер, не растягиваются */
+.menu-item img {
+  width: 100%;
+  height: 220px;        /* фиксированная высота */
+  object-fit: cover;    /* обрезает красиво */
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+/* Название — фиксированная высота, чтобы карточки не прыгали */
+.menu-title {
+  min-height: 48px;     /* одинаковая высота блока */
+  display: flex;
+  align-items: flex-start;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Цена — аккуратно под названием */
+.menu-price {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Кнопка всегда внизу карточки */
+.menu-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 10px;
+  font-size: 16px;
+}
