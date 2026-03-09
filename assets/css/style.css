@@ -1127,20 +1127,27 @@ input[type="time"] {
 }
 
 /* ===========================
-   АККУРАТНЫЕ ЧЁРНЫЕ КАРТОЧКИ МЕНЮ
+   ЧЁРНЫЕ КАРТОЧКИ МЕНЮ
 =========================== */
 
-/* Карточка — чёрная, ровная, кнопка внизу */
+/* Внешняя карточка */
 .menu-item {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #000;              /* ЧЁРНЫЙ ФОН */
-  color: #fff;                   /* БЕЛЫЙ ТЕКСТ */
+  background: #000 !important;     /* ЧЁРНЫЙ ФОН */
+  color: #fff !important;          /* БЕЛЫЙ ТЕКСТ */
   padding: 16px;
   border-radius: 14px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   height: 100%;
+}
+
+/* Внутренний блок, который раньше был белым */
+.menu-info,
+.menu-text {
+  background: transparent !important;  /* убираем белый фон */
+  color: #fff !important;
 }
 
 /* Изображения — одинаковый размер */
