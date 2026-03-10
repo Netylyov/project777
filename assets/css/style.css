@@ -1292,9 +1292,7 @@ input[type="time"] {
   color: #fff;
   opacity: 0.9;
 }
-.feature-item,
-.hero-feature,
-.hero-features button {
+.hero-tags .tag {
   background: none !important;
   border: none !important;
   padding: 0 !important;
@@ -1302,10 +1300,6 @@ input[type="time"] {
   box-shadow: none !important;
   border-radius: 0 !important;
   cursor: default !important;
-}
-
-.feature-item:hover,
-.hero-feature:hover,
-.hero-features button:hover {
-  transform: none !important;
+  display: inline !important;
+  color: inherit !important;
 }
