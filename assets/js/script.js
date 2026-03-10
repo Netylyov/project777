@@ -371,3 +371,55 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
+document.addEventListener("DOMContentLoaded", function () {
+
+  const modalOpenBtn = document.getElementById("openBookingModal");
+
+  modalOpenBtn.addEventListener("click", function () {
+
+    // Ждём, пока модалка появится в DOM
+    setTimeout(() => {
+
+      const nameInput = document.getElementById("name");
+      const phoneInput = document.getElementById("phone");
+
+      // === ВАЛИДАЦИЯ ИМЕНИ ===
+      if (nameInput) {
+        nameInput.addEventListener("input", function (e) {
+          e.target.value = e.target.value
+            .replace(/[^А-Яа-яЁё]/g, "")
+            .slice(0, 20);
+        });
+      }
+
+      // === МАСКА ТЕЛЕФОНА ===
+      if (phoneInput) {
+        phoneInput.addEventListener("input", function (e) {
+          let value = e.target.value.replace(/\D/g, "");
+
+          if (value.startsWith("375")) {
+            value = "+375 "
+              + (value.slice(3, 5) || "") + " "
+              + (value.slice(5, 8) || "") + " "
+              + (value.slice(8, 10) || "") + " "
+              + (value.slice(10, 12) || "");
+          }
+          else if (value.startsWith("7")) {
+            value = "+7 "
+              + (value.slice(1, 4) || "") + " "
+              + (value.slice(4, 7) || "") + " "
+              + (value.slice(7, 9) || "") + " "
+              + (value.slice(9, 11) || "");
+          }
+          else {
+            value = "";
+          }
+
+          e.target.value = value.trim();
+        });
+      }
+
+    }, 50); // даём модалке время появиться
+  });
+
+});
