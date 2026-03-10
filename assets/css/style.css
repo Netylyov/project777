@@ -1292,3 +1292,20 @@ input[type="time"] {
   color: #fff;
   opacity: 0.9;
 }
+.feature-item,
+.hero-feature,
+.hero-features button {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  cursor: default !important;
+}
+
+.feature-item:hover,
+.hero-feature:hover,
+.hero-features button:hover {
+  transform: none !important;
+}
