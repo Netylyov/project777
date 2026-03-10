@@ -10,7 +10,7 @@ if (burgerBtn && mobileMenu) {
 
 
 /* ===========================
-   ФИЛЬТР МЕНЮ (ИСПРАВЛЕНО)
+   ФИЛЬТР МЕНЮ
 =========================== */
 const filterButtons = document.querySelectorAll('.menu-categories button');
 const menuItems = document.querySelectorAll('.menu-item');
@@ -26,7 +26,6 @@ filterButtons.forEach(btn => {
       const match =
         category === 'all' || item.dataset.category === category;
 
-      // ВАЖНО: не меняем тип display, только скрываем
       item.style.display = match ? '' : 'none';
     });
   };
@@ -45,7 +44,6 @@ const cartItems = document.getElementById('cartItems');
 const cartTotal = document.getElementById('cartTotal');
 const cartCount = document.getElementById('cartCount');
 
-/* ===== TOAST ===== */
 function showToast(text) {
   const toast = document.getElementById('toast');
   toast.textContent = text;
@@ -89,7 +87,6 @@ function updateCart() {
   });
 }
 
-/* ===== ДОБАВЛЕНИЕ В КОРЗИНУ + TOAST ===== */
 document.querySelectorAll('.menu-btn').forEach(btn => {
   btn.onclick = () => {
     const item = btn.closest('.menu-item');
@@ -206,7 +203,7 @@ logoutBtn.onclick = () => {
 
 
 /* ===========================
-   БРОНИРОВАНИЕ (bottom‑sheet)
+   БРОНИРОВАНИЕ
 =========================== */
 
 const bookingModal = document.getElementById('bookingModal');
@@ -221,6 +218,8 @@ function openBooking() {
 
   document.getElementById('name').value = profileName.value || "";
   document.getElementById('phone').value = profilePhone.value || "";
+
+  applyValidation();
 }
 
 openBookingModal.onclick = openBooking;
@@ -330,144 +329,68 @@ if (historyModal) {
     if (e.target === historyModal) historyModal.classList.remove('modal--open');
   };
 }
-document.addEventListener("DOMContentLoaded", function () {
 
-  // Валидация имени
+
+/* ===========================
+   ВАЛИДАЦИЯ И МАСКА ТЕЛЕФОНА
+=========================== */
+
+function applyValidation() {
   const nameInput = document.getElementById("name");
-  if (nameInput) {
-    nameInput.addEventListener("input", function (e) {
-      e.target.value = e.target.value
-        .replace(/[^А-Яа-яЁё]/g, "")
-        .slice(0, 20);
-    });
-  }
-
-  // Маска телефона
   const phoneInput = document.getElementById("phone");
-  if (phoneInput) {
-    phoneInput.addEventListener("input", function (e) {
-      let value = e.target.value.replace(/\D/g, "");
 
-      if (value.startsWith("375")) {
-        value = "+375 "
-          + (value.slice(3, 5) || "") + " "
-          + (value.slice(5, 8) || "") + " "
-          + (value.slice(8, 10) || "") + " "
-          + (value.slice(10, 12) || "");
-      }
-      else if (value.startsWith("7")) {
-        value = "+7 "
-          + (value.slice(1, 4) || "") + " "
-          + (value.slice(4, 7) || "") + " "
-          + (value.slice(7, 9) || "") + " "
-          + (value.slice(9, 11) || "");
-      }
-      else {
-        value = "";
-      }
+  if (!nameInput || !phoneInput) return;
 
-      e.target.value = value.trim();
-    });
-  }
+  /* === ВАЛИДАЦИЯ ИМЕНИ === */
+  nameInput.oninput = e => {
+    e.target.value = e.target.value
+      .replace(/[^А-Яа-яЁё]/g, "")
+      .slice(0, 20);
+  };
 
-});
-document.addEventListener("DOMContentLoaded", function () {
+  /* === МАСКА ТЕЛЕФОНА (BY +375, RU +7) === */
+  phoneInput.oninput = e => {
+    let value = e.target.value.replace(/\D/g, "");
 
-  const modalOpenBtn = document.getElementById("openBookingModal");
+    if (value === "3" || value === "37") {
+      e.target.value = value;
+      return;
+    }
 
-  modalOpenBtn.addEventListener("click", function () {
+    if (value.startsWith("375")) {
+      const p1 = value.slice(3, 5);
+      const p2 = value.slice(5, 8);
+      const p3 = value.slice(8, 10);
+      const p4 = value.slice(10, 12);
 
-    // Ждём, пока модалка появится в DOM
-    setTimeout(() => {
+      e.target.value =
+        "+375" +
+        (p1 ? " " + p1 : "") +
+        (p2 ? " " + p2 : "") +
+        (p3 ? " " + p3 : "") +
+        (p4 ? " " + p4 : "");
 
-      const nameInput = document.getElementById("name");
-      const phoneInput = document.getElementById("phone");
+      return;
+    }
 
-      // === ВАЛИДАЦИЯ ИМЕНИ ===
-      if (nameInput) {
-        nameInput.addEventListener("input", function (e) {
-          e.target.value = e.target.value
-            .replace(/[^А-Яа-яЁё]/g, "")
-            .slice(0, 20);
-        });
-      }
+    if (value.startsWith("7")) {
+      const p1 = value.slice(1, 4);
+      const p2 = value.slice(4, 7);
+      const p3 = value.slice(7, 9);
+      const p4 = value.slice(9, 11);
 
-      // === МАСКА ТЕЛЕФОНА ===
-      if (phoneInput) {
-        phoneInput.addEventListener("input", function (e) {
-          let value = e.target.value.replace(/\D/g, "");
+      e.target.value =
+        "+7" +
+        (p1 ? " " + p1 : "") +
+        (p2 ? " " + p2 : "") +
+        (p3 ? " " + p3 : "") +
+        (p4 ? " " + p4 : "");
 
-          if (value.startsWith("375")) {
-            value = "+375 "
-              + (value.slice(3, 5) || "") + " "
-              + (value.slice(5, 8) || "") + " "
-              + (value.slice(8, 10) || "") + " "
-              + (value.slice(10, 12) || "");
-          }
-          else if (value.startsWith("7")) {
-            value = "+7 "
-              + (value.slice(1, 4) || "") + " "
-              + (value.slice(4, 7) || "") + " "
-              + (value.slice(7, 9) || "") + " "
-              + (value.slice(9, 11) || "");
-          }
-          else {
-            value = "";
-          }
+      return;
+    }
 
-          e.target.value = value.trim();
-        });
-      }
-
-    }, 50); // даём модалке время появиться
-  });
-
-});
-phoneInput.addEventListener("input", function (e) {
-  let value = e.target.value.replace(/\D/g, ""); // только цифры
-
-  // --- Разрешаем ввод первых цифр для BY ---
-  if (value === "3" || value === "37") {
-    e.target.value = value;
-    return;
-  }
-
-  // --- Беларусь +375 ---
-  if (value.startsWith("375")) {
-    const part1 = value.slice(3, 5);
-    const part2 = value.slice(5, 8);
-    const part3 = value.slice(8, 10);
-    const part4 = value.slice(10, 12);
-
-    e.target.value =
-      "+375" +
-      (part1 ? " " + part1 : "") +
-      (part2 ? " " + part2 : "") +
-      (part3 ? " " + part3 : "") +
-      (part4 ? " " + part4 : "");
-
-    return;
-  }
-
-  // --- Россия +7 ---
-  if (value.startsWith("7")) {
-    const part1 = value.slice(1, 4);
-    const part2 = value.slice(4, 7);
-    const part3 = value.slice(7, 9);
-    const part4 = value.slice(9, 11);
-
-    e.target.value =
-      "+7" +
-      (part1 ? " " + part1 : "") +
-      (part2 ? " " + part2 : "") +
-      (part3 ? " " + part3 : "") +
-      (part4 ? " " + part4 : "");
-
-    return;
-  }
-
-  // --- Если ввод начинается не с 3, 37, 375 или 7 — очищаем ---
-  if (value !== "") {
-    e.target.value = "";
-  }
-});
+    if (value !== "") {
+      e.target.value = "";
+    }
+  };
+}
