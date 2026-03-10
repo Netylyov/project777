@@ -423,3 +423,37 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 });
+phoneInput.addEventListener("input", function (e) {
+  let value = e.target.value.replace(/\D/g, ""); // только цифры
+
+  // Разрешаем ввод первых цифр для BY
+  if (value === "3" || value === "37") {
+    e.target.value = value;
+    return;
+  }
+
+  // Беларусь +375
+  if (value.startsWith("375")) {
+    value = "+375 "
+      + (value.slice(3, 5) || "") + " "
+      + (value.slice(5, 8) || "") + " "
+      + (value.slice(8, 10) || "") + " "
+      + (value.slice(10, 12) || "");
+  }
+
+  // Россия +7
+  else if (value.startsWith("7")) {
+    value = "+7 "
+      + (value.slice(1, 4) || "") + " "
+      + (value.slice(4, 7) || "") + " "
+      + (value.slice(7, 9) || "") + " "
+      + (value.slice(9, 11) || "");
+  }
+
+  // Если номер не начинается с 3, 37, 375 или 7 — очищаем
+  else {
+    value = "";
+  }
+
+  e.target.value = value.trim();
+});
