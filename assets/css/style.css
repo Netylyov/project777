@@ -1361,3 +1361,5 @@ input[type="time"] {
   z-index: 999999 !important;
   pointer-events: auto !important;
 }
+right: auto;
+left: 12px;
