@@ -216,8 +216,8 @@ function openBooking() {
   bookingModal.classList.add('modal--open');
   document.body.style.overflow = "hidden";
 
-  document.getElementById('name').value = profileName.value || "";
-  document.getElementById('phone').value = profilePhone.value || "";
+  document.getElementById('name').value = (profileName.value || "");
+  document.getElementById('phone').value = (profilePhone.value || "").replace(/\D/g, "");
 
   applyValidation();
 }
@@ -341,10 +341,12 @@ function applyValidation() {
 
   if (!nameInput || !phoneInput) return;
 
-  /* === ВАЛИДАЦИЯ ИМЕНИ === */
+  /* === ВАЛИДАЦИЯ ИМЕНИ (русские буквы + пробелы) === */
   nameInput.oninput = e => {
     e.target.value = e.target.value
-      .replace(/[^А-Яа-яЁё]/g, "")
+      .replace(/[^А-Яа-яЁё ]/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trimStart()
       .slice(0, 20);
   };
 
