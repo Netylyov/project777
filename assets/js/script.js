@@ -330,3 +330,44 @@ if (historyModal) {
     if (e.target === historyModal) historyModal.classList.remove('modal--open');
   };
 }
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Валидация имени
+  const nameInput = document.getElementById("name");
+  if (nameInput) {
+    nameInput.addEventListener("input", function (e) {
+      e.target.value = e.target.value
+        .replace(/[^А-Яа-яЁё]/g, "")
+        .slice(0, 20);
+    });
+  }
+
+  // Маска телефона
+  const phoneInput = document.getElementById("phone");
+  if (phoneInput) {
+    phoneInput.addEventListener("input", function (e) {
+      let value = e.target.value.replace(/\D/g, "");
+
+      if (value.startsWith("375")) {
+        value = "+375 "
+          + (value.slice(3, 5) || "") + " "
+          + (value.slice(5, 8) || "") + " "
+          + (value.slice(8, 10) || "") + " "
+          + (value.slice(10, 12) || "");
+      }
+      else if (value.startsWith("7")) {
+        value = "+7 "
+          + (value.slice(1, 4) || "") + " "
+          + (value.slice(4, 7) || "") + " "
+          + (value.slice(7, 9) || "") + " "
+          + (value.slice(9, 11) || "");
+      }
+      else {
+        value = "";
+      }
+
+      e.target.value = value.trim();
+    });
+  }
+
+});
