@@ -1286,16 +1286,9 @@ input[type="time"] {
   color: #fff;
   margin-bottom: 4px;
 }
-.hero-features button,
 .hero-features .feature-item {
-  border: none !important;
-  background: none !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  cursor: default !important;
-}
-
-.hero-features button:hover,
-.hero-features .feature-item:hover {
-  transform: none !important;
+  padding: 4px 0;
+  font-weight: 500;
+  color: #fff;
+  opacity: 0.9;
 }
