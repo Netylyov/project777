@@ -426,34 +426,48 @@ document.addEventListener("DOMContentLoaded", function () {
 phoneInput.addEventListener("input", function (e) {
   let value = e.target.value.replace(/\D/g, ""); // только цифры
 
-  // Разрешаем ввод первых цифр для BY
+  // --- Разрешаем ввод первых цифр для BY ---
   if (value === "3" || value === "37") {
     e.target.value = value;
     return;
   }
 
-  // Беларусь +375
+  // --- Беларусь +375 ---
   if (value.startsWith("375")) {
-    value = "+375 "
-      + (value.slice(3, 5) || "") + " "
-      + (value.slice(5, 8) || "") + " "
-      + (value.slice(8, 10) || "") + " "
-      + (value.slice(10, 12) || "");
+    const part1 = value.slice(3, 5);
+    const part2 = value.slice(5, 8);
+    const part3 = value.slice(8, 10);
+    const part4 = value.slice(10, 12);
+
+    e.target.value =
+      "+375" +
+      (part1 ? " " + part1 : "") +
+      (part2 ? " " + part2 : "") +
+      (part3 ? " " + part3 : "") +
+      (part4 ? " " + part4 : "");
+
+    return;
   }
 
-  // Россия +7
-  else if (value.startsWith("7")) {
-    value = "+7 "
-      + (value.slice(1, 4) || "") + " "
-      + (value.slice(4, 7) || "") + " "
-      + (value.slice(7, 9) || "") + " "
-      + (value.slice(9, 11) || "");
+  // --- Россия +7 ---
+  if (value.startsWith("7")) {
+    const part1 = value.slice(1, 4);
+    const part2 = value.slice(4, 7);
+    const part3 = value.slice(7, 9);
+    const part4 = value.slice(9, 11);
+
+    e.target.value =
+      "+7" +
+      (part1 ? " " + part1 : "") +
+      (part2 ? " " + part2 : "") +
+      (part3 ? " " + part3 : "") +
+      (part4 ? " " + part4 : "");
+
+    return;
   }
 
-  // Если номер не начинается с 3, 37, 375 или 7 — очищаем
-  else {
-    value = "";
+  // --- Если ввод начинается не с 3, 37, 375 или 7 — очищаем ---
+  if (value !== "") {
+    e.target.value = "";
   }
-
-  e.target.value = value.trim();
 });
