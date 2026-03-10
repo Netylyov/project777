@@ -1303,24 +1303,22 @@ input[type="time"] {
   display: inline !important;
   color: inherit !important;
 }
-.booking-form {
-  position: relative;
+.booking-sheet__window {
+  position: relative !important;
 }
 
-.close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  font-size: 26px;
-  cursor: pointer;
-  color: #fff; /* или твой цвет */
-  z-index: 9999;
-  padding: 5px;
-  line-height: 1;
-}
+.booking-sheet__close {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
 
-.close-btn:hover {
-  opacity: 0.7;
+  background: none !important;
+  border: none !important;
+  font-size: 28px !important;
+  color: #fff !important;
+  cursor: pointer !important;
+
+  z-index: 99999 !important;
+  padding: 4px !important;
+  line-height: 1 !important;
 }
