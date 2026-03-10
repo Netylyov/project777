@@ -1280,3 +1280,9 @@ input[type="time"] {
   border-radius: 10px;
   font-size: 16px;
 }
+.menu-price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
