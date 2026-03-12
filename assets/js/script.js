@@ -426,3 +426,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dateInput.value > maxDate) dateInput.value = maxDate;
   });
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const timeInput = document.getElementById("time");
+  if (!timeInput) return;
+
+  timeInput.addEventListener("input", () => {
+    const value = timeInput.value;
+
+    // Если формат не HH:MM — ничего не делаем
+    if (!/^\d{2}:\d{2}$/.test(value)) return;
+
+    let [h, m] = value.split(":").map(Number);
+
+    // Часы 0–23
+    if (h > 23) h = 23;
+
+    // Минуты 0–59
+    if (m > 59) m = 59;
+
+    // Возвращаем исправленное значение
+    timeInput.value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  });
+});
