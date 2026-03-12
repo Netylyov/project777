@@ -510,104 +510,126 @@ const setLang = (lang) => {
   applyLang(lang);
 };
 /* ============================
-      ВЫБОР ЯЗЫКА
+      ВЫБОР ЯЗЫКА (БЕЗ КОНФЛИКТОВ)
 ============================ */
 
-const translations = {
-  ru: {
-    choose_lang: "Выбрать язык",
-    menu: "Меню",
-    booking: "Бронь",
-    profile: "Профиль",
-    contacts: "Контакты",
-    hero_title: "Вечер, который хочется повторить",
-    booking_name: "Имя",
-    booking_phone: "Телефон",
-    booking_date: "Дата",
-    booking_time: "Время",
-    booking_guests: "Гостей",
-    booking_comment: "Комментарий",
-    booking_submit: "Отправить заявку",
-    profile_title: "Мой профиль",
-    profile_name: "Имя",
-    profile_phone: "Телефон",
-    profile_save: "Сохранить профиль"
-  },
-
-  en: {
-    choose_lang: "Choose language",
-    menu: "Menu",
-    booking: "Booking",
-    profile: "Profile",
-    contacts: "Contacts",
-    hero_title: "An evening you want to repeat",
-    booking_name: "Name",
-    booking_phone: "Phone",
-    booking_date: "Date",
-    booking_time: "Time",
-    booking_guests: "Guests",
-    booking_comment: "Comment",
-    booking_submit: "Submit request",
-    profile_title: "My profile",
-    profile_name: "Name",
-    profile_phone: "Phone",
-    profile_save: "Save profile"
-  },
-
-  by: {
-    choose_lang: "Выбраць мову",
-    menu: "Меню",
-    booking: "Бронь",
-    profile: "Профіль",
-    contacts: "Кантакты",
-    hero_title: "Вечар, які хочацца паўтарыць",
-    booking_name: "Імя",
-    booking_phone: "Тэлефон",
-    booking_date: "Дата",
-    booking_time: "Час",
-    booking_guests: "Гасцей",
-    booking_comment: "Каментар",
-    booking_submit: "Адправіць заяўку",
-    profile_title: "Мой профіль",
-    profile_name: "Імя",
-    profile_phone: "Тэлефон",
-    profile_save: "Захаваць профіль"
-  }
-};
-
-function applyLang(lang) {
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.dataset.i18n;
-    if (translations[lang][key]) {
-      el.textContent = translations[lang][key];
+(function () {
+  const i18nTranslations = {
+    ru: {
+      choose_lang: "Выбрать язык",
+      menu: "Меню",
+      booking: "Бронь",
+      profile: "Профиль",
+      contacts: "Контакты",
+      hero_title: "Вечер, который хочется повторить",
+      booking_name: "Имя",
+      booking_phone: "Телефон",
+      booking_date: "Дата",
+      booking_time: "Время",
+      booking_guests: "Гостей",
+      booking_comment: "Комментарий",
+      booking_submit: "Отправить заявку",
+      profile_title: "Мой профиль",
+      profile_name: "Имя",
+      profile_phone: "Телефон",
+      profile_save: "Сохранить профиль"
+    },
+    en: {
+      choose_lang: "Choose language",
+      menu: "Menu",
+      booking: "Booking",
+      profile: "Profile",
+      contacts: "Contacts",
+      hero_title: "An evening you want to repeat",
+      booking_name: "Name",
+      booking_phone: "Phone",
+      booking_date: "Date",
+      booking_time: "Time",
+      booking_guests: "Guests",
+      booking_comment: "Comment",
+      booking_submit: "Submit request",
+      profile_title: "My profile",
+      profile_name: "Name",
+      profile_phone: "Phone",
+      profile_save: "Save profile"
+    },
+    by: {
+      choose_lang: "Выбраць мову",
+      menu: "Меню",
+      booking: "Бронь",
+      profile: "Профіль",
+      contacts: "Кантакты",
+      hero_title: "Вечар, які хочацца паўтарыць",
+      booking_name: "Імя",
+      booking_phone: "Тэлефон",
+      booking_date: "Дата",
+      booking_time: "Час",
+      booking_guests: "Гасцей",
+      booking_comment: "Каментар",
+      booking_submit: "Адправіць заяўку",
+      profile_title: "Мой профіль",
+      profile_name: "Імя",
+      profile_phone: "Тэлефон",
+      profile_save: "Захаваць профіль"
     }
-  });
+  };
 
-  document.getElementById("langToggle").textContent =
-    translations[lang].choose_lang;
-}
+  function i18nApplyLang(lang) {
+    if (!i18nTranslations[lang]) return;
 
-function setLang(lang) {
-  localStorage.setItem("site-lang", lang);
-  applyLang(lang);
-}
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n;
+      if (i18nTranslations[lang][key]) {
+        el.textContent = i18nTranslations[lang][key];
+      }
+    });
 
-document.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem("site-lang") || "ru";
-  applyLang(saved);
+    const langToggle = document.getElementById("langToggle");
+    if (langToggle && i18nTranslations[lang].choose_lang) {
+      langToggle.textContent = i18nTranslations[lang].choose_lang;
+    }
+  }
 
-  const langToggle = document.getElementById("langToggle");
-  const langList = document.getElementById("langList");
+  function i18nSetLang(lang) {
+    if (!i18nTranslations[lang]) return;
+    try {
+      localStorage.setItem("site-lang", lang);
+    } catch (e) {}
+    i18nApplyLang(lang);
+  }
 
-  langToggle.addEventListener("click", () => {
-    langList.classList.toggle("open");
-  });
+  document.addEventListener("DOMContentLoaded", () => {
+    const langToggle = document.getElementById("langToggle");
+    const langList = document.getElementById("langList");
 
-  document.querySelectorAll(".lang-item").forEach(item => {
-    item.addEventListener("click", () => {
-      const lang = item.dataset.lang;
-      setLang(lang);
-      langList.classList.remove("open");
+    if (!langToggle || !langList) {
+      // если разметки нет — тихо выходим, не ломая остальной JS
+      return;
+    }
+
+    let saved = "ru";
+    try {
+      saved = localStorage.getItem("site-lang") || "ru";
+    } catch (e) {}
+
+    i18nApplyLang(saved);
+
+    langToggle.addEventListener("click", () => {
+      langList.classList.toggle("open");
+    });
+
+    langList.querySelectorAll(".lang-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const lang = item.dataset.lang;
+        i18nSetLang(lang);
+        langList.classList.remove("open");
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!langList.contains(e.target) && e.target !== langToggle) {
+        langList.classList.remove("open");
+      }
     });
   });
-});
+})();
