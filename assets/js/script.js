@@ -398,25 +398,30 @@ function applyValidation() {
 }
 document.addEventListener("DOMContentLoaded", () => {
   const dateInput = document.getElementById("date");
-
   if (!dateInput) return;
 
   const today = new Date();
 
-  // Минимальная дата — сегодня
-  const minDate = today.toISOString().split("T")[0];
+  const format = d => d.toISOString().split("T")[0];
 
-  // Максимальная дата — +1 месяц
+  const minDate = format(today);
+
   const maxDateObj = new Date(today);
   maxDateObj.setMonth(maxDateObj.getMonth() + 1);
-  const maxDate = maxDateObj.toISOString().split("T")[0];
+  const maxDate = format(maxDateObj);
 
-  // Устанавливаем ограничения
   dateInput.min = minDate;
   dateInput.max = maxDate;
 
-  // Если пользователь вручную ввёл неправильную дату — исправляем
   dateInput.addEventListener("input", () => {
+    // Ограничение длины года (YYYY-MM-DD → первые 4 цифры — год)
+    if (dateInput.value.length >= 5) {
+      const year = dateInput.value.slice(0, 4);
+      const rest = dateInput.value.slice(4);
+      dateInput.value = year + rest;
+    }
+
+    // Исправление выхода за диапазон
     if (dateInput.value < minDate) dateInput.value = minDate;
     if (dateInput.value > maxDate) dateInput.value = maxDate;
   });
