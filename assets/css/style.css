@@ -1322,3 +1322,11 @@ input[type="time"] {
   padding: 4px !important;
   line-height: 1 !important;
 }
+input[type="date"] {
+  color-scheme: dark;
+  accent-color: #f7c325;
+}
+input[type="time"] {
+  color-scheme: dark;
+  accent-color: #f7c325;
+}
