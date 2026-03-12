@@ -457,55 +457,51 @@ document.addEventListener("DOMContentLoaded", () => {
     timeInput.addEventListener("change", fixTime);
   });
 });
-// === ВАЛИДАЦИЯ ПРОФИЛЯ: ИМЯ И ТЕЛЕФОН ===
-document.addEventListener("DOMContentLoaded", () => {
+/* ============================
+   ПРОФИЛЬ — ЖЁСТКАЯ ВАЛИДАЦИЯ
+============================ */
 
-  // --- ИМЯ ---
-  const profileName = document.querySelector('#profileName');
-  if (profileName) {
-    profileName.addEventListener("input", () => {
-      // Разрешаем только русские буквы + пробел
-      profileName.value = profileName.value
-        .replace(/[^А-Яа-яЁё\s]/g, "")
-        .slice(0, 20); // максимум 20 символов
-    });
-  }
+// ИМЯ — только русские буквы, максимум 20 символов
+const profileName = document.querySelector('#profileName');
+if (profileName) {
+  profileName.addEventListener("input", () => {
+    profileName.value = profileName.value
+      .replace(/[^А-Яа-яЁё\s]/g, "")   // только русские буквы
+      .slice(0, 20);                   // максимум 20 символов
+  });
+}
 
-  // --- ТЕЛЕФОН ---
-  const profilePhone = document.querySelector('#profilePhone');
-  if (profilePhone) {
-    profilePhone.addEventListener("input", () => {
-      let v = profilePhone.value.replace(/\D/g, ""); // убираем всё кроме цифр
+// ТЕЛЕФОН — строгая маска BY +375 и RU +7
+const profilePhone = document.querySelector('#profilePhone');
+if (profilePhone) {
+  profilePhone.addEventListener("input", () => {
+    let v = profilePhone.value.replace(/\D/g, ""); // только цифры
 
-      // Беларусь: +375 XX XXX XX XX
-      if (v.startsWith("375")) {
-        v = v.slice(0, 12);
-        let formatted =
-          "+375 " +
-          v.slice(3, 5) + " " +
-          v.slice(5, 8) + " " +
-          v.slice(8, 10) + " " +
-          v.slice(10, 12);
-        profilePhone.value = formatted.trim();
-        return;
-      }
+    // Беларусь: +375 XX XXX XX XX
+    if (v.startsWith("375")) {
+      v = v.slice(0, 12);
+      profilePhone.value =
+        "+375 " +
+        v.slice(3, 5) + " " +
+        v.slice(5, 8) + " " +
+        v.slice(8, 10) + " " +
+        v.slice(10, 12);
+      return;
+    }
 
-      // Россия: +7 XXX XXX XX XX
-      if (v.startsWith("7")) {
-        v = v.slice(0, 11);
-        let formatted =
-          "+7 " +
-          v.slice(1, 4) + " " +
-          v.slice(4, 7) + " " +
-          v.slice(7, 9) + " " +
-          v.slice(9, 11);
-        profilePhone.value = formatted.trim();
-        return;
-      }
+    // Россия: +7 XXX XXX XX XX
+    if (v.startsWith("7")) {
+      v = v.slice(0, 11);
+      profilePhone.value =
+        "+7 " +
+        v.slice(1, 4) + " " +
+        v.slice(4, 7) + " " +
+        v.slice(7, 9) + " " +
+        v.slice(9, 11);
+      return;
+    }
 
-      // Если вводят что-то другое — начинаем с "+"
-      profilePhone.value = "+" + v;
-    });
-  }
-
-});
+    // Если вводят что-то другое — просто показываем + и цифры
+    profilePhone.value = "+" + v;
+  });
+}
