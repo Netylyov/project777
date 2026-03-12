@@ -1367,3 +1367,45 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   color: #000;
   border-color: #f7c325;
 }
+.lang-dropdown {
+  position: relative;
+  margin-left: auto;
+}
+
+.lang-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.lang-list {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  background: rgba(0,0,0,0.9);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 6px 0;
+  display: none;
+  min-width: 150px;
+  z-index: 9999;
+}
+
+.lang-list.open {
+  display: block;
+}
+
+.lang-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 14px;
+}
+
+.lang-item:hover {
+  background: rgba(255,255,255,0.1);
+}

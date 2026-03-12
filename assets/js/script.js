@@ -509,3 +509,105 @@ const setLang = (lang) => {
   localStorage.setItem("site-lang", lang);
   applyLang(lang);
 };
+/* ============================
+      ВЫБОР ЯЗЫКА
+============================ */
+
+const translations = {
+  ru: {
+    choose_lang: "Выбрать язык",
+    menu: "Меню",
+    booking: "Бронь",
+    profile: "Профиль",
+    contacts: "Контакты",
+    hero_title: "Вечер, который хочется повторить",
+    booking_name: "Имя",
+    booking_phone: "Телефон",
+    booking_date: "Дата",
+    booking_time: "Время",
+    booking_guests: "Гостей",
+    booking_comment: "Комментарий",
+    booking_submit: "Отправить заявку",
+    profile_title: "Мой профиль",
+    profile_name: "Имя",
+    profile_phone: "Телефон",
+    profile_save: "Сохранить профиль"
+  },
+
+  en: {
+    choose_lang: "Choose language",
+    menu: "Menu",
+    booking: "Booking",
+    profile: "Profile",
+    contacts: "Contacts",
+    hero_title: "An evening you want to repeat",
+    booking_name: "Name",
+    booking_phone: "Phone",
+    booking_date: "Date",
+    booking_time: "Time",
+    booking_guests: "Guests",
+    booking_comment: "Comment",
+    booking_submit: "Submit request",
+    profile_title: "My profile",
+    profile_name: "Name",
+    profile_phone: "Phone",
+    profile_save: "Save profile"
+  },
+
+  by: {
+    choose_lang: "Выбраць мову",
+    menu: "Меню",
+    booking: "Бронь",
+    profile: "Профіль",
+    contacts: "Кантакты",
+    hero_title: "Вечар, які хочацца паўтарыць",
+    booking_name: "Імя",
+    booking_phone: "Тэлефон",
+    booking_date: "Дата",
+    booking_time: "Час",
+    booking_guests: "Гасцей",
+    booking_comment: "Каментар",
+    booking_submit: "Адправіць заяўку",
+    profile_title: "Мой профіль",
+    profile_name: "Імя",
+    profile_phone: "Тэлефон",
+    profile_save: "Захаваць профіль"
+  }
+};
+
+function applyLang(lang) {
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if (translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+
+  document.getElementById("langToggle").textContent =
+    translations[lang].choose_lang;
+}
+
+function setLang(lang) {
+  localStorage.setItem("site-lang", lang);
+  applyLang(lang);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("site-lang") || "ru";
+  applyLang(saved);
+
+  const langToggle = document.getElementById("langToggle");
+  const langList = document.getElementById("langList");
+
+  langToggle.addEventListener("click", () => {
+    langList.classList.toggle("open");
+  });
+
+  document.querySelectorAll(".lang-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const lang = item.dataset.lang;
+      setLang(lang);
+      langList.classList.remove("open");
+    });
+  });
+});
