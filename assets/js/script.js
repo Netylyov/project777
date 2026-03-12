@@ -101,22 +101,28 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
   };
 });
 
-openCart.onclick = () => {
-  cartModal.classList.add('modal--open');
-  document.body.style.overflow = "hidden";
-};
+if (openCart) {
+  openCart.onclick = () => {
+    cartModal.classList.add('modal--open');
+    document.body.style.overflow = "hidden";
+  };
+}
 
-closeCart.onclick = () => {
-  cartModal.classList.remove('modal--open');
-  document.body.style.overflow = "";
-};
-
-cartModal.onclick = e => {
-  if (e.target === cartModal) {
+if (closeCart) {
+  closeCart.onclick = () => {
     cartModal.classList.remove('modal--open');
     document.body.style.overflow = "";
-  }
-};
+  };
+}
+
+if (cartModal) {
+  cartModal.onclick = e => {
+    if (e.target === cartModal) {
+      cartModal.classList.remove('modal--open');
+      document.body.style.overflow = "";
+    }
+  };
+}
 
 updateCart();
 
@@ -148,31 +154,72 @@ const avatar = document.getElementById('profileAvatar');
 let profile = JSON.parse(localStorage.getItem('profile') || '{}');
 
 function loadProfile() {
-  if (profile.name) profileName.value = profile.name;
-  if (profile.phone) profilePhone.value = profile.phone;
+  if (profile.name && profileName) profileName.value = profile.name;
+  if (profile.phone && profilePhone) profilePhone.value = profile.phone;
 }
 loadProfile();
 
-saveProfile.onclick = () => {
-  profile = {
-    name: profileName.value,
-    phone: profilePhone.value
+// Жёсткая валидация профиля
+if (profileName) {
+  profileName.addEventListener("input", () => {
+    profileName.value = profileName.value
+      .replace(/[^А-Яа-яЁё\s]/g, "")
+      .slice(0, 20);
+  });
+}
+
+if (profilePhone) {
+  profilePhone.addEventListener("input", () => {
+    let v = profilePhone.value.replace(/\D/g, "");
+
+    if (v.startsWith("375")) {
+      v = v.slice(0, 12);
+      profilePhone.value =
+        "+375 " +
+        v.slice(3, 5) + " " +
+        v.slice(5, 8) + " " +
+        v.slice(8, 10) + " " +
+        v.slice(10, 12);
+      return;
+    }
+
+    if (v.startsWith("7")) {
+      v = v.slice(0, 11);
+      profilePhone.value =
+        "+7 " +
+        v.slice(1, 4) + " " +
+        v.slice(4, 7) + " " +
+        v.slice(7, 9) + " " +
+        v.slice(9, 11);
+      return;
+    }
+
+    profilePhone.value = v ? "+" + v : "";
+  });
+}
+
+if (saveProfile) {
+  saveProfile.onclick = () => {
+    profile = {
+      name: profileName ? profileName.value : "",
+      phone: profilePhone ? profilePhone.value : ""
+    };
+    localStorage.setItem('profile', JSON.stringify(profile));
+    alert('Профиль сохранён');
   };
-  localStorage.setItem('profile', JSON.stringify(profile));
-  alert('Профиль сохранён');
-};
+}
 
 if (googleLoginBtn && auth) {
   googleLoginBtn.onclick = () => {
     auth.signInWithPopup(provider).then(result => {
       const user = result.user;
 
-      if (user.displayName) {
+      if (user.displayName && profileName) {
         profileName.value = user.displayName;
         profile.name = user.displayName;
       }
 
-      if (user.photoURL) {
+      if (user.photoURL && avatar) {
         avatar.src = user.photoURL;
         avatar.style.display = 'block';
       }
@@ -185,8 +232,8 @@ if (googleLoginBtn && auth) {
 if (auth) {
   auth.onAuthStateChanged(user => {
     if (user) {
-      logoutBtn.style.display = 'block';
-      if (user.photoURL) {
+      if (logoutBtn) logoutBtn.style.display = 'block';
+      if (user.photoURL && avatar) {
         avatar.src = user.photoURL;
         avatar.style.display = 'block';
       }
@@ -194,12 +241,14 @@ if (auth) {
   });
 }
 
-logoutBtn.onclick = () => {
-  auth.signOut().then(() => {
-    localStorage.removeItem('profile');
-    location.reload();
-  });
-};
+if (logoutBtn && auth) {
+  logoutBtn.onclick = () => {
+    auth.signOut().then(() => {
+      localStorage.removeItem('profile');
+      location.reload();
+    });
+  };
+}
 
 
 /* ===========================
@@ -212,136 +261,12 @@ const openBookingHero = document.getElementById('openBookingHero');
 const closeBooking = document.getElementById('closeBooking');
 const bookingForm = document.getElementById('booking-form');
 
-function openBooking() {
-  bookingModal.classList.add('modal--open');
-  document.body.style.overflow = "hidden";
-
-  document.getElementById('name').value = (profileName.value || "");
-  document.getElementById('phone').value = (profilePhone.value || "").replace(/\D/g, "");
-
-  applyValidation();
-}
-
-openBookingModal.onclick = openBooking;
-if (openBookingHero) openBookingHero.onclick = openBooking;
-
-closeBooking.onclick = () => {
-  bookingModal.classList.remove('modal--open');
-  document.body.style.overflow = "";
-};
-
-bookingModal.onclick = e => {
-  if (e.target === bookingModal) {
-    bookingModal.classList.remove('modal--open');
-    document.body.style.overflow = "";
-  }
-};
-
-bookingForm.onsubmit = e => {
-  e.preventDefault();
-
-  alert('Заявка отправлена! Мы свяжемся с вами.');
-
-  bookingModal.classList.remove('modal--open');
-  document.body.style.overflow = "";
-  bookingForm.reset();
-};
-
-
-/* ===========================
-   ОФОРМЛЕНИЕ ЗАКАЗА → БРОНИРОВАНИЕ
-=========================== */
-
-const checkoutBtn = document.getElementById('checkoutBtn');
-
-if (checkoutBtn) {
-  checkoutBtn.onclick = () => {
-    if (cart.length === 0) {
-      showToast("Корзина пуста");
-      return;
-    }
-
-    cartModal.classList.remove('modal--open');
-    document.body.style.overflow = "";
-
-    openBooking();
-
-    const commentField = document.getElementById('comment');
-
-    let orderText = "Заказ:\n";
-    cart.forEach(item => {
-      orderText += `• ${item.title} — ${item.price} BYN\n`;
-    });
-
-    commentField.value = orderText;
-  };
-}
-
-
-/* ===========================
-   ИСТОРИЯ ЗАКАЗОВ
-=========================== */
-const historyModal = document.getElementById('historyModal');
-const openHistory = document.getElementById('openHistory');
-const openHistoryFooter = document.getElementById('openHistoryFooter');
-const closeHistory = document.getElementById('closeHistory');
-const historyList = document.getElementById('historyList');
-
-function loadHistory() {
-  if (!db) return;
-
-  historyList.innerHTML = '';
-
-  db.collection('orders')
-    .orderBy('timestamp', 'desc')
-    .get()
-    .then(snapshot => {
-      snapshot.forEach(doc => {
-        const order = doc.data();
-
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.innerHTML = `
-          <div><b>Имя:</b> ${order.name}</div>
-          <div><b>Телефон:</b> ${order.phone}</div>
-          <div><b>Сумма:</b> ${order.total} BYN</div>
-          <div><b>Дата:</b> ${order.timestamp ? order.timestamp.toDate().toLocaleString() : '-'}</div>
-          <hr>
-        `;
-        historyList.appendChild(div);
-      });
-    });
-}
-
-function openHistoryFn() {
-  loadHistory();
-  historyModal.classList.add('modal--open');
-}
-
-if (openHistory) openHistory.onclick = openHistoryFn;
-if (openHistoryFooter) openHistoryFooter.onclick = openHistoryFn;
-if (closeHistory) {
-  closeHistory.onclick = () => historyModal.classList.remove('modal--open');
-}
-
-if (historyModal) {
-  historyModal.onclick = e => {
-    if (e.target === historyModal) historyModal.classList.remove('modal--open');
-  };
-}
-
-
-/* ===========================
-   ВАЛИДАЦИЯ И МАСКА ТЕЛЕФОНА
-=========================== */
-
 function applyValidation() {
   const nameInput = document.getElementById("name");
   const phoneInput = document.getElementById("phone");
 
   if (!nameInput || !phoneInput) return;
 
-  /* === ВАЛИДАЦИЯ ИМЕНИ (русские буквы + пробелы) === */
   nameInput.oninput = e => {
     e.target.value = e.target.value
       .replace(/[^А-Яа-яЁё ]/g, "")
@@ -350,7 +275,6 @@ function applyValidation() {
       .slice(0, 20);
   };
 
-  /* === МАСКА ТЕЛЕФОНА (BY +375, RU +7) === */
   phoneInput.oninput = e => {
     let value = e.target.value.replace(/\D/g, "");
 
@@ -396,12 +320,156 @@ function applyValidation() {
     }
   };
 }
+
+function openBooking() {
+  if (!bookingModal) return;
+
+  bookingModal.classList.add('modal--open');
+  document.body.style.overflow = "hidden";
+
+  const nameField = document.getElementById('name');
+  const phoneField = document.getElementById('phone');
+
+  if (nameField && profileName) {
+    nameField.value = profileName.value || "";
+  }
+  if (phoneField && profilePhone) {
+    phoneField.value = (profilePhone.value || "").replace(/\D/g, "");
+  }
+
+  applyValidation();
+}
+
+if (openBookingModal) openBookingModal.onclick = openBooking;
+if (openBookingHero) openBookingHero.onclick = openBooking;
+
+if (closeBooking && bookingModal) {
+  closeBooking.onclick = () => {
+    bookingModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
+  };
+}
+
+if (bookingModal) {
+  bookingModal.onclick = e => {
+    if (e.target === bookingModal) {
+      bookingModal.classList.remove('modal--open');
+      document.body.style.overflow = "";
+    }
+  };
+}
+
+if (bookingForm) {
+  bookingForm.onsubmit = e => {
+    e.preventDefault();
+
+    alert('Заявка отправлена! Мы свяжемся с вами.');
+
+    if (bookingModal) {
+      bookingModal.classList.remove('modal--open');
+      document.body.style.overflow = "";
+    }
+    bookingForm.reset();
+  };
+}
+
+
+/* ===========================
+   ОФОРМЛЕНИЕ ЗАКАЗА → БРОНИРОВАНИЕ
+=========================== */
+
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+if (checkoutBtn) {
+  checkoutBtn.onclick = () => {
+    if (cart.length === 0) {
+      showToast("Корзина пуста");
+      return;
+    }
+
+    if (cartModal) {
+      cartModal.classList.remove('modal--open');
+      document.body.style.overflow = "";
+    }
+
+    openBooking();
+
+    const commentField = document.getElementById('comment');
+
+    if (commentField) {
+      let orderText = "Заказ:\n";
+      cart.forEach(item => {
+        orderText += `• ${item.title} — ${item.price} BYN\n`;
+      });
+
+      commentField.value = orderText;
+    }
+  };
+}
+
+
+/* ===========================
+   ИСТОРИЯ ЗАКАЗОВ
+=========================== */
+const historyModal = document.getElementById('historyModal');
+const openHistory = document.getElementById('openHistory');
+const openHistoryFooter = document.getElementById('openHistoryFooter');
+const closeHistory = document.getElementById('closeHistory');
+const historyList = document.getElementById('historyList');
+
+function loadHistory() {
+  if (!db || !historyList) return;
+
+  historyList.innerHTML = '';
+
+  db.collection('orders')
+    .orderBy('timestamp', 'desc')
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const order = doc.data();
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div><b>Имя:</b> ${order.name}</div>
+          <div><b>Телефон:</b> ${order.phone}</div>
+          <div><b>Сумма:</b> ${order.total} BYN</div>
+          <div><b>Дата:</b> ${order.timestamp ? order.timestamp.toDate().toLocaleString() : '-'}</div>
+          <hr>
+        `;
+        historyList.appendChild(div);
+      });
+    });
+}
+
+function openHistoryFn() {
+  loadHistory();
+  if (historyModal) {
+    historyModal.classList.add('modal--open');
+  }
+}
+
+if (openHistory) openHistory.onclick = openHistoryFn;
+if (openHistoryFooter) openHistoryFooter.onclick = openHistoryFn;
+if (closeHistory && historyModal) {
+  closeHistory.onclick = () => historyModal.classList.remove('modal--open');
+}
+
+if (historyModal) {
+  historyModal.onclick = e => {
+    if (e.target === historyModal) historyModal.classList.remove('modal--open');
+  };
+}
+
+
+/* ===========================
+   ДАТА (ОГРАНИЧЕНИЯ)
+=========================== */
 document.addEventListener("DOMContentLoaded", () => {
   const dateInput = document.getElementById("date");
   if (!dateInput) return;
 
   const today = new Date();
-
   const format = d => d.toISOString().split("T")[0];
 
   const minDate = format(today);
@@ -414,19 +482,21 @@ document.addEventListener("DOMContentLoaded", () => {
   dateInput.max = maxDate;
 
   dateInput.addEventListener("input", () => {
-    // Ограничение длины года (YYYY-MM-DD → первые 4 цифры — год)
     if (dateInput.value.length >= 5) {
       const year = dateInput.value.slice(0, 4);
       const rest = dateInput.value.slice(4);
       dateInput.value = year + rest;
     }
 
-    // Исправление выхода за диапазон
     if (dateInput.value < minDate) dateInput.value = minDate;
     if (dateInput.value > maxDate) dateInput.value = maxDate;
   });
 });
-// === ЖЁСТКАЯ ВАЛИДАЦИЯ ВРЕМЕНИ ===
+
+
+/* ===========================
+   ЖЁСТКАЯ ВАЛИДАЦИЯ ВРЕМЕНИ
+=========================== */
 document.addEventListener("DOMContentLoaded", () => {
   const timeInputs = document.querySelectorAll('input[type="time"]');
   if (!timeInputs.length) return;
@@ -435,16 +505,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const fixTime = () => {
       let v = timeInput.value;
 
-      // Если формат не HH:MM — выходим
       if (!/^\d{1,2}:\d{1,2}$/.test(v)) return;
 
       let [h, m] = v.split(":").map(Number);
 
-      // Часы 0–23
       if (h < 0) h = 0;
       if (h > 23) h = 23;
 
-      // Минуты 0–59
       if (m < 0) m = 0;
       if (m > 59) m = 59;
 
@@ -457,179 +524,3 @@ document.addEventListener("DOMContentLoaded", () => {
     timeInput.addEventListener("change", fixTime);
   });
 });
-/* ============================
-   ПРОФИЛЬ — ЖЁСТКАЯ ВАЛИДАЦИЯ
-============================ */
-
-// ИМЯ — только русские буквы, максимум 20 символов
-const profileName = document.querySelector('#profileName');
-if (profileName) {
-  profileName.addEventListener("input", () => {
-    profileName.value = profileName.value
-      .replace(/[^А-Яа-яЁё\s]/g, "")   // только русские буквы
-      .slice(0, 20);                   // максимум 20 символов
-  });
-}
-
-// ТЕЛЕФОН — строгая маска BY +375 и RU +7
-const profilePhone = document.querySelector('#profilePhone');
-if (profilePhone) {
-  profilePhone.addEventListener("input", () => {
-    let v = profilePhone.value.replace(/\D/g, ""); // только цифры
-
-    // Беларусь: +375 XX XXX XX XX
-    if (v.startsWith("375")) {
-      v = v.slice(0, 12);
-      profilePhone.value =
-        "+375 " +
-        v.slice(3, 5) + " " +
-        v.slice(5, 8) + " " +
-        v.slice(8, 10) + " " +
-        v.slice(10, 12);
-      return;
-    }
-
-    // Россия: +7 XXX XXX XX XX
-    if (v.startsWith("7")) {
-      v = v.slice(0, 11);
-      profilePhone.value =
-        "+7 " +
-        v.slice(1, 4) + " " +
-        v.slice(4, 7) + " " +
-        v.slice(7, 9) + " " +
-        v.slice(9, 11);
-      return;
-    }
-
-    // Если вводят что-то другое — просто показываем + и цифры
-    profilePhone.value = "+" + v;
-  });
-}
-const setLang = (lang) => {
-  localStorage.setItem("site-lang", lang);
-  applyLang(lang);
-};
-/* ============================
-      ВЫБОР ЯЗЫКА (БЕЗ КОНФЛИКТОВ)
-============================ */
-
-(function () {
-  const i18nTranslations = {
-    ru: {
-      choose_lang: "Выбрать язык",
-      menu: "Меню",
-      booking: "Бронь",
-      profile: "Профиль",
-      contacts: "Контакты",
-      hero_title: "Вечер, который хочется повторить",
-      booking_name: "Имя",
-      booking_phone: "Телефон",
-      booking_date: "Дата",
-      booking_time: "Время",
-      booking_guests: "Гостей",
-      booking_comment: "Комментарий",
-      booking_submit: "Отправить заявку",
-      profile_title: "Мой профиль",
-      profile_name: "Имя",
-      profile_phone: "Телефон",
-      profile_save: "Сохранить профиль"
-    },
-    en: {
-      choose_lang: "Choose language",
-      menu: "Menu",
-      booking: "Booking",
-      profile: "Profile",
-      contacts: "Contacts",
-      hero_title: "An evening you want to repeat",
-      booking_name: "Name",
-      booking_phone: "Phone",
-      booking_date: "Date",
-      booking_time: "Time",
-      booking_guests: "Guests",
-      booking_comment: "Comment",
-      booking_submit: "Submit request",
-      profile_title: "My profile",
-      profile_name: "Name",
-      profile_phone: "Phone",
-      profile_save: "Save profile"
-    },
-    by: {
-      choose_lang: "Выбраць мову",
-      menu: "Меню",
-      booking: "Бронь",
-      profile: "Профіль",
-      contacts: "Кантакты",
-      hero_title: "Вечар, які хочацца паўтарыць",
-      booking_name: "Імя",
-      booking_phone: "Тэлефон",
-      booking_date: "Дата",
-      booking_time: "Час",
-      booking_guests: "Гасцей",
-      booking_comment: "Каментар",
-      booking_submit: "Адправіць заяўку",
-      profile_title: "Мой профіль",
-      profile_name: "Імя",
-      profile_phone: "Тэлефон",
-      profile_save: "Захаваць профіль"
-    }
-  };
-
-  function i18nApplyLang(lang) {
-    if (!i18nTranslations[lang]) return;
-
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.dataset.i18n;
-      if (i18nTranslations[lang][key]) {
-        el.textContent = i18nTranslations[lang][key];
-      }
-    });
-
-    const langToggle = document.getElementById("langToggle");
-    if (langToggle && i18nTranslations[lang].choose_lang) {
-      langToggle.textContent = i18nTranslations[lang].choose_lang;
-    }
-  }
-
-  function i18nSetLang(lang) {
-    if (!i18nTranslations[lang]) return;
-    try {
-      localStorage.setItem("site-lang", lang);
-    } catch (e) {}
-    i18nApplyLang(lang);
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const langToggle = document.getElementById("langToggle");
-    const langList = document.getElementById("langList");
-
-    if (!langToggle || !langList) {
-      // если разметки нет — тихо выходим, не ломая остальной JS
-      return;
-    }
-
-    let saved = "ru";
-    try {
-      saved = localStorage.getItem("site-lang") || "ru";
-    } catch (e) {}
-
-    i18nApplyLang(saved);
-
-    langToggle.addEventListener("click", () => {
-      langList.classList.toggle("open");
-    });
-
-    langList.querySelectorAll(".lang-item").forEach(item => {
-      item.addEventListener("click", () => {
-        const lang = item.dataset.lang;
-        i18nSetLang(lang);
-        langList.classList.remove("open");
-      });
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!langList.contains(e.target) && e.target !== langToggle) {
-        langList.classList.remove("open");
-      }
-    });
-  });
-})();
