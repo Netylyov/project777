@@ -1367,24 +1367,3 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   color: #000;
   border-color: #f7c325;
 }
-.lang-switcher {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.lang-switcher button {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.lang-switcher button.active {
-  background: #f7c325;
-  color: #000;
-  border-color: #f7c325;
-}
