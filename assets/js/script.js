@@ -396,3 +396,28 @@ function applyValidation() {
     }
   };
 }
+document.addEventListener("DOMContentLoaded", () => {
+  const dateInput = document.getElementById("date");
+
+  if (!dateInput) return;
+
+  const today = new Date();
+
+  // Минимальная дата — сегодня
+  const minDate = today.toISOString().split("T")[0];
+
+  // Максимальная дата — +1 месяц
+  const maxDateObj = new Date(today);
+  maxDateObj.setMonth(maxDateObj.getMonth() + 1);
+  const maxDate = maxDateObj.toISOString().split("T")[0];
+
+  // Устанавливаем ограничения
+  dateInput.min = minDate;
+  dateInput.max = maxDate;
+
+  // Если пользователь вручную ввёл неправильную дату — исправляем
+  dateInput.addEventListener("input", () => {
+    if (dateInput.value < minDate) dateInput.value = minDate;
+    if (dateInput.value > maxDate) dateInput.value = maxDate;
+  });
+});
