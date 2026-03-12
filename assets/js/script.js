@@ -426,25 +426,34 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dateInput.value > maxDate) dateInput.value = maxDate;
   });
 });
+// === ЖЁСТКАЯ ВАЛИДАЦИЯ ВРЕМЕНИ ===
 document.addEventListener("DOMContentLoaded", () => {
-  const timeInput = document.getElementById("time");
-  if (!timeInput) return;
+  const timeInputs = document.querySelectorAll('input[type="time"]');
+  if (!timeInputs.length) return;
 
-  timeInput.addEventListener("input", () => {
-    const value = timeInput.value;
+  timeInputs.forEach(timeInput => {
+    const fixTime = () => {
+      let v = timeInput.value;
 
-    // Если формат не HH:MM — ничего не делаем
-    if (!/^\d{2}:\d{2}$/.test(value)) return;
+      // Если формат не HH:MM — выходим
+      if (!/^\d{1,2}:\d{1,2}$/.test(v)) return;
 
-    let [h, m] = value.split(":").map(Number);
+      let [h, m] = v.split(":").map(Number);
 
-    // Часы 0–23
-    if (h > 23) h = 23;
+      // Часы 0–23
+      if (h < 0) h = 0;
+      if (h > 23) h = 23;
 
-    // Минуты 0–59
-    if (m > 59) m = 59;
+      // Минуты 0–59
+      if (m < 0) m = 0;
+      if (m > 59) m = 59;
 
-    // Возвращаем исправленное значение
-    timeInput.value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+      timeInput.value =
+        String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+    };
+
+    timeInput.addEventListener("input", fixTime);
+    timeInput.addEventListener("blur", fixTime);
+    timeInput.addEventListener("change", fixTime);
   });
 });
