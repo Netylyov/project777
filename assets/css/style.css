@@ -1333,3 +1333,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(82%) sepia(92%) saturate(1200%) hue-rotate(2deg) brightness(110%) contrast(105%);
   opacity: 1 !important;
 }
+.booking-sheet__close {
+  right: 40px !important; /* ← смещает крестик левее */
+}
