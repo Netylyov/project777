@@ -1333,6 +1333,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(82%) sepia(92%) saturate(1200%) hue-rotate(2deg) brightness(110%) contrast(105%);
   opacity: 1 !important;
 }
-.booking-sheet__close {
-  right: 40px !important; /* ← смещает крестик левее */
+/* Уменьшаем ширину полоски прокрутки в форме бронирования */
+.booking-sheet__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.booking-sheet__content::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.25);
+  border-radius: 10px;
+}
+
+.booking-sheet__content::-webkit-scrollbar-track {
+  background: transparent;
 }
