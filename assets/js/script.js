@@ -535,191 +535,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /* ===========================
-   ВЫБОР ЯЗЫКА (БЕЗ КОНФЛИКТОВ)
-=========================== */
-(function () {
-  const i18nTranslations = {
-    ru: {
-      choose_lang: "Выбрать язык",
-      menu: "Меню",
-      booking: "Бронь",
-      profile: "Профиль",
-      contacts: "Контакты",
-      hero_title: "Вечер, который хочется повторить",
-      booking_name: "Имя",
-      booking_phone: "Телефон",
-      booking_date: "Дата",
-      booking_time: "Время",
-      booking_guests: "Гостей",
-      booking_comment: "Комментарий",
-      booking_submit: "Отправить заявку",
-      profile_title: "Мой профиль",
-      profile_name: "Имя",
-      profile_phone: "Телефон",
-      profile_save: "Сохранить профиль"
-    },
-    en: {
-      choose_lang: "Choose language",
-      menu: "Menu",
-      booking: "Booking",
-      profile: "Profile",
-      contacts: "Contacts",
-      hero_title: "An evening you want to repeat",
-      booking_name: "Name",
-      booking_phone: "Phone",
-      booking_date: "Date",
-      booking_time: "Time",
-      booking_guests: "Guests",
-      booking_comment: "Comment",
-      booking_submit: "Submit request",
-      profile_title: "My profile",
-      profile_name: "Name",
-      profile_phone: "Phone",
-      profile_save: "Save profile"
-    },
-    by: {
-      choose_lang: "Выбраць мову",
-      menu: "Меню",
-      booking: "Бронь",
-      profile: "Профіль",
-      contacts: "Кантакты",
-      hero_title: "Вечар, які хочацца паўтарыць",
-      booking_name: "Імя",
-      booking_phone: "Тэлефон",
-      booking_date: "Дата",
-      booking_time: "Час",
-      booking_guests: "Гасцей",
-      booking_comment: "Каментар",
-      booking_submit: "Адправіць заяўку",
-      profile_title: "Мой профіль",
-      profile_name: "Імя",
-      profile_phone: "Тэлефон",
-      profile_save: "Захаваць профіль"
-    }
-  };
-
-  function i18nApplyLang(lang) {
-    if (!i18nTranslations[lang]) return;
-
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.dataset.i18n;
-      if (i18nTranslations[lang][key]) {
-        el.textContent = i18nTranslations[lang][key];
-      }
-    });
-
-    const langToggle = document.getElementById("langToggle");
-    if (langToggle && i18nTranslations[lang].choose_lang) {
-      langToggle.textContent = i18nTranslations[lang].choose_lang;
-    }
-  }
-
-  function i18nSetLang(lang) {
-    if (!i18nTranslations[lang]) return;
-    try {
-      localStorage.setItem("site-lang", lang);
-    } catch (e) {}
-    i18nApplyLang(lang);
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const langToggle = document.getElementById("langToggle");
-    const langList = document.getElementById("langList");
-
-    if (!langToggle || !langList) return;
-
-    let saved = "ru";
-    try {
-      saved = localStorage.getItem("site-lang") || "ru";
-    } catch (e) {}
-
-    i18nApplyLang(saved);
-
-    langToggle.addEventListener("click", () => {
-      langList.classList.toggle("open");
-    });
-
-    langList.querySelectorAll(".lang-item").forEach(item => {
-      item.addEventListener("click", () => {
-        const lang = item.dataset.lang;
-        i18nSetLang(lang);
-        langList.classList.remove("open");
-      });
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!langList.contains(e.target) && e.target !== langToggle) {
-        langList.classList.remove("open");
-      }
-    });
-  });
-})();
-/* ===========================
-   ПОЛНАЯ РАБОЧАЯ ЛОКАЛИЗАЦИЯ
+   ВЫБОР ЯЗЫКА / ЛОКАЛИЗАЦИЯ
 =========================== */
 
 (function () {
   const translations = {
     ru: {
       choose_lang: "Выбрать язык",
+      home: "Главная",
+      about: "О ресторане",
       menu: "Меню",
       booking: "Бронь",
       profile: "Профиль",
-      contacts: "Контакты",
-      hero_title: "Вечер, который хочется повторить",
-      booking_name: "Имя",
-      booking_phone: "Телефон",
-      booking_date: "Дата",
-      booking_time: "Время",
-      booking_guests: "Гостей",
-      booking_comment: "Комментарий",
-      booking_submit: "Отправить заявку",
-      profile_title: "Мой профиль",
-      profile_name: "Имя",
-      profile_phone: "Телефон",
-      profile_save: "Сохранить профиль"
+      contacts: "Контакты"
     },
     en: {
       choose_lang: "Choose language",
+      home: "Home",
+      about: "About",
       menu: "Menu",
       booking: "Booking",
       profile: "Profile",
-      contacts: "Contacts",
-      hero_title: "An evening you want to repeat",
-      booking_name: "Name",
-      booking_phone: "Phone",
-      booking_date: "Date",
-      booking_time: "Time",
-      booking_guests: "Guests",
-      booking_comment: "Comment",
-      booking_submit: "Submit request",
-      profile_title: "My profile",
-      profile_name: "Name",
-      profile_phone: "Phone",
-      profile_save: "Save profile"
+      contacts: "Contacts"
     },
     by: {
       choose_lang: "Выбраць мову",
+      home: "Галоўная",
+      about: "Пра рэстаран",
       menu: "Меню",
       booking: "Бронь",
       profile: "Профіль",
-      contacts: "Кантакты",
-      hero_title: "Вечар, які хочацца паўтарыць",
-      booking_name: "Імя",
-      booking_phone: "Тэлефон",
-      booking_date: "Дата",
-      booking_time: "Час",
-      booking_guests: "Гасцей",
-      booking_comment: "Каментар",
-      booking_submit: "Адправіць заяўку",
-      profile_title: "Мой профіль",
-      profile_name: "Імя",
-      profile_phone: "Тэлефон",
-      profile_save: "Захаваць профіль"
+      contacts: "Кантакты"
     }
   };
 
   function applyLang(lang) {
+    if (!translations[lang]) return;
+
     document.querySelectorAll("[data-i18n]").forEach(el => {
       const key = el.dataset.i18n;
       if (translations[lang][key]) {
@@ -728,11 +580,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const toggle = document.getElementById("langToggle");
-    if (toggle) toggle.textContent = translations[lang].choose_lang;
+    if (toggle && translations[lang].choose_lang) {
+      toggle.textContent = translations[lang].choose_lang;
+    }
   }
 
   function setLang(lang) {
-    localStorage.setItem("site-lang", lang);
+    if (!translations[lang]) return;
+    try {
+      localStorage.setItem("site-lang", lang);
+    } catch (e) {}
     applyLang(lang);
   }
 
@@ -742,7 +599,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!toggle || !list) return;
 
-    const saved = localStorage.getItem("site-lang") || "ru";
+    let saved = "ru";
+    try {
+      saved = localStorage.getItem("site-lang") || "ru";
+    } catch (e) {}
+
     applyLang(saved);
 
     toggle.addEventListener("click", () => {
@@ -751,7 +612,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     list.querySelectorAll(".lang-item").forEach(item => {
       item.addEventListener("click", () => {
-        setLang(item.dataset.lang);
+        const lang = item.dataset.lang;
+        setLang(lang);
         list.classList.remove("open");
       });
     });
