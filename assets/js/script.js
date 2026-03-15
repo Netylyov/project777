@@ -1,373 +1,711 @@
-/* =========================================================
-   ЛОКАЛИЗАЦИЯ: RU → EN → BY
-========================================================= */
+/* ===========================
+   БУРГЕР-МЕНЮ
+=========================== */
+const burgerBtn = document.getElementById('burgerBtn');
+const mobileMenu = document.getElementById('mobileMenu');
 
-const translations = {
-  ru: {
-    lang_current: "RU",
+if (burgerBtn && mobileMenu) {
+  burgerBtn.onclick = () => mobileMenu.classList.toggle('open');
+}
 
-    /* NAV */
-    nav_home: "Главная",
-    nav_about: "О ресторане",
-    nav_menu: "Меню",
-    nav_booking: "Бронь",
-    nav_profile: "Профиль",
-    nav_contacts: "Контакты",
 
-    /* HERO */
-    hero_sub: "RESTAURANT • LOUNGE • EVENING PLACE",
-    hero_title: "Вечер, который хочется повторить",
-    hero_desc: "DRUZYA — камерный ресторан и lounge для вечеров с друзьями, ужинов вдвоём и небольших праздников.",
-    hero_booking_btn: "Забронировать столик",
-    hero_menu_btn: "Посмотреть меню",
-    hero_kitchen_time: "Кухня до 23:30",
-    hero_bar_time: "Бар до 02:00",
-    hero_address: "ул. Приморская 10, Минск",
-    hero_card_title: "DRUZYA - Restaurant & Lounge",
-    hero_card_text: "Вечерний ресторан и lounge с мягким светом, продуманной музыкой и кухней, к которой хочется вернуться.",
-    hero_tag_pan_asian: "Паназиатская кухня",
-    hero_tag_cocktails: "Авторские коктейли",
-    hero_tag_lounge: "Lounge‑атмосфера",
-    hero_open_now: "Сегодня открыты",
-    hero_reservation_note: "Рекомендуем брони заранее",
+/* ===========================
+   ФИЛЬТР МЕНЮ
+=========================== */
+const filterButtons = document.querySelectorAll('.menu-categories button');
+const menuItems = document.querySelectorAll('.menu-item');
 
-    /* ABOUT */
-    about_title: "О ресторане",
-    about_sub: "DRUZYA — это вечерний ресторан и lounge, где можно спокойно провести время.",
-    about_text: "Паназиатская кухня, закуски с коктейлями и блюда, которые удобно делить на компанию.",
-    about_formats_title: "Форматы",
-    about_formats_text: "Уютные вечера, небольшие праздники, романтические ужины и встречи с друзьями.",
+filterButtons.forEach(btn => {
+  btn.onclick = () => {
+    filterButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-    /* MENU */
-    menu_title: "Меню",
-    menu_sub: "Закуски, горячее, салаты, мясо, рыба, десерты, напитки.",
-    menu_filter_all: "Все",
-    menu_filter_appetizers: "Закуски",
-    menu_filter_hot: "Горячее",
-    menu_filter_salads: "Салаты",
-    menu_filter_meat: "Мясо",
-    menu_filter_fish: "Рыба",
-    menu_filter_desserts: "Десерты",
-    menu_filter_drinks: "Напитки",
+    const category = btn.dataset.filter;
 
-    menu_add_btn: "Добавить",
+    menuItems.forEach(item => {
+      const match =
+        category === 'all' || item.dataset.category === category;
 
-    menu_appetizer_cold_title: "Холодная закуска",
-    menu_appetizer_cold_weight: "180 г",
-    menu_appetizer_cold_desc: "Лёгкая закуска к напиткам.",
-    menu_appetizer_cold_price: "18 BYN",
+      item.style.display = match ? '' : 'none';
+    });
+  };
+});
 
-    menu_appetizer_hot_title: "Горячая закуска",
-    menu_appetizer_hot_weight: "220 г",
-    menu_appetizer_hot_desc: "Подаётся горячей, идеально к вину.",
-    menu_appetizer_hot_price: "22 BYN",
 
-    menu_sauce_assort_title: "Ассорти соусов",
-    menu_sauce_assort_weight: "90 г",
-    menu_sauce_assort_desc: "Три фирменных соуса.",
-    menu_sauce_assort_price: "8 BYN",
+/* ===========================
+   КОРЗИНА
+=========================== */
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    menu_salad_signature_title: "Фирменный салат",
-    menu_salad_signature_weight: "250 г",
-    menu_salad_signature_desc: "Свежие овощи и авторская заправка.",
-    menu_salad_signature_price: "16 BYN",
+const cartModal = document.getElementById('cartModal');
+const openCart = document.getElementById('openCart');
+const closeCart = document.getElementById('closeCart');
+const cartItems = document.getElementById('cartItems');
+const cartTotal = document.getElementById('cartTotal');
+const cartCount = document.getElementById('cartCount');
 
-    menu_grill_assort_title: "Гриль‑ассорти",
-    menu_grill_assort_weight: "350 г",
-    menu_grill_assort_desc: "Мясо и овощи на гриле.",
-    menu_grill_assort_price: "32 BYN",
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = text;
+  toast.classList.add('show');
 
-    menu_side_title: "Гарнир",
-    menu_side_weight: "200 г",
-    menu_side_desc: "Идеальное дополнение к горячему.",
-    menu_side_price: "10 BYN",
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 1500);
+}
 
-    menu_meat_title: "Мясное блюдо",
-    menu_meat_weight: "300 г",
-    menu_meat_desc: "Сочное мясо с гарниром.",
-    menu_meat_price: "28 BYN",
+function saveCart() {
+  localStorage.setItem('cart', JSON.stringify(cart));
+}
 
-    menu_fish_title: "Рыбное блюдо",
-    menu_fish_weight: "280 г",
-    menu_fish_desc: "Свежая рыба, приготовленная на пару.",
-    menu_fish_price: "26 BYN",
+function updateCart() {
+  if (!cartItems || !cartTotal || !cartCount) return;
 
-    menu_dessert_title: "Десерт",
-    menu_dessert_weight: "150 г",
-    menu_dessert_desc: "Сладкое завершение вечера.",
-    menu_dessert_price: "14 BYN",
+  cartItems.innerHTML = '';
+  let total = 0;
 
-    menu_drink_title: "Авторский напиток",
-    menu_drink_weight: "250 мл",
-    menu_drink_desc: "Освежающий коктейль.",
-    menu_drink_price: "12 BYN",
+  cart.forEach((item, index) => {
+    total += item.price;
 
-    /* BOOKING */
-    booking_title: "Бронирование столика",
-    booking_sub: "Укажите дату, время и количество гостей — мы подтвердим бронь.",
-    booking_date_label: "Дата",
-    booking_time_label: "Время",
-    booking_guests_label: "Гостей",
-    booking_name_label: "Имя",
-    booking_phone_label: "Телефон",
-    booking_comment_label: "Комментарий",
-    booking_submit_btn: "Отправить заявку",
-    booking_note: "Мы свяжемся с вами для подтверждения брони.",
-    booking_modal_title: "Бронирование столика",
+    const div = document.createElement('div');
+    div.className = 'cart-row';
+    div.innerHTML = `
+      <span>${item.title}</span>
+      <span>${item.price} BYN</span>
+      <button data-index="${index}" class="remove-item">✕</button>
+    `;
+    cartItems.appendChild(div);
+  });
 
-    booking_date_placeholder: "Выберите дату",
-    booking_time_placeholder: "Выберите время",
-    booking_guests_placeholder: "Количество гостей",
-    booking_name_placeholder: "Как к вам обращаться?",
-    booking_phone_placeholder: "+375 (__) ___‑__‑__",
-    booking_comment_placeholder: "Пожелания по столику, событию или меню",
+  cartTotal.textContent = total;
+  cartCount.textContent = cart.length;
 
-    /* PROFILE */
-    profile_title: "Профиль гостя",
-    profile_sub: "Сохраняйте свои данные, просматривайте историю заказов и бронирований.",
-    profile_data_title: "Личные данные",
-    profile_name_label: "Имя",
-    profile_phone_label: "Телефон",
-    profile_email_label: "Email",
-    profile_save_btn: "Сохранить",
-    profile_history_title: "История заказов",
-    profile_history_empty: "У вас ещё нет заказов.",
+  document.querySelectorAll('.remove-item').forEach(btn => {
+    btn.onclick = () => {
+      cart.splice(btn.dataset.index, 1);
+      saveCart();
+      updateCart();
+    };
+  });
+}
 
-    profile_name_placeholder: "Ваше имя",
-    profile_phone_placeholder: "+375 (__) ___‑__‑__",
-    profile_email_placeholder: "you@example.com",
+document.querySelectorAll('.menu-btn').forEach(btn => {
+  btn.onclick = () => {
+    const item = btn.closest('.menu-item');
+    if (!item) return;
+    const titleEl = item.querySelector('.menu-title');
+    const priceEl = item.querySelector('.menu-price');
+    if (!titleEl || !priceEl) return;
 
-    /* CONTACTS */
-    contacts_title: "Контакты",
-    contacts_sub: "Если у вас есть вопросы по брони, меню или мероприятиям — свяжитесь с нами.",
-    contacts_address_title: "Адрес",
-    contacts_address_text: "ул. Приморская 10, Минск",
-    contacts_phone_title: "Телефон",
-    contacts_phone_value: "+375 (29) 123‑45‑67",
-    contacts_time_title: "Время работы",
-    contacts_time_text: "Пн–Чт: 17:00–01:00\nПт–Сб: 17:00–02:00\nВс: 17:00–00:00",
-    contacts_social_title: "Мы на связи",
-    contacts_telegram_btn: "Написать в Telegram",
+    const title = titleEl.textContent;
+    const price = Number(priceEl.textContent);
 
-    /* FOOTER */
-    footer_text: "Вечерний ресторан и lounge в Минске с паназиатской кухней и авторскими коктейлями.",
-    footer_nav_title: "Навигация",
-    footer_contacts_title: "Контакты",
-    footer_address: "ул. Приморская 10, Минск",
-    footer_phone: "+375 (29) 123‑45‑67",
-    footer_telegram_btn: "Написать в Telegram",
-    footer_rights: "© DRUZYA, все права защищены.",
+    cart.push({ title, price });
+    saveCart();
+    updateCart();
 
-    /* CART */
-    cart_title: "Корзина",
-    cart_total: "Итого:",
-    cart_checkout_btn: "Оформить заказ",
+    showToast(`«${title}» добавлено в корзину`);
+  };
+});
 
-    /* CHECKOUT */
-    checkout_title: "Оформление заказа",
-    checkout_name_label: "Имя",
-    checkout_phone_label: "Телефон",
-    checkout_comment_label: "Комментарий",
-    checkout_submit_btn: "Подтвердить заказ",
+if (openCart && cartModal) {
+  openCart.onclick = () => {
+    cartModal.classList.add('modal--open');
+    document.body.style.overflow = "hidden";
+  };
+}
 
-    checkout_name_placeholder: "Ваше имя",
-    checkout_phone_placeholder: "+375 (__) ___‑__‑__",
-    checkout_comment_placeholder: "Пожелания по заказу или доставке",
-  },
+if (closeCart && cartModal) {
+  closeCart.onclick = () => {
+    cartModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
+  };
+}
 
-  /* =========================================================
-     ENGLISH
-  ========================================================= */
-  en: {
-    lang_current: "EN",
+if (cartModal) {
+  cartModal.onclick = e => {
+    if (e.target === cartModal) {
+      cartModal.classList.remove('modal--open');
+      document.body.style.overflow = "";
+    }
+  };
+}
 
-    nav_home: "Home",
-    nav_about: "About",
-    nav_menu: "Menu",
-    nav_booking: "Booking",
-    nav_profile: "Profile",
-    nav_contacts: "Contacts",
+updateCart();
 
-    hero_sub: "RESTAURANT • LOUNGE • EVENING PLACE",
-    hero_title: "An Evening You Want to Repeat",
-    hero_desc: "DRUZYA is an intimate restaurant and lounge for evenings with friends, dinners for two, and small celebrations.",
-    hero_booking_btn: "Reserve a Table",
-    hero_menu_btn: "View Menu",
-    hero_kitchen_time: "Kitchen until 23:30",
-    hero_bar_time: "Bar until 02:00",
-    hero_address: "10 Primorskaya St, Minsk",
-    hero_card_title: "DRUZYA - Restaurant & Lounge",
-    hero_card_text: "An evening restaurant and lounge with soft lighting, curated music, and cuisine worth returning to.",
-    hero_tag_pan_asian: "Pan‑Asian Cuisine",
-    hero_tag_cocktails: "Signature Cocktails",
-    hero_tag_lounge: "Lounge Atmosphere",
-    hero_open_now: "Open Today",
-    hero_reservation_note: "We recommend booking in advance",
 
-    about_title: "About the Restaurant",
-    about_sub: "DRUZYA is an evening restaurant and lounge where you can relax and enjoy your time.",
-    about_text: "Pan‑Asian cuisine, snacks with cocktails, and dishes perfect for sharing.",
-    about_formats_title: "Formats",
-    about_formats_text: "Cozy evenings, small celebrations, romantic dinners, and gatherings with friends.",
+/* ===========================
+   FIREBASE
+=========================== */
+let db = null;
+let auth = null;
+let provider = null;
 
-    menu_title: "Menu",
-    menu_sub: "Appetizers, mains, salads, meat, fish, desserts, drinks.",
-    menu_filter_all: "All",
-    menu_filter_appetizers: "Appetizers",
-    menu_filter_hot: "Main Courses",
-    menu_filter_salads: "Salads",
-    menu_filter_meat: "Meat Dishes",
-    menu_filter_fish: "Fish Dishes",
-    menu_filter_desserts: "Desserts",
-    menu_filter_drinks: "Beverages",
+if (window.firebase) {
+  db = firebase.firestore();
+  auth = firebase.auth();
+  provider = new firebase.auth.GoogleAuthProvider();
+}
 
-    menu_add_btn: "Add",
 
-    menu_appetizer_cold_title: "Cold Appetizer",
-    menu_appetizer_cold_weight: "180 g",
-    menu_appetizer_cold_desc: "A light appetizer for drinks.",
-    menu_appetizer_cold_price: "18 BYN",
+/* ===========================
+   ПРОФИЛЬ
+=========================== */
+const profileName = document.getElementById('profileName');
+const profilePhone = document.getElementById('profilePhone');
+const saveProfile = document.getElementById('saveProfile');
+const googleLoginBtn = document.getElementById('googleLoginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const avatar = document.getElementById('profileAvatar');
 
-    menu_appetizer_hot_title: "Hot Appetizer",
-    menu_appetizer_hot_weight: "220 g",
-    menu_appetizer_hot_desc: "Served hot, perfect with wine.",
-    menu_appetizer_hot_price: "22 BYN",
+let profile = JSON.parse(localStorage.getItem('profile') || '{}');
 
-    menu_sauce_assort_title: "Sauce Assortment",
-    menu_sauce_assort_weight: "90 g",
-    menu_sauce_assort_desc: "Three signature sauces.",
-    menu_sauce_assort_price: "8 BYN",
+function loadProfile() {
+  if (profile.name && profileName) profileName.value = profile.name;
+  if (profile.phone && profilePhone) profilePhone.value = profile.phone;
+}
+loadProfile();
 
-    menu_salad_signature_title: "Signature Salad",
-    menu_salad_signature_weight: "250 g",
-    menu_salad_signature_desc: "Fresh vegetables with a house dressing.",
-    menu_salad_signature_price: "16 BYN",
+// Жёсткая валидация профиля
+if (profileName) {
+  profileName.addEventListener("input", () => {
+    profileName.value = profileName.value
+      .replace(/[^А-Яа-яЁё\s]/g, "")
+      .slice(0, 20);
+  });
+}
 
-    menu_grill_assort_title: "Mixed Grill Platter",
-    menu_grill_assort_weight: "350 g",
-    menu_grill_assort_desc: "Grilled meat and vegetables.",
-    menu_grill_assort_price: "32 BYN",
+if (profilePhone) {
+  profilePhone.addEventListener("input", () => {
+    let v = profilePhone.value.replace(/\D/g, "");
 
-    menu_side_title: "Side Dish",
-    menu_side_weight: "200 g",
-    menu_side_desc: "A perfect addition to mains.",
-    menu_side_price: "10 BYN",
+    if (v.startsWith("375")) {
+      v = v.slice(0, 12);
+      profilePhone.value =
+        "+375 " +
+        v.slice(3, 5) + " " +
+        v.slice(5, 8) + " " +
+        v.slice(8, 10) + " " +
+        v.slice(10, 12);
+      return;
+    }
 
-    menu_meat_title: "Meat Dish",
-    menu_meat_weight: "300 g",
-    menu_meat_desc: "Juicy meat with garnish.",
-    menu_meat_price: "28 BYN",
+    if (v.startsWith("7")) {
+      v = v.slice(0, 11);
+      profilePhone.value =
+        "+7 " +
+        v.slice(1, 4) + " " +
+        v.slice(4, 7) + " " +
+        v.slice(7, 9) + " " +
+        v.slice(9, 11);
+      return;
+    }
 
-    menu_fish_title: "Fish Dish",
-    menu_fish_weight: "280 g",
-    menu_fish_desc: "Fresh steamed fish.",
-    menu_fish_price: "26 BYN",
+    profilePhone.value = v ? "+" + v : "";
+  });
+}
 
-    menu_dessert_title: "Dessert",
-    menu_dessert_weight: "150 g",
-    menu_dessert_desc: "A sweet finale to your evening.",
-    menu_dessert_price: "14 BYN",
+if (saveProfile) {
+  saveProfile.onclick = () => {
+    profile = {
+      name: profileName ? profileName.value : "",
+      phone: profilePhone ? profilePhone.value : ""
+    };
+    localStorage.setItem('profile', JSON.stringify(profile));
+    alert('Профиль сохранён');
+  };
+}
 
-    menu_drink_title: "Signature Drink",
-    menu_drink_weight: "250 ml",
-    menu_drink_desc: "Refreshing cocktail.",
-    menu_drink_price: "12 BYN",
+if (googleLoginBtn && auth) {
+  googleLoginBtn.onclick = () => {
+    auth.signInWithPopup(provider).then(result => {
+      const user = result.user;
 
-    booking_title: "Table Reservation",
-    booking_sub: "Select date, time, and number of guests — we will confirm your booking.",
-    booking_date_label: "Date",
-    booking_time_label: "Time",
-    booking_guests_label: "Guests",
-    booking_name_label: "Name",
-    booking_phone_label: "Phone",
-    booking_comment_label: "Comment",
-    booking_submit_btn: "Submit Request",
-    booking_note: "We will contact you to confirm the reservation.",
-    booking_modal_title: "Table Reservation",
+      if (user.displayName && profileName) {
+        profileName.value = user.displayName;
+        profile.name = user.displayName;
+      }
 
-    booking_date_placeholder: "Select a date",
-    booking_time_placeholder: "Select a time",
-    booking_guests_placeholder: "Number of guests",
-    booking_name_placeholder: "Your name",
-    booking_phone_placeholder: "+375 (__) ___‑__‑__",
-    booking_comment_placeholder: "Preferences for table or event",
+      if (user.photoURL && avatar) {
+        avatar.src = user.photoURL;
+        avatar.style.display = 'block';
+      }
 
-    profile_title: "Guest Profile",
-    profile_sub: "Save your data and view your order and booking history.",
-    profile_data_title: "Personal Data",
-    profile_name_label: "Name",
-    profile_phone_label: "Phone",
-    profile_email_label: "Email",
-    profile_save_btn: "Save",
-    profile_history_title: "Order History",
-    profile_history_empty: "You have no orders yet.",
+      localStorage.setItem('profile', JSON.stringify(profile));
+    });
+  };
+}
 
-    profile_name_placeholder: "Your name",
-    profile_phone_placeholder: "+375 (__) ___‑__‑__",
-    profile_email_placeholder: "you@example.com",
+if (auth) {
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      if (logoutBtn) logoutBtn.style.display = 'block';
+      if (user.photoURL && avatar) {
+        avatar.src = user.photoURL;
+        avatar.style.display = 'block';
+      }
+    }
+  });
+}
 
-    contacts_title: "Contacts",
-    contacts_sub: "If you have questions about booking, menu, or events — contact us.",
-    contacts_address_title: "Address",
-    contacts_address_text: "10 Primorskaya St, Minsk",
-    contacts_phone_title: "Phone",
-    contacts_phone_value: "+375 (29) 123‑45‑67",
-    contacts_time_title: "Working Hours",
-    contacts_time_text: "Mon–Thu: 17:00–01:00\nFri–Sat: 17:00–02:00\nSun: 17:00–00:00",
-    contacts_social_title: "We Are Online",
-    contacts_telegram_btn: "Message on Telegram",
+if (logoutBtn && auth) {
+  logoutBtn.onclick = () => {
+    auth.signOut().then(() => {
+      localStorage.removeItem('profile');
+      location.reload();
+    });
+  };
+}
 
-    footer_text: "An evening restaurant and lounge in Minsk with Pan‑Asian cuisine and signature cocktails.",
-    footer_nav_title: "Navigation",
-    footer_contacts_title: "Contacts",
-    footer_address: "10 Primorskaya St, Minsk",
-    footer_phone: "+375 (29) 123‑45‑67",
-    footer_telegram_btn: "Message on Telegram",
-    footer_rights: "© DRUZYA, all rights reserved.",
 
-    cart_title: "Cart",
-    cart_total: "Total:",
-    cart_checkout_btn: "Checkout",
+/* ===========================
+   БРОНИРОВАНИЕ
+=========================== */
 
-    checkout_title: "Checkout",
-    checkout_name_label: "Name",
-    checkout_phone_label: "Phone",
-    checkout_comment_label: "Comment",
-    checkout_submit_btn: "Confirm Order",
+const bookingModal = document.getElementById('bookingModal');
+const openBookingModal = document.getElementById('openBookingModal');
+const openBookingHero = document.getElementById('openBookingHero');
+const closeBooking = document.getElementById('closeBooking');
+const bookingForm = document.getElementById('booking-form');
 
-    checkout_name_placeholder: "Your name",
-    checkout_phone_placeholder: "+375 (__) ___‑__‑__",
-    checkout_comment_placeholder: "Order or delivery notes",
-  },
+function applyValidation() {
+  const nameInput = document.getElementById("name");
+  const phoneInput = document.getElementById("phone");
 
-  /* =========================================================
-     BELARUSIAN
-  ========================================================= */
-  by: {
-    lang_current: "BY",
+  if (!nameInput || !phoneInput) return;
 
-    nav_home: "Галоўная",
-    nav_about: "Пра рэстаран",
-    nav_menu: "Меню",
-    nav_booking: "Бронь",
-    nav_profile: "Профіль",
-    nav_contacts: "Кантакты",
+  nameInput.oninput = e => {
+    e.target.value = e.target.value
+      .replace(/[^А-Яа-яЁё ]/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trimStart()
+      .slice(0, 20);
+  };
 
-    hero_sub: "RESTAURANT • LOUNGE • EVENING PLACE",
-    hero_title: "Вечар, які хочацца паўтарыць",
-    hero_desc: "DRUZYA — камерны рэстаран і lounge для вечараў з сябрамі, вячэр на дваіх і невялікіх святаў.",
-    hero_booking_btn: "Забраніраваць столік",
-    hero_menu_btn: "Паглядзець меню",
-    hero_kitchen_time: "Кухня да 23:30",
-    hero_bar_time: "Бар да 02:00",
-    hero_address: "вул. Прыморская 10, Мінск",
-    hero_card_title: "DRUZYA - Restaurant & Lounge",
-    hero_card_text: "Вячэрні рэстаран і lounge з мяккім святлом, музыкай і кухняй, да якой хочацца вяртацца.",
-    hero_tag_pan_asian: "Паназіяцкая кухня",
-    hero_tag_cocktails: "Аўтарскія кактэйлі",
-    hero_tag_lounge: "Lounge‑атмасфера",
-    hero_open_now: "Сёння адкрыты",
-    hero_reservation_note: "Рэкамендуем брані загадзя",
+  phoneInput.oninput = e => {
+    let value = e.target.value.replace(/\D/g, "");
 
-    about_title: "Пра рэстаран",
-    about_sub: "DRUZYA — гэта вячэрні рэстаран і lounge, дзе можна спакойна
+    if (value === "3" || value === "37") {
+      e.target.value = value;
+      return;
+    }
+
+    if (value.startsWith("375")) {
+      const p1 = value.slice(3, 5);
+      const p2 = value.slice(5, 8);
+      const p3 = value.slice(8, 10);
+      const p4 = value.slice(10, 12);
+
+      e.target.value =
+        "+375" +
+        (p1 ? " " + p1 : "") +
+        (p2 ? " " + p2 : "") +
+        (p3 ? " " + p3 : "") +
+        (p4 ? " " + p4 : "");
+
+      return;
+    }
+
+    if (value.startsWith("7")) {
+      const p1 = value.slice(1, 4);
+      const p2 = value.slice(4, 7);
+      const p3 = value.slice(7, 9);
+      const p4 = value.slice(9, 11);
+
+      e.target.value =
+        "+7" +
+        (p1 ? " " + p1 : "") +
+        (p2 ? " " + p2 : "") +
+        (p3 ? " " + p3 : "") +
+        (p4 ? " " + p4 : "");
+
+      return;
+    }
+
+    if (value !== "") {
+      e.target.value = "";
+    }
+  };
+}
+
+function openBooking() {
+  if (!bookingModal) return;
+
+  bookingModal.classList.add('modal--open');
+  document.body.style.overflow = "hidden";
+
+  const nameField = document.getElementById('name');
+  const phoneField = document.getElementById('phone');
+
+  if (nameField && profileName) {
+    nameField.value = profileName.value || "";
+  }
+  if (phoneField && profilePhone) {
+    phoneField.value = (profilePhone.value || "").replace(/\D/g, "");
+  }
+
+  applyValidation();
+}
+
+if (openBookingModal) openBookingModal.onclick = openBooking;
+if (openBookingHero) openBookingHero.onclick = openBooking;
+
+if (closeBooking && bookingModal) {
+  closeBooking.onclick = () => {
+    bookingModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
+  };
+}
+
+if (bookingModal) {
+  bookingModal.onclick = e => {
+    if (e.target === bookingModal) {
+      bookingModal.classList.remove('modal--open');
+      document.body.style.overflow = "";
+    }
+  };
+}
+
+if (bookingForm) {
+  bookingForm.onsubmit = e => {
+    e.preventDefault();
+
+    alert('Заявка отправлена! Мы свяжемся с вами.');
+
+    if (bookingModal) {
+      bookingModal.classList.remove('modal--open');
+      document.body.style.overflow = "";
+    }
+    bookingForm.reset();
+  };
+}
+
+
+/* ===========================
+   ОФОРМЛЕНИЕ ЗАКАЗА → БРОНИРОВАНИЕ
+=========================== */
+
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+if (checkoutBtn) {
+  checkoutBtn.onclick = () => {
+    if (cart.length === 0) {
+      showToast("Корзина пуста");
+      return;
+    }
+
+    if (cartModal) {
+      cartModal.classList.remove('modal--open');
+      document.body.style.overflow = "";
+    }
+
+    openBooking();
+
+    const commentField = document.getElementById('comment');
+
+    if (commentField) {
+      let orderText = "Заказ:\n";
+      cart.forEach(item => {
+        orderText += `• ${item.title} — ${item.price} BYN\n`;
+      });
+
+      commentField.value = orderText;
+    }
+  };
+}
+
+
+/* ===========================
+   ИСТОРИЯ ЗАКАЗОВ
+=========================== */
+const historyModal = document.getElementById('historyModal');
+const openHistory = document.getElementById('openHistory');
+const openHistoryFooter = document.getElementById('openHistoryFooter');
+const closeHistory = document.getElementById('closeHistory');
+const historyList = document.getElementById('historyList');
+
+function loadHistory() {
+  if (!db || !historyList) return;
+
+  historyList.innerHTML = '';
+
+  db.collection('orders')
+    .orderBy('timestamp', 'desc')
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const order = doc.data();
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div><b>Имя:</b> ${order.name}</div>
+          <div><b>Телефон:</b> ${order.phone}</div>
+          <div><b>Сумма:</b> ${order.total} BYN</div>
+          <div><b>Дата:</b> ${order.timestamp ? order.timestamp.toDate().toLocaleString() : '-'}</div>
+          <hr>
+        `;
+        historyList.appendChild(div);
+      });
+    });
+}
+
+function openHistoryFn() {
+  loadHistory();
+  if (historyModal) {
+    historyModal.classList.add('modal--open');
+  }
+}
+
+if (openHistory) openHistory.onclick = openHistoryFn;
+if (openHistoryFooter) openHistoryFooter.onclick = openHistoryFn;
+if (closeHistory && historyModal) {
+  closeHistory.onclick = () => historyModal.classList.remove('modal--open');
+}
+
+if (historyModal) {
+  historyModal.onclick = e => {
+    if (e.target === historyModal) historyModal.classList.remove('modal--open');
+  };
+}
+
+
+/* ===========================
+   ДАТА (ОГРАНИЧЕНИЯ)
+=========================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const dateInput = document.getElementById("date");
+  if (!dateInput) return;
+
+  const today = new Date();
+  const format = d => d.toISOString().split("T")[0];
+
+  const minDate = format(today);
+
+  const maxDateObj = new Date(today);
+  maxDateObj.setMonth(maxDateObj.getMonth() + 1);
+  const maxDate = format(maxDateObj);
+
+  dateInput.min = minDate;
+  dateInput.max = maxDate;
+
+  dateInput.addEventListener("input", () => {
+    if (dateInput.value.length >= 5) {
+      const year = dateInput.value.slice(0, 4);
+      const rest = dateInput.value.slice(4);
+      dateInput.value = year + rest;
+    }
+
+    if (dateInput.value < minDate) dateInput.value = minDate;
+    if (dateInput.value > maxDate) dateInput.value = maxDate;
+  });
+});
+
+
+/* ===========================
+   ЖЁСТКАЯ ВАЛИДАЦИЯ ВРЕМЕНИ
+=========================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const timeInputs = document.querySelectorAll('input[type="time"]');
+  if (!timeInputs.length) return;
+
+  timeInputs.forEach(timeInput => {
+    const fixTime = () => {
+      let v = timeInput.value;
+
+      if (!/^\d{1,2}:\d{1,2}$/.test(v)) return;
+
+      let [h, m] = v.split(":").map(Number);
+
+      if (h < 0) h = 0;
+      if (h > 23) h = 23;
+
+      if (m < 0) m = 0;
+      if (m > 59) m = 59;
+
+      timeInput.value =
+        String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+    };
+
+    timeInput.addEventListener("input", fixTime);
+    timeInput.addEventListener("blur", fixTime);
+    timeInput.addEventListener("change", fixTime);
+  });
+});
+
+
+/* ===========================
+   ВЫБОР ЯЗЫКА / ЛОКАЛИЗАЦИЯ
+=========================== */
+
+(function () {
+  const translations = {
+    ru: {
+      choose_lang: "Выбрать язык",
+      home: "Главная",
+      about: "О ресторане",
+      menu: "Меню",
+      booking: "Бронь",
+      profile: "Профиль",
+      contacts: "Контакты"
+    },
+    en: {
+      choose_lang: "Choose language",
+      home: "Home",
+      about: "About",
+      menu: "Menu",
+      booking: "Booking",
+      profile: "Profile",
+      contacts: "Contacts"
+    },
+    by: {
+      choose_lang: "Выбраць мову",
+      home: "Галоўная",
+      about: "Пра рэстаран",
+      menu: "Меню",
+      booking: "Бронь",
+      profile: "Профіль",
+      contacts: "Кантакты"
+    }
+  };
+
+  function applyLang(lang) {
+    if (!translations[lang]) return;
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n;
+      if (translations[lang][key]) {
+        el.textContent = translations[lang][key];
+      }
+    });
+
+    const toggle = document.getElementById("langToggle");
+    if (toggle && translations[lang].choose_lang) {
+      toggle.textContent = translations[lang].choose_lang;
+    }
+  }
+
+  function setLang(lang) {
+    if (!translations[lang]) return;
+    try {
+      localStorage.setItem("site-lang", lang);
+    } catch (e) {}
+    applyLang(lang);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("langToggle");
+    const list = document.getElementById("langList");
+
+    if (!toggle || !list) return;
+
+    let saved = "ru";
+    try {
+      saved = localStorage.getItem("site-lang") || "ru";
+    } catch (e) {}
+
+    applyLang(saved);
+
+    toggle.addEventListener("click", () => {
+      list.classList.toggle("open");
+    });
+
+    list.querySelectorAll(".lang-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const lang = item.dataset.lang;
+        setLang(lang);
+        list.classList.remove("open");
+      });
+    });
+
+    document.addEventListener("click", e => {
+      if (!list.contains(e.target) && e.target !== toggle) {
+        list.classList.remove("open");
+      }
+    });
+  });
+})();
+/* ===========================
+   ВЫБОР ЯЗЫКА / ЛОКАЛИЗАЦИЯ
+=========================== */
+
+(function () {
+  const translations = {
+    ru: {
+      choose_lang: "Выбрать язык",
+      home: "Главная",
+      about: "О ресторане",
+      menu: "Меню",
+      booking: "Бронь",
+      profile: "Профиль",
+      contacts: "Контакты"
+    },
+    en: {
+      choose_lang: "Choose language",
+      home: "Home",
+      about: "About",
+      menu: "Menu",
+      booking: "Booking",
+      profile: "Profile",
+      contacts: "Contacts"
+    },
+    by: {
+      choose_lang: "Выбраць мову",
+      home: "Галоўная",
+      about: "Пра рэстаран",
+      menu: "Меню",
+      booking: "Бронь",
+      profile: "Профіль",
+      contacts: "Кантакты"
+    }
+  };
+
+  function applyLang(lang) {
+    if (!translations[lang]) return;
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n;
+      if (translations[lang][key]) {
+        el.textContent = translations[lang][key];
+      }
+    });
+
+    const toggle = document.getElementById("langToggle");
+    if (toggle && translations[lang].choose_lang) {
+      toggle.textContent = translations[lang].choose_lang;
+    }
+  }
+
+  function setLang(lang) {
+    if (!translations[lang]) return;
+    localStorage.setItem("site-lang", lang);
+    applyLang(lang);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("langToggle");
+    const list = document.getElementById("langList");
+
+    if (!toggle || !list) return;
+
+    const saved = localStorage.getItem("site-lang") || "ru";
+    applyLang(saved);
+
+    toggle.addEventListener("click", () => {
+      list.classList.toggle("open");
+    });
+
+    list.querySelectorAll(".lang-item").forEach(item => {
+      item.addEventListener("click", () => {
+        setLang(item.dataset.lang);
+        list.classList.remove("open");
+      });
+    });
+
+    document.addEventListener("click", e => {
+      if (!list.contains(e.target) && e.target !== toggle) {
+        list.classList.remove("open");
+      }
+    });
+  });
+})();
