@@ -66,13 +66,14 @@ function updateCart() {
   let total = 0;
 
   cart.forEach((item, index) => {
-    total += item.price;
+    const priceNum = Number(item.price) || 0;
+    total += priceNum;
 
     const div = document.createElement('div');
     div.className = 'cart-row';
     div.innerHTML = `
       <span>${item.title}</span>
-      <span>${item.price} BYN</span>
+      <span>${priceNum} BYN</span>
       <button data-index="${index}" class="remove-item">✕</button>
     `;
     cartItems.appendChild(div);
@@ -98,8 +99,8 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
     const priceEl = item.querySelector('.menu-price');
     if (!titleEl || !priceEl) return;
 
-    const title = titleEl.textContent;
-    const price = Number(priceEl.textContent);
+    const title = titleEl.textContent.trim();
+    const price = Number(priceEl.textContent.replace(/\D/g, "")) || 0;
 
     cart.push({ title, price });
     saveCart();
@@ -268,6 +269,7 @@ const openBookingModal = document.getElementById('openBookingModal');
 const openBookingHero = document.getElementById('openBookingHero');
 const closeBooking = document.getElementById('closeBooking');
 const bookingForm = document.getElementById('booking-form');
+const clearBooking = document.getElementById('clearBooking');
 
 function applyValidation() {
   const nameInput = document.getElementById("name");
@@ -367,6 +369,12 @@ if (bookingModal) {
   };
 }
 
+if (clearBooking && bookingForm) {
+  clearBooking.onclick = () => {
+    bookingForm.reset();
+  };
+}
+
 if (bookingForm) {
   bookingForm.onsubmit = e => {
     e.preventDefault();
@@ -407,7 +415,8 @@ if (checkoutBtn) {
     if (commentField) {
       let orderText = "Заказ:\n";
       cart.forEach(item => {
-        orderText += `• ${item.title} — ${item.price} BYN\n`;
+        const priceNum = Number(item.price) || 0;
+        orderText += `• ${item.title} — ${priceNum} BYN\n`;
       });
 
       commentField.value = orderText;
