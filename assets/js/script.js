@@ -625,3 +625,87 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 })();
+/* ===========================
+   ВЫБОР ЯЗЫКА / ЛОКАЛИЗАЦИЯ
+=========================== */
+
+(function () {
+  const translations = {
+    ru: {
+      choose_lang: "Выбрать язык",
+      home: "Главная",
+      about: "О ресторане",
+      menu: "Меню",
+      booking: "Бронь",
+      profile: "Профиль",
+      contacts: "Контакты"
+    },
+    en: {
+      choose_lang: "Choose language",
+      home: "Home",
+      about: "About",
+      menu: "Menu",
+      booking: "Booking",
+      profile: "Profile",
+      contacts: "Contacts"
+    },
+    by: {
+      choose_lang: "Выбраць мову",
+      home: "Галоўная",
+      about: "Пра рэстаран",
+      menu: "Меню",
+      booking: "Бронь",
+      profile: "Профіль",
+      contacts: "Кантакты"
+    }
+  };
+
+  function applyLang(lang) {
+    if (!translations[lang]) return;
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n;
+      if (translations[lang][key]) {
+        el.textContent = translations[lang][key];
+      }
+    });
+
+    const toggle = document.getElementById("langToggle");
+    if (toggle && translations[lang].choose_lang) {
+      toggle.textContent = translations[lang].choose_lang;
+    }
+  }
+
+  function setLang(lang) {
+    if (!translations[lang]) return;
+    localStorage.setItem("site-lang", lang);
+    applyLang(lang);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("langToggle");
+    const list = document.getElementById("langList");
+
+    if (!toggle || !list) return;
+
+    const saved = localStorage.getItem("site-lang") || "ru";
+    applyLang(saved);
+
+    toggle.addEventListener("click", () => {
+      list.classList.toggle("open");
+    });
+
+    list.querySelectorAll(".lang-item").forEach(item => {
+      item.addEventListener("click", () => {
+        setLang(item.dataset.lang);
+        list.classList.remove("open");
+      });
+    });
+
+    document.addEventListener("click", e => {
+      if (!list.contains(e.target) && e.target !== toggle) {
+        list.classList.remove("open");
+      }
+    });
+  });
+})();
