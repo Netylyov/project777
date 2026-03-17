@@ -142,6 +142,7 @@ updateCart();
 let db = null;
 let auth = null;
 let provider = null;
+let currentUserId = "guest";
 
 if (window.firebase) {
   db = firebase.firestore();
@@ -241,11 +242,15 @@ if (googleLoginBtn && auth) {
 if (auth) {
   auth.onAuthStateChanged(user => {
     if (user) {
+      currentUserId = user.uid;
+
       if (logoutBtn) logoutBtn.style.display = 'block';
       if (user.photoURL && avatar) {
         avatar.src = user.photoURL;
         avatar.style.display = 'block';
       }
+    } else {
+      currentUserId = "guest";
     }
   });
 }
@@ -391,7 +396,7 @@ if (bookingForm) {
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
 
-    const userId = auth?.currentUser?.uid || "guest";
+    const userId = currentUserId;
 
     const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
 
@@ -469,12 +474,10 @@ const historyList = document.getElementById('historyList');
 function loadHistory() {
   if (!db || !historyList) return;
 
-  historyList.innerHTML = '';
-
-  const userId = auth?.currentUser?.uid || "guest";
+  historyList.innerHTML = '<p>Загружаем заказы...</p>';
 
   db.collection('orders')
-    .where("userId", "==", userId)
+    .where("userId", "==", currentUserId)
     .orderBy('timestamp', 'desc')
     .get()
     .then(snapshot => {
@@ -482,6 +485,8 @@ function loadHistory() {
         historyList.innerHTML = "<p>Заказов пока нет.</p>";
         return;
       }
+
+      historyList.innerHTML = '';
 
       snapshot.forEach(doc => {
         const order = doc.data();
@@ -499,14 +504,18 @@ function loadHistory() {
         `;
         historyList.appendChild(div);
       });
+    })
+    .catch(err => {
+      historyList.innerHTML = "<p>Ошибка загрузки истории.</p>";
+      console.error(err);
     });
 }
 
 function openHistoryFn() {
-  loadHistory();
-  if (historyModal) {
+  setTimeout(() => {
+    loadHistory();
     historyModal.classList.add('modal--open');
-  }
+  }, 300);
 }
 
 if (openHistory) openHistory.onclick = openHistoryFn;
@@ -576,11 +585,4 @@ document.addEventListener("DOMContentLoaded", () => {
       if (m > 59) m = 59;
 
       timeInput.value =
-        String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
-    };
-
-      timeInput.addEventListener("input", fixTime);
-    timeInput.addEventListener("blur", fixTime);
-    timeInput.addEventListener("change", fixTime);
-  });
-});
+        String(h).padStart(2, "0") + ":" + String(m).
