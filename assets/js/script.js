@@ -293,6 +293,11 @@ function applyValidation() {
   phoneInput.oninput = e => {
     let value = e.target.value.replace(/\D/g, "");
 
+    if (value === "3" || value === "37") {
+      e.target.value = value;
+      return;
+    }
+
     if (value.startsWith("375")) {
       const p1 = value.slice(3, 5);
       const p2 = value.slice(5, 8);
@@ -305,6 +310,7 @@ function applyValidation() {
         (p2 ? " " + p2 : "") +
         (p3 ? " " + p3 : "") +
         (p4 ? " " + p4 : "");
+
       return;
     }
 
@@ -320,22 +326,31 @@ function applyValidation() {
         (p2 ? " " + p2 : "") +
         (p3 ? " " + p3 : "") +
         (p4 ? " " + p4 : "");
+
       return;
     }
 
-    if (value !== "") e.target.value = "";
+    if (value !== "") {
+      e.target.value = "";
+    }
   };
 }
 
 function openBooking() {
+  if (!bookingModal) return;
+
   bookingModal.classList.add('modal--open');
   document.body.style.overflow = "hidden";
 
   const nameField = document.getElementById('name');
   const phoneField = document.getElementById('phone');
 
-  if (nameField && profileName) nameField.value = profileName.value || "";
-  if (phoneField && profilePhone) phoneField.value = profilePhone.value || "";
+  if (nameField && profileName) {
+    nameField.value = profileName.value || "";
+  }
+  if (phoneField && profilePhone) {
+    phoneField.value = profilePhone.value || "";
+  }
 
   applyValidation();
 }
@@ -343,7 +358,7 @@ function openBooking() {
 if (openBookingModal) openBookingModal.onclick = openBooking;
 if (openBookingHero) openBookingHero.onclick = openBooking;
 
-if (closeBooking) {
+if (closeBooking && bookingModal) {
   closeBooking.onclick = () => {
     bookingModal.classList.remove('modal--open');
     document.body.style.overflow = "";
@@ -359,9 +374,12 @@ if (bookingModal) {
   };
 }
 
-if (clearBooking) {
-  clearBooking.onclick = () => bookingForm.reset();
+if (clearBooking && bookingForm) {
+  clearBooking.onclick = () => {
+    bookingForm.reset();
+  };
 }
+
 
 /* ===========================
    ОТПРАВКА ЗАКАЗА + FIRESTORE + ОЧИСТКА КОРЗИНЫ
@@ -371,6 +389,11 @@ if (bookingForm) {
   bookingForm.addEventListener("submit", async e => {
     e.preventDefault();
 
+    if (!db) {
+      alert("Ошибка: база данных недоступна.");
+      return;
+    }
+
     const name = document.getElementById("name").value.trim();
     const phone = document.getElementById("phone").value.trim();
     const guests = document.getElementById("guests").value;
@@ -394,53 +417,6 @@ if (bookingForm) {
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    cart = [];
-    saveCart();
-    updateCart();
-
-    alert("Заявка отправлена! Мы свяжемся с вами.");
-
-    bookingModal.classList.remove("modal--open");
-    document.body.style.overflow = "";
-    bookingForm.reset();
-  });
-}
-
-
-
-/* ===========================
-   ОТПРАВКА ЗАКАЗА + FIRESTORE + ОЧИСТКА КОРЗИНЫ
-=========================== */
-
-if (bookingForm) {
-  bookingForm.onsubmit = async e => {
-    e.preventDefault();
-
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const guests = document.getElementById("guests").value;
-    const comment = document.getElementById("comment").value.trim();
-    const date = document.getElementById("date").value;
-    const time = document.getElementById("time").value;
-
-    const userId = currentUserId;
-
-    const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
-
-    await db.collection("orders").add({
-      userId,
-      name,
-      phone,
-      guests,
-      comment,
-      date,
-      time,
-      total,
-      items: cart,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    // Очищаем корзину
     cart = [];
     saveCart();
     updateCart();
@@ -450,7 +426,7 @@ if (bookingForm) {
     bookingModal.classList.remove('modal--open');
     document.body.style.overflow = "";
     bookingForm.reset();
-  };
+  });
 }
 
 
@@ -541,7 +517,9 @@ function loadHistory() {
 function openHistoryFn() {
   setTimeout(() => {
     loadHistory();
-    historyModal.classList.add('modal--open');
+    if (historyModal) {
+      historyModal.classList.add('modal--open');
+    }
   }, 300);
 }
 
@@ -612,4 +590,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (m > 59) m = 59;
 
       timeInput.value =
-        String(h).padStart(2, "0") + ":" + String(m).
+        String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+    };
+
+    timeInput.addEventListener("input", fixTime);
+    timeInput.addEventListener("blur", fixTime);
+    timeInput.addEventListener("change", fixTime);
+  });
+});
