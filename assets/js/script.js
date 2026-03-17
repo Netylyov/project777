@@ -375,16 +375,48 @@ if (clearBooking && bookingForm) {
   };
 }
 
+
+/* ===========================
+   ОТПРАВКА ЗАКАЗА + FIRESTORE + ОЧИСТКА КОРЗИНЫ
+=========================== */
+
 if (bookingForm) {
-  bookingForm.onsubmit = e => {
+  bookingForm.onsubmit = async e => {
     e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const guests = document.getElementById("guests").value;
+    const comment = document.getElementById("comment").value.trim();
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+
+    const userId = auth?.currentUser?.uid || "guest";
+
+    const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
+
+    await db.collection("orders").add({
+      userId,
+      name,
+      phone,
+      guests,
+      comment,
+      date,
+      time,
+      total,
+      items: cart,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Очищаем корзину
+    cart = [];
+    saveCart();
+    updateCart();
 
     alert('Заявка отправлена! Мы свяжемся с вами.');
 
-    if (bookingModal) {
-      bookingModal.classList.remove('modal--open');
-      document.body.style.overflow = "";
-    }
+    bookingModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
     bookingForm.reset();
   };
 }
@@ -426,7 +458,7 @@ if (checkoutBtn) {
 
 
 /* ===========================
-   ИСТОРИЯ ЗАКАЗОВ
+   ИСТОРИЯ ЗАКАЗОВ (ПЕРСОНАЛЬНАЯ)
 =========================== */
 const historyModal = document.getElementById('historyModal');
 const openHistory = document.getElementById('openHistory');
@@ -439,19 +471,30 @@ function loadHistory() {
 
   historyList.innerHTML = '';
 
+  const userId = auth?.currentUser?.uid || "guest";
+
   db.collection('orders')
+    .where("userId", "==", userId)
     .orderBy('timestamp', 'desc')
     .get()
     .then(snapshot => {
+      if (snapshot.empty) {
+        historyList.innerHTML = "<p>Заказов пока нет.</p>";
+        return;
+      }
+
       snapshot.forEach(doc => {
         const order = doc.data();
         const div = document.createElement('div');
         div.className = 'history-item';
         div.innerHTML = `
+          <div><b>Дата:</b> ${order.timestamp ? order.timestamp.toDate().toLocaleString() : '-'}</div>
+          <div><b>Сумма:</b> ${order.total} BYN</div>
           <div><b>Имя:</b> ${order.name}</div>
           <div><b>Телефон:</b> ${order.phone}</div>
-          <div><b>Сумма:</b> ${order.total} BYN</div>
-          <div><b>Дата:</b> ${order.timestamp ? order.timestamp.toDate().toLocaleString() : '-'}</div>
+          <div><b>Гостей:</b> ${order.guests}</div>
+          <div><b>Комментарий:</b> ${order.comment || '-'}</div>
+          <div><b>Позиции:</b><br>${order.items.map(i => `• ${i.title} — ${i.price} BYN`).join("<br>")}</div>
           <hr>
         `;
         historyList.appendChild(div);
@@ -536,7 +579,7 @@ document.addEventListener("DOMContentLoaded", () => {
         String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
     };
 
-    timeInput.addEventListener("input", fixTime);
+      timeInput.addEventListener("input", fixTime);
     timeInput.addEventListener("blur", fixTime);
     timeInput.addEventListener("change", fixTime);
   });
