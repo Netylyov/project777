@@ -598,10 +598,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===========================
-   АБСОЛЮТНЫЙ ФИКС КНОПКИ
+   ФИНАЛЬНЫЙ ФИКС: Firestore + корзина + история
 =========================== */
 
-(function forceBookingButton() {
+(function finalBookingFix() {
   const modal = document.getElementById("bookingModal");
   if (!modal) return;
 
@@ -612,10 +612,10 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     e.stopPropagation();
 
-    const name = modal.querySelector('input[id="name"]')?.value.trim();
-    const phone = modal.querySelector('input[id="phone"]')?.value.trim();
-    const date = modal.querySelector('input[id="date"]')?.value;
-    const time = modal.querySelector('input[id="time"]')?.value;
+    const name = modal.querySelector("#name")?.value.trim();
+    const phone = modal.querySelector("#phone")?.value.trim();
+    const date = modal.querySelector("#date")?.value;
+    const time = modal.querySelector("#time")?.value;
     const guests = modal.querySelector("#guests")?.value;
     const comment = modal.querySelector("#comment")?.value.trim();
 
@@ -624,6 +624,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    let orderSaved = false;
+
+    // --- 1. Сохраняем заказ в Firestore ---
     try {
       if (window.firebase && db) {
         const total = Array.isArray(cart)
@@ -642,14 +645,39 @@ document.addEventListener("DOMContentLoaded", () => {
           items: Array.isArray(cart) ? cart : [],
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        orderSaved = true;
       }
     } catch (err) {
       console.warn("Firestore error:", err);
     }
 
-    alert("Заявка отправлена!");
+    // --- 2. Очищаем корзину ---
+    try {
+      cart = [];
+      localStorage.setItem("cart", JSON.stringify(cart));
+      if (typeof updateCart === "function") updateCart();
+    } catch (err) {
+      console.warn("Cart clear error:", err);
+    }
 
+    // --- 3. Показываем уведомление ---
+    try {
+      if (typeof showToast === "function") {
+        showToast(orderSaved ? "Заявка отправлена!" : "Заявка отправлена (без сохранения в БД)");
+      } else {
+        alert("Заявка отправлена!");
+      }
+    } catch {
+      alert("Заявка отправлена!");
+    }
+
+    // --- 4. Закрываем модалку ---
     modal.classList.remove("modal--open");
     document.body.style.overflow = "";
+
+    // --- 5. Очищаем форму ---
+    const form = document.getElementById("booking-form");
+    if (form) form.reset();
   });
 })();
