@@ -277,9 +277,8 @@ const bookingForm = document.getElementById('booking-form');
 const clearBooking = document.getElementById('clearBooking');
 
 function applyValidation() {
-  // Берём поля ИМЕННО из модалки бронирования
-  const nameInput = bookingModal ? bookingModal.querySelector("#name") : null;
-  const phoneInput = bookingModal ? bookingModal.querySelector("#phone") : null;
+  const nameInput = document.getElementById("name");
+  const phoneInput = document.getElementById("phone");
 
   if (!nameInput || !phoneInput) return;
 
@@ -343,8 +342,8 @@ function openBooking() {
   bookingModal.classList.add('modal--open');
   document.body.style.overflow = "hidden";
 
-  const nameField = bookingModal.querySelector('#name');
-  const phoneField = bookingModal.querySelector('#phone');
+  const nameField = document.getElementById('name');
+  const phoneField = document.getElementById('phone');
 
   if (nameField && profileName) {
     nameField.value = profileName.value || "";
@@ -380,8 +379,6 @@ if (clearBooking && bookingForm) {
     bookingForm.reset();
   };
 }
-
-
 /* ===========================
    ОТПРАВКА ЗАКАЗА + FIRESTORE + ОЧИСТКА КОРЗИНЫ
 =========================== */
@@ -540,7 +537,7 @@ if (historyModal) {
 /* ===========================
    ДАТА (ОГРАНИЧЕНИЯ)
 =========================== */
-(function () {
+document.addEventListener("DOMContentLoaded", () => {
   const dateInput = document.getElementById("date");
   if (!dateInput) return;
 
@@ -566,13 +563,13 @@ if (historyModal) {
     if (dateInput.value < minDate) dateInput.value = minDate;
     if (dateInput.value > maxDate) dateInput.value = maxDate;
   });
-})();
+});
 
 
 /* ===========================
    ЖЁСТКАЯ ВАЛИДАЦИЯ ВРЕМЕНИ
 =========================== */
-(function () {
+document.addEventListener("DOMContentLoaded", () => {
   const timeInputs = document.querySelectorAll('input[type="time"]');
   if (!timeInputs.length) return;
 
@@ -597,5 +594,62 @@ if (historyModal) {
     timeInput.addEventListener("input", fixTime);
     timeInput.addEventListener("blur", fixTime);
     timeInput.addEventListener("change", fixTime);
+  });
+});
+
+/* ===========================
+   ФИКС ОТПРАВКИ ЗАЯВКИ
+   (вставить в самый конец script.js)
+=========================== */
+
+(function fixBookingSubmit() {
+  const modal = document.getElementById("bookingModal");
+  const form = document.getElementById("booking-form");
+  if (!modal || !form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = modal.querySelector("#name")?.value.trim();
+    const phone = modal.querySelector("#phone")?.value.trim();
+    const guests = modal.querySelector("#guests")?.value;
+    const comment = modal.querySelector("#comment")?.value.trim();
+    const date = modal.querySelector("#date")?.value;
+    const time = modal.querySelector("#time")?.value;
+
+    if (!name || !phone || !date || !time) {
+      alert("Пожалуйста, заполните все обязательные поля.");
+      return;
+    }
+
+    if (!db) {
+      alert("Ошибка: база данных недоступна.");
+      return;
+    }
+
+    const total = cart.reduce((s, i) => s + Number(i.price), 0);
+
+    await db.collection("orders").add({
+      userId: currentUserId,
+      name,
+      phone,
+      guests,
+      comment,
+      date,
+      time,
+      total,
+      items: cart,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    cart = [];
+    saveCart();
+    updateCart();
+
+    alert("Заявка отправлена! Мы свяжемся с вами.");
+
+    modal.classList.remove("modal--open");
+    document.body.style.overflow = "";
+    form.reset();
   });
 })();
