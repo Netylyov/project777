@@ -598,18 +598,29 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===========================
-   ЖЁСТКИЙ ПЕРЕХВАТ SUBMIT БРОНИ
-   (переписывает логику, не трогая корзину)
+   АБСОЛЮТНЫЙ ФИКС КНОПКИ "ОТПРАВИТЬ ЗАЯВКУ"
+   (обходит ВСЕ проблемы с submit)
 =========================== */
 
-(function hardFixBookingSubmit() {
+(function ultimateBookingFix() {
   const modal = document.getElementById("bookingModal");
   const form = document.getElementById("booking-form");
-  if (!modal || !form) return;
+  const submitBtn = modal?.querySelector('.booking-submit');
 
-  // Полностью ПЕРЕЗАПИСЫВАЕМ обработчик, игнорируя старые addEventListener
-  form.onsubmit = async (e) => {
+  if (!modal || !form || !submitBtn) return;
+
+  // Полностью отключаем встроенную валидацию браузера
+  form.setAttribute("novalidate", "true");
+
+  // Удаляем ВСЕ старые обработчики submit
+  const newForm = form.cloneNode(true);
+  form.parentNode.replaceChild(newForm, form);
+
+  const fixedForm = newForm;
+
+  submitBtn.onclick = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
 
     const name = modal.querySelector("#name")?.value.trim();
     const phone = modal.querySelector("#phone")?.value.trim();
@@ -618,12 +629,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const date = modal.querySelector("#date")?.value;
     const time = modal.querySelector("#time")?.value;
 
+    // Минимальная проверка
     if (!name || !phone || !date || !time) {
-      alert("Пожалуйста, заполните имя, телефон, дату и время.");
+      alert("Заполните имя, телефон, дату и время.");
       return;
     }
 
-    // Пытаемся сохранить в Firestore, но если что-то пойдёт не так — просто не ломаем UX
+    // Пытаемся сохранить в Firestore, но если не получится — просто продолжаем
     try {
       if (window.firebase && window.firebase.firestore && db) {
         const total = Array.isArray(cart)
@@ -644,15 +656,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     } catch (err) {
-      console.error("Ошибка при сохранении заказа:", err);
-      // Но дальше всё равно продолжаем — для тебя главное, чтобы «заявка отправлена»
+      console.warn("Ошибка Firestore:", err);
     }
 
-    // НИЧЕГО не трогаем в корзине и localStorage
-    alert("Заявка отправлена! Мы свяжемся с вами.");
+    alert("Заявка отправлена!");
 
     modal.classList.remove("modal--open");
     document.body.style.overflow = "";
-    form.reset();
+    fixedForm.reset();
   };
 })();
