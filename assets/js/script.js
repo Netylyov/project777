@@ -23,9 +23,7 @@ filterButtons.forEach(btn => {
     const category = btn.dataset.filter;
 
     menuItems.forEach(item => {
-      const match =
-        category === 'all' || item.dataset.category === category;
-
+      const match = category === 'all' || item.dataset.category === category;
       item.style.display = match ? '' : 'none';
     });
   };
@@ -49,10 +47,7 @@ function showToast(text) {
   if (!toast) return;
   toast.textContent = text;
   toast.classList.add('show');
-
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 1500);
+  setTimeout(() => toast.classList.remove('show'), 1500);
 }
 
 function saveCart() {
@@ -105,7 +100,6 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
     cart.push({ title, price });
     saveCart();
     updateCart();
-
     showToast(`«${title}» добавлено в корзину`);
   };
 });
@@ -169,7 +163,7 @@ function loadProfile() {
 }
 loadProfile();
 
-// Жёсткая валидация профиля
+// Валидация имени в профиле
 if (profileName) {
   profileName.addEventListener("input", () => {
     profileName.value = profileName.value
@@ -178,6 +172,7 @@ if (profileName) {
   });
 }
 
+// Валидация телефона в профиле
 if (profilePhone) {
   profilePhone.addEventListener("input", () => {
     let v = profilePhone.value.replace(/\D/g, "");
@@ -215,7 +210,7 @@ if (saveProfile) {
       phone: profilePhone ? profilePhone.value : ""
     };
     localStorage.setItem('profile', JSON.stringify(profile));
-    alert('Профиль сохранён');
+    showToast('Профиль сохранён');
   };
 }
 
@@ -276,7 +271,7 @@ const closeBooking = document.getElementById('closeBooking');
 const bookingForm = document.getElementById('booking-form');
 const clearBooking = document.getElementById('clearBooking');
 
-function applyValidation() {
+function applyBookingValidation() {
   if (!bookingModal) return;
 
   const nameInput = bookingModal.querySelector("#name");
@@ -354,7 +349,7 @@ function openBooking() {
     phoneField.value = profilePhone.value || "";
   }
 
-  applyValidation();
+  applyBookingValidation();
 }
 
 if (openBookingModal) openBookingModal.onclick = openBooking;
@@ -403,6 +398,11 @@ if (bookingForm && bookingModal) {
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
 
+    if (!name || !phone || !date || !time) {
+      showToast("Заполните обязательные поля");
+      return;
+    }
+
     const userId = currentUserId;
     const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
 
@@ -423,7 +423,7 @@ if (bookingForm && bookingModal) {
     saveCart();
     updateCart();
 
-    alert('Заявка отправлена! Мы свяжемся с вами.');
+    showToast('Заявка отправлена! Мы свяжемся с вами.');
 
     bookingModal.classList.remove('modal--open');
     document.body.style.overflow = "";
