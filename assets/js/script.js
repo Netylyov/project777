@@ -277,8 +277,9 @@ const bookingForm = document.getElementById('booking-form');
 const clearBooking = document.getElementById('clearBooking');
 
 function applyValidation() {
-  const nameInput = document.getElementById("name");
-  const phoneInput = document.getElementById("phone");
+  // Берём поля ИМЕННО из модалки бронирования
+  const nameInput = bookingModal ? bookingModal.querySelector("#name") : null;
+  const phoneInput = bookingModal ? bookingModal.querySelector("#phone") : null;
 
   if (!nameInput || !phoneInput) return;
 
@@ -342,8 +343,8 @@ function openBooking() {
   bookingModal.classList.add('modal--open');
   document.body.style.overflow = "hidden";
 
-  const nameField = document.getElementById('name');
-  const phoneField = document.getElementById('phone');
+  const nameField = bookingModal.querySelector('#name');
+  const phoneField = bookingModal.querySelector('#phone');
 
   if (nameField && profileName) {
     nameField.value = profileName.value || "";
@@ -379,6 +380,8 @@ if (clearBooking && bookingForm) {
     bookingForm.reset();
   };
 }
+
+
 /* ===========================
    ОТПРАВКА ЗАКАЗА + FIRESTORE + ОЧИСТКА КОРЗИНЫ
 =========================== */
@@ -537,7 +540,7 @@ if (historyModal) {
 /* ===========================
    ДАТА (ОГРАНИЧЕНИЯ)
 =========================== */
-document.addEventListener("DOMContentLoaded", () => {
+(function () {
   const dateInput = document.getElementById("date");
   if (!dateInput) return;
 
@@ -563,13 +566,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dateInput.value < minDate) dateInput.value = minDate;
     if (dateInput.value > maxDate) dateInput.value = maxDate;
   });
-});
+})();
 
 
 /* ===========================
    ЖЁСТКАЯ ВАЛИДАЦИЯ ВРЕМЕНИ
 =========================== */
-document.addEventListener("DOMContentLoaded", () => {
+(function () {
   const timeInputs = document.querySelectorAll('input[type="time"]');
   if (!timeInputs.length) return;
 
@@ -595,4 +598,4 @@ document.addEventListener("DOMContentLoaded", () => {
     timeInput.addEventListener("blur", fixTime);
     timeInput.addEventListener("change", fixTime);
   });
-});
+})();
