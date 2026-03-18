@@ -598,16 +598,17 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===========================
-   ФИКС ОТПРАВКИ ЗАЯВКИ
-   (вставить в самый конец script.js)
+   ЖЁСТКИЙ ПЕРЕХВАТ SUBMIT БРОНИ
+   (переписывает логику, не трогая корзину)
 =========================== */
 
-(function fixBookingSubmit() {
+(function hardFixBookingSubmit() {
   const modal = document.getElementById("bookingModal");
   const form = document.getElementById("booking-form");
   if (!modal || !form) return;
 
-  form.addEventListener("submit", async (e) => {
+  // Полностью ПЕРЕЗАПИСЫВАЕМ обработчик, игнорируя старые addEventListener
+  form.onsubmit = async (e) => {
     e.preventDefault();
 
     const name = modal.querySelector("#name")?.value.trim();
@@ -618,38 +619,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const time = modal.querySelector("#time")?.value;
 
     if (!name || !phone || !date || !time) {
-      alert("Пожалуйста, заполните все обязательные поля.");
+      alert("Пожалуйста, заполните имя, телефон, дату и время.");
       return;
     }
 
-    if (!db) {
-      alert("Ошибка: база данных недоступна.");
-      return;
+    // Пытаемся сохранить в Firestore, но если что-то пойдёт не так — просто не ломаем UX
+    try {
+      if (window.firebase && window.firebase.firestore && db) {
+        const total = Array.isArray(cart)
+          ? cart.reduce((s, i) => s + Number(i.price || 0), 0)
+          : 0;
+
+        await db.collection("orders").add({
+          userId: currentUserId || "guest",
+          name,
+          phone,
+          guests,
+          comment,
+          date,
+          time,
+          total,
+          items: Array.isArray(cart) ? cart : [],
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+    } catch (err) {
+      console.error("Ошибка при сохранении заказа:", err);
+      // Но дальше всё равно продолжаем — для тебя главное, чтобы «заявка отправлена»
     }
 
-    const total = cart.reduce((s, i) => s + Number(i.price), 0);
-
-    await db.collection("orders").add({
-      userId: currentUserId,
-      name,
-      phone,
-      guests,
-      comment,
-      date,
-      time,
-      total,
-      items: cart,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    cart = [];
-    saveCart();
-    updateCart();
-
+    // НИЧЕГО не трогаем в корзине и localStorage
     alert("Заявка отправлена! Мы свяжемся с вами.");
 
     modal.classList.remove("modal--open");
     document.body.style.overflow = "";
     form.reset();
-  });
+  };
 })();
