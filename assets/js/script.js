@@ -598,46 +598,34 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===========================
-   АБСОЛЮТНЫЙ ФИКС КНОПКИ "ОТПРАВИТЬ ЗАЯВКУ"
-   (обходит ВСЕ проблемы с submit)
+   АБСОЛЮТНЫЙ ФИКС КНОПКИ
 =========================== */
 
-(function ultimateBookingFix() {
+(function forceBookingButton() {
   const modal = document.getElementById("bookingModal");
-  const form = document.getElementById("booking-form");
-  const submitBtn = modal?.querySelector('.booking-submit');
+  if (!modal) return;
 
-  if (!modal || !form || !submitBtn) return;
+  const btn = modal.querySelector(".booking-submit");
+  if (!btn) return;
 
-  // Полностью отключаем встроенную валидацию браузера
-  form.setAttribute("novalidate", "true");
-
-  // Удаляем ВСЕ старые обработчики submit
-  const newForm = form.cloneNode(true);
-  form.parentNode.replaceChild(newForm, form);
-
-  const fixedForm = newForm;
-
-  submitBtn.onclick = async (e) => {
+  btn.addEventListener("click", async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const name = modal.querySelector("#name")?.value.trim();
-    const phone = modal.querySelector("#phone")?.value.trim();
+    const name = modal.querySelector('input[id="name"]')?.value.trim();
+    const phone = modal.querySelector('input[id="phone"]')?.value.trim();
+    const date = modal.querySelector('input[id="date"]')?.value;
+    const time = modal.querySelector('input[id="time"]')?.value;
     const guests = modal.querySelector("#guests")?.value;
     const comment = modal.querySelector("#comment")?.value.trim();
-    const date = modal.querySelector("#date")?.value;
-    const time = modal.querySelector("#time")?.value;
 
-    // Минимальная проверка
     if (!name || !phone || !date || !time) {
       alert("Заполните имя, телефон, дату и время.");
       return;
     }
 
-    // Пытаемся сохранить в Firestore, но если не получится — просто продолжаем
     try {
-      if (window.firebase && window.firebase.firestore && db) {
+      if (window.firebase && db) {
         const total = Array.isArray(cart)
           ? cart.reduce((s, i) => s + Number(i.price || 0), 0)
           : 0;
@@ -656,13 +644,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     } catch (err) {
-      console.warn("Ошибка Firestore:", err);
+      console.warn("Firestore error:", err);
     }
 
     alert("Заявка отправлена!");
 
     modal.classList.remove("modal--open");
     document.body.style.overflow = "";
-    fixedForm.reset();
-  };
+  });
 })();
