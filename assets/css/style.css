@@ -1409,8 +1409,3 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .lang-item:hover {
   background: rgba(255,255,255,0.1);
 }
-body::before,
-.modal::before,
-.booking-sheet::before {
-    pointer-events: none !important;
-}
