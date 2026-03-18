@@ -51,11 +51,62 @@
         DRUZYA — камерный ресторан и lounge для вечеров с друзьями, ужинов вдвоём и небольших праздников.
       </p>
 
-      <div class="hero-buttons">
-        <button class="btn btn-primary" id="openBookingHero">Забронировать столик</button>
-        <button class="btn btn-outline" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
-          Посмотреть меню
-        </button>
+     <div id="bookingModal" class="modal">
+    <div class="modal__content booking">
+        <h2>Бронирование столика</h2>
+
+        <form id="booking-form" class="booking__form">
+
+            <div class="booking__field">
+                <label for="name">Имя</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="booking__field">
+                <label for="phone">Телефон</label>
+                <input type="tel" id="phone" required>
+            </div>
+
+            <div class="booking__field">
+                <label for="date">Дата</label>
+                <input type="date" id="date" required>
+            </div>
+
+            <div class="booking__field">
+                <label for="time">Время</label>
+                <input type="time" id="time" required>
+            </div>
+
+            <div class="booking__field">
+                <label for="guests">Гостей</label>
+                <select id="guests" required>
+                    <option value="1">1 гость</option>
+                    <option value="2">2 гостя</option>
+                    <option value="3">3 гостя</option>
+                    <option value="4">4 гостя</option>
+                    <option value="5">5 гостей</option>
+                </select>
+            </div>
+
+            <div class="booking__field">
+                <label for="comment">Комментарий</label>
+                <textarea id="comment"></textarea>
+            </div>
+
+            <div class="booking__buttons">
+                <button type="submit" class="btn btn--primary">Отправить заявку</button>
+                <button type="button" id="clearBooking" class="btn btn--secondary">Очистить</button>
+            </div>
+
+            <p class="booking__note">
+                Нажимая «Отправить заявку», вы соглашаетесь на обработку данных для связи по бронированию.
+            </p>
+
+        </form>
+
+    </div>
+</div>
+
       </div>
 
       <div class="hero-meta">
