@@ -377,20 +377,11 @@
 
 </main>
 
-<!-- BOOKING MODAL -->
-<div class="modal booking-sheet" id="bookingModal">
+<!-- BOOKING MODAL (ЧИСТАЯ РАБОЧАЯ ВЕРСИЯ) -->
+<div class="booking-sheet" id="bookingModal">
   <div class="booking-sheet__window">
 
-    <button
-      id="closeBooking"
-      class="booking-sheet__close"
-      style="
-        position:absolute;
-        top:12px;
-        left:30px;
-        z-index:999999;
-      "
-    >✕</button>
+    <button id="closeBooking" class="booking-sheet__close">✕</button>
 
     <div class="booking-sheet__content">
 
@@ -400,15 +391,17 @@
       </div>
 
       <form id="booking-form">
+
         <div class="booking-grid">
+
           <div class="field">
             <label for="name">Имя</label>
-            <input type="text" id="name" placeholder="Как к вам обращаться" required>
+            <input type="text" id="name" required>
           </div>
 
           <div class="field">
             <label for="phone">Телефон</label>
-            <input type="text" id="phone" placeholder="+375 XX XXX XX XX или +7 XXX XXX XX XX" maxlength="19">
+            <input type="text" id="phone" maxlength="19" required>
           </div>
 
           <div class="field">
@@ -430,7 +423,7 @@
               <option value="4">4 гостя</option>
               <option value="5">5 гостей</option>
               <option value="6">6 гостей</option>
-                            <option value="7">7 гостей</option>
+              <option value="7">7 гостей</option>
               <option value="8">8 гостей</option>
               <option value="9">9 гостей</option>
               <option value="10">10 гостей</option>
@@ -439,24 +432,22 @@
 
           <div class="field field-full">
             <label for="comment">Комментарий</label>
-            <textarea id="comment" placeholder="Пожелания по столу, событие, повод (необязательно)"></textarea>
+            <textarea id="comment"></textarea>
           </div>
+
         </div>
 
-        <div class="booking-sheet" id="bookingModal">
-
+        <div class="booking-footer">
           <button type="submit" class="btn booking-submit">Отправить заявку</button>
           <button type="button" id="clearBooking" class="btn btn-outline booking-clear">Очистить</button>
         </div>
 
-        <div class="booking-note">
-          Нажимая «Отправить заявку», вы соглашаетесь на обработку данных для связи по бронированию.
-        </div>
       </form>
 
     </div>
   </div>
 </div>
+
 
 <!-- CART MODAL -->
 <div class="cart-modal" id="cartModal">
