@@ -34,11 +34,13 @@ function showToast(text) {
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.9);
       color: white;
       padding: 12px 24px;
       border-radius: 8px;
-      z-index: 9999;
+      z-index: 10000;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       display: none;
     `;
     document.body.appendChild(newToast);
@@ -47,10 +49,8 @@ function showToast(text) {
   }
   toast.textContent = text;
   toast.style.display = 'block';
-  toast.classList.add('show');
   setTimeout(() => {
     toast.style.display = 'none';
-    toast.classList.remove('show');
   }, 2000);
 }
 
@@ -65,6 +65,195 @@ function closeAllModals() {
     modal.style.display = 'none';
   });
   document.body.style.overflow = "";
+}
+
+/* ===========================
+   СТИЛИ ДЛЯ TOAST И МОДАЛОК
+=========================== */
+function addGlobalStyles() {
+  if (document.getElementById('global-styles')) return;
+  
+  const styles = document.createElement('style');
+  styles.id = 'global-styles';
+  styles.textContent = `
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 10000;
+      display: none;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 20px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal--open {
+      display: flex !important;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    .close:hover {
+      color: #000;
+    }
+    
+    .cart-count {
+      background: #e44d2e;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      min-width: 18px;
+      text-align: center;
+    }
+    
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    
+    .remove-item {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0 5px;
+    }
+    
+    .remove-item:hover {
+      color: #e44d2e;
+    }
+    
+    .empty-cart {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+    }
+    
+    .history-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 10px;
+    }
+    
+    .history-item:last-child {
+      border-bottom: none;
+    }
+    
+    .history-date {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .history-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .history-booking {
+      color: #e44d2e;
+      margin-bottom: 5px;
+    }
+    
+    .history-items {
+      margin: 10px 0;
+      padding-left: 10px;
+      color: #555;
+    }
+    
+    .history-total {
+      font-weight: bold;
+      color: #333;
+      margin-top: 5px;
+    }
+    
+    .history-comment {
+      color: #666;
+      font-style: italic;
+      margin-top: 5px;
+      padding: 5px;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+    
+    .no-orders {
+      text-align: center;
+      color: #999;
+      padding: 30px;
+    }
+  `;
+  document.head.appendChild(styles);
 }
 
 /* ===========================
@@ -100,9 +289,7 @@ function initMenuFilter() {
 
   filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      // Убираем активный класс у всех
       filterButtons.forEach(b => b.classList.remove('active'));
-      // Добавляем текущему
       btn.classList.add('active');
 
       const category = btn.dataset.filter || btn.dataset.category;
@@ -399,9 +586,11 @@ function initProfile() {
 }
 
 /* ===========================
-   БРОНИРОВАНИЕ
+   БРОНИРОВАНИЕ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
 =========================== */
 function initBooking() {
+  console.log('📅 Инициализация бронирования...');
+  
   const bookingModal = document.getElementById('bookingModal');
   const openBookingModal = document.getElementById('openBookingModal');
   const openBookingHero = document.getElementById('openBookingHero');
@@ -409,7 +598,10 @@ function initBooking() {
   const bookingForm = document.getElementById('booking-form');
   const clearBooking = document.getElementById('clearBooking');
 
-  if (!bookingModal || !bookingForm) return;
+  if (!bookingModal || !bookingForm) {
+    console.error('❌ Элементы бронирования не найдены');
+    return;
+  }
 
   // Поля формы
   const nameInput = document.getElementById('name');
@@ -418,6 +610,8 @@ function initBooking() {
   const timeInput = document.getElementById('time');
   const guestsInput = document.getElementById('guests');
   const commentInput = document.getElementById('comment');
+
+  console.log('✅ Поля формы найдены');
 
   // Валидация полей
   if (nameInput) {
@@ -474,6 +668,7 @@ function initBooking() {
 
   // Открытие модалки
   function openBooking() {
+    console.log('📂 Открытие формы бронирования');
     bookingModal.style.display = 'flex';
     bookingModal.classList.add('modal--open');
     document.body.style.overflow = "hidden";
@@ -483,12 +678,19 @@ function initBooking() {
     if (phoneInput && profile.phone) phoneInput.value = profile.phone;
   }
 
-  if (openBookingModal) openBookingModal.addEventListener('click', openBooking);
-  if (openBookingHero) openBookingHero.addEventListener('click', openBooking);
+  if (openBookingModal) {
+    openBookingModal.addEventListener('click', openBooking);
+    console.log('✅ Обработчик открытия добавлен для кнопки в шапке');
+  }
+  if (openBookingHero) {
+    openBookingHero.addEventListener('click', openBooking);
+    console.log('✅ Обработчик открытия добавлен для hero-кнопки');
+  }
 
   // Закрытие
   if (closeBooking) {
     closeBooking.addEventListener('click', () => {
+      console.log('📂 Закрытие формы бронирования');
       bookingModal.style.display = 'none';
       bookingModal.classList.remove('modal--open');
       document.body.style.overflow = "";
@@ -507,6 +709,7 @@ function initBooking() {
   if (clearBooking) {
     clearBooking.addEventListener('click', (e) => {
       e.preventDefault();
+      console.log('🧹 Очистка формы');
       bookingForm.reset();
       if (commentInput) commentInput.value = '';
       if (dateInput) {
@@ -515,12 +718,16 @@ function initBooking() {
         dateInput.value = tomorrow.toISOString().split('T')[0];
       }
       if (timeInput) timeInput.value = '18:00';
+      showToast('Форма очищена');
     });
   }
 
-  // ОТПРАВКА
+  // ========== ИСПРАВЛЕННАЯ ОТПРАВКА ==========
   bookingForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('=== НАЧАЛО ОТПРАВКИ ===');
 
     const name = nameInput?.value.trim();
     const phone = phoneInput?.value.trim();
@@ -529,21 +736,23 @@ function initBooking() {
     const date = dateInput?.value;
     const time = timeInput?.value;
 
+    console.log('📋 Данные формы:', { name, phone, guests, comment, date, time });
+
     // Валидация
     if (!name) {
-      showToast('Введите имя');
+      showToast('❌ Введите имя');
       return;
     }
     if (!phone) {
-      showToast('Введите телефон');
+      showToast('❌ Введите телефон');
       return;
     }
     if (!date) {
-      showToast('Выберите дату');
+      showToast('❌ Выберите дату');
       return;
     }
     if (!time) {
-      showToast('Выберите время');
+      showToast('❌ Выберите время');
       return;
     }
 
@@ -555,9 +764,12 @@ function initBooking() {
     }
 
     try {
-      // Получаем корзину
+      // Получаем корзину ДО очистки
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+
+      console.log('🛒 Товары в корзине:', cart);
+      console.log('💰 Общая сумма:', total);
 
       // Данные заказа
       const orderData = {
@@ -575,11 +787,12 @@ function initBooking() {
         timestamp: new Date().toISOString()
       };
 
-      // Сохраняем в localStorage
+      // СОХРАНЯЕМ В ИСТОРИЮ (localStorage)
       const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
       history.unshift(orderData);
       if (history.length > 30) history.pop();
       localStorage.setItem('orderHistory', JSON.stringify(history));
+      console.log('✅ Заказ сохранен в истории');
 
       // Сохраняем в Firebase если есть
       if (db) {
@@ -588,48 +801,103 @@ function initBooking() {
             ...orderData,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
           });
+          console.log('✅ Заказ сохранен в Firebase');
         } catch (e) {
-          console.log('Firebase недоступен, сохранено только локально');
+          console.log('⚠️ Firebase недоступен, сохранено только локально');
         }
       }
 
-      // Очищаем корзину
+      // 1. 🧹 ОЧИЩАЕМ КОРЗИНУ
       localStorage.setItem('cart', '[]');
+      console.log('✅ Корзина очищена');
       
-      // Обновляем счетчик
-      document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
-        if (el) el.textContent = '0';
+      // 2. 🔄 ОБНОВЛЯЕМ ОТОБРАЖЕНИЕ КОРЗИНЫ
+      // Обновляем счетчик на всех элементах
+      document.querySelectorAll('.cart-count, #cartCount, [data-cart-count]').forEach(el => {
+        if (el) {
+          el.textContent = '0';
+        }
       });
+      
+      // Обновляем общую сумму если есть
+      const cartTotal = document.getElementById('cartTotal');
+      if (cartTotal) cartTotal.textContent = '0';
+      
+      // Очищаем список товаров в корзине если он открыт
+      const cartItems = document.getElementById('cartItems');
+      if (cartItems) {
+        cartItems.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
+      }
 
-      // Уведомление
+      // 3. ✅ ПОКАЗЫВАЕМ УВЕДОМЛЕНИЕ
       showToast('✅ Заявка успешно отправлена!');
+      console.log('✅ Уведомление показано');
 
-      // Закрываем модалку
+      // 4. 🚪 ЗАКРЫВАЕМ ФОРМУ БРОНИРОВАНИЯ
       bookingModal.style.display = 'none';
       bookingModal.classList.remove('modal--open');
       document.body.style.overflow = "";
+      console.log('✅ Форма бронирования закрыта');
 
-      // Очищаем форму
+      // 5. 🧹 ОЧИЩАЕМ ПОЛЯ ФОРМЫ
       bookingForm.reset();
       if (commentInput) commentInput.value = '';
+      
+      // Восстанавливаем дату по умолчанию
       if (dateInput) {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         dateInput.value = tomorrow.toISOString().split('T')[0];
       }
-      if (timeInput) timeInput.value = '18:00';
+      
+      // Восстанавливаем время по умолчанию
+      if (timeInput) {
+        timeInput.value = '18:00';
+      }
+      
+      // Восстанавливаем количество гостей
+      if (guestsInput) {
+        guestsInput.value = '2';
+      }
+
+      console.log('✅ Форма очищена');
+      console.log('=== ОТПРАВКА ЗАВЕРШЕНА УСПЕШНО ===');
+
+      // Принудительно обновляем корзину через небольшую задержку
+      setTimeout(() => {
+        // Проверяем что корзина действительно пуста
+        const checkCart = JSON.parse(localStorage.getItem('cart') || '[]');
+        console.log('🔍 Проверка корзины после очистки:', checkCart);
+        
+        // Если вдруг не очистилось - очищаем еще раз
+        if (checkCart.length > 0) {
+          console.warn('⚠️ Корзина не очистилась, пробуем снова');
+          localStorage.setItem('cart', '[]');
+        }
+      }, 100);
 
     } catch (error) {
-      console.error('Ошибка:', error);
-      showToast('❌ Ошибка при отправке');
-    } finally {
-      // Разблокируем кнопку
+      console.error('❌ ОШИБКА ПРИ ОТПРАВКЕ:', error);
+      showToast('❌ Ошибка при отправке заявки');
+      
+      // Разблокируем кнопку в случае ошибки
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Отправить заявку';
       }
+    } finally {
+      // Разблокируем кнопку (на всякий случай)
+      setTimeout(() => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Отправить заявку';
+        }
+      }, 500);
     }
   });
+  // ========== КОНЕЦ ИСПРАВЛЕННОЙ ОТПРАВКИ ==========
+  
+  console.log('✅ Бронирование полностью инициализировано');
 }
 
 /* ===========================
@@ -694,65 +962,24 @@ function initHistory() {
 }
 
 /* ===========================
-   СТИЛИ ДЛЯ TOAST
+   ЗАКРЫТИЕ ПО ESC
 =========================== */
-function addToastStyles() {
-  if (document.getElementById('toast-styles')) return;
-  
-  const styles = document.createElement('style');
-  styles.id = 'toast-styles';
-  styles.textContent = `
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.9);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      z-index: 10000;
-      display: none;
-      font-size: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 9999;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal--open {
-      display: flex;
-    }
-    .cart-count {
-      background: #e44d2e;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 6px;
-      font-size: 12px;
-      position: absolute;
-      top: -5px;
-      right: -5px;
-    }
-  `;
-  document.head.appendChild(styles);
-}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeAllModals();
+  }
+});
 
 /* ===========================
-   ЗАПУСК
+   ЗАПУСК ПРИ ЗАГРУЗКЕ
 =========================== */
 document.addEventListener('DOMContentLoaded', () => {
-  // Добавляем стили
-  addToastStyles();
+  console.log('🚀 Запуск инициализации сайта...');
   
-  // Инициализация
+  // Добавляем глобальные стили
+  addGlobalStyles();
+  
+  // Инициализация всех модулей
   initBurgerMenu();
   initMenuFilter();
   initCart();
@@ -763,13 +990,32 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('✅ Сайт полностью загружен и готов к работе');
 });
 
-// Для отладки
+// ===========================
+// ОТЛАДОЧНЫЕ ФУНКЦИИ
+// ===========================
 window.debug = {
-  cart: () => JSON.parse(localStorage.getItem('cart') || '[]'),
-  history: () => JSON.parse(localStorage.getItem('orderHistory') || '[]'),
-  profile: () => JSON.parse(localStorage.getItem('profile') || '{}'),
+  cart: () => {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    console.log('🛒 Текущая корзина:', cart);
+    return cart;
+  },
+  history: () => {
+    const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    console.log('📜 История заказов:', history);
+    return history;
+  },
+  profile: () => {
+    const profile = JSON.parse(localStorage.getItem('profile') || '{}');
+    console.log('👤 Профиль:', profile);
+    return profile;
+  },
   clear: () => {
-    localStorage.clear();
-    location.reload();
+    if (confirm('Очистить все данные?')) {
+      localStorage.clear();
+      location.reload();
+    }
+  },
+  test: () => {
+    showToast('🔔 Тестовое уведомление');
   }
 };
