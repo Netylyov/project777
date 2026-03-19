@@ -1409,21 +1409,53 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .lang-item:hover {
   background: rgba(255,255,255,0.1);
 }
-/* === FIX: делаем окно кликабельным === */
-.booking-sheet__window {
-  z-index: 9999 !important;
-  pointer-events: auto !important;
-}
+/* === ЧИСТАЯ РАБОЧАЯ МОДАЛКА БРОНИРОВАНИЯ === */
 
-/* === FIX: фон НЕ должен перехватывать клики === */
 .booking-sheet {
-  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: none;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 9999;
 }
 
-/* === FIX: контент внутри окна снова кликабельный === */
-.booking-sheet__content,
-.booking-sheet__close,
-#booking-form,
-#booking-form * {
-  pointer-events: auto !important;
+.booking-sheet.modal--open {
+  display: flex;
+}
+
+.booking-sheet__window {
+  width: 100%;
+  max-width: 520px;
+  background: rgba(0,0,0,0.92);
+  border-radius: 20px 20px 0 0;
+  padding: 22px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.booking-sheet__content {
+  overflow-y: auto;
+  padding-right: 6px;
+  flex: 1;
+}
+
+.booking-sheet__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
 }
