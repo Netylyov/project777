@@ -460,12 +460,11 @@ function initBooking() {
       bookingForm.reset();
     });
   }
-// ========== УЛУЧШЕННЫЙ ОБРАБОТЧИК С МАКСИМАЛЬНОЙ ОТЛАДКОЙ ==========
+// ========== ИСПРАВЛЕННЫЙ ОБРАБОТЧИК С ПОЛНОЙ ЛОГИКОЙ ==========
 bookingForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  console.log('%c=== НАЧАЛО ОТПРАВКИ ===', 'color: blue; font-weight: bold');
-  console.log('Время:', new Date().toLocaleTimeString());
+  console.log('=== НАЧАЛО ОТПРАВКИ ===');
   
   const name = nameInput?.value.trim();
   const phone = phoneInput?.value.trim();
@@ -474,26 +473,22 @@ bookingForm.addEventListener('submit', async (e) => {
   const date = dateInput?.value;
   const time = timeInput?.value;
 
-  console.log('📋 Данные формы:', { name, phone, guests, comment, date, time });
+  console.log('Данные формы:', { name, phone, guests, comment, date, time });
 
   // Валидация
   if (!name) {
-    console.log('❌ Ошибка: нет имени');
     showToast('Введите имя');
     return;
   }
   if (!phone) {
-    console.log('❌ Ошибка: нет телефона');
     showToast('Введите телефон');
     return;
   }
   if (!date) {
-    console.log('❌ Ошибка: нет даты');
     showToast('Выберите дату');
     return;
   }
   if (!time) {
-    console.log('❌ Ошибка: нет времени');
     showToast('Выберите время');
     return;
   }
@@ -507,165 +502,74 @@ bookingForm.addEventListener('submit', async (e) => {
 
   try {
     // Получаем корзину
-    console.log('🛒 Получаем корзину из localStorage...');
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
     
-    console.log('🛒 Корзина:', cart);
-    console.log('💰 Общая сумма:', total);
-    console.log('🔥 Firebase доступен:', !!db);
+    console.log('Корзина:', cart);
+    console.log('Firebase доступен:', !!db);
 
+    // СОХРАНЯЕМ В ИСТОРИЮ (Firebase или localStorage)
+    const orderData = {
+      id: Date.now().toString(),
+      userId: currentUserId,
+      name,
+      phone,
+      guests: Number(guests),
+      comment,
+      date,
+      time,
+      total,
+      items: cart,
+      status: 'new',
+      timestamp: new Date().toISOString()
+    };
+
+    // Если есть Firebase - сохраняем туда
     if (db) {
-      console.log('📤 Сохраняем в Firebase...');
-      
-      // Проверяем соединение с таймаутом
-      console.log('🔄 Проверка соединения с Firebase...');
-      
       try {
-        // Устанавливаем таймаут для проверки соединения
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Таймаут соединения с Firebase')), 5000)
-        );
-        
-        const testPromise = db.collection('test').doc('test').set({ test: true });
-        
-        await Promise.race([testPromise, timeoutPromise]);
-        console.log('✅ Соединение с Firebase работает');
-        
-      } catch (connError) {
-        console.error('❌ Ошибка соединения с Firebase:', connError);
-        console.log('🔄 Переключаемся на режим без Firebase...');
-        
-        // Вместо возврата ошибки, продолжаем с симуляцией
-        console.log('📱 Симулируем сохранение без Firebase');
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Очищаем корзину и показываем успех
-        localStorage.setItem('cart', '[]');
-        
-        const cartCount = document.getElementById('cartCount');
-        if (cartCount) cartCount.textContent = '0';
-        
-        const cartTotal = document.getElementById('cartTotal');
-        if (cartTotal) cartTotal.textContent = '0';
-
-        console.log('✅ Все операции завершены (режим без Firebase)');
-        showToast('✅ Заявка успешно отправлена! (тестовый режим)');
-
-        bookingModal.classList.remove('modal--open');
-        document.body.style.overflow = "";
-        bookingForm.reset();
-        
-        // Разблокируем кнопку
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Отправить заявку';
-        }
-        
-        console.log('%c=== КОНЕЦ ОТПРАВКИ (ТЕСТОВЫЙ РЕЖИМ) ===', 'color: green');
-        return;
+        await db.collection('orders').add({
+          ...orderData,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('✅ Заказ сохранен в Firebase');
+      } catch (firebaseError) {
+        console.error('Ошибка Firebase, сохраняем в localStorage:', firebaseError);
+        // Сохраняем в localStorage как резерв
+        saveOrderToLocalStorage(orderData);
       }
-
-      // Если дошли сюда, значит Firebase работает
-      console.log('📦 Создаем batch запись...');
-      const batch = db.batch();
-
-      const orderRef = db.collection('orders').doc();
-      console.log('📄 Order ref:', orderRef.path);
-      
-      batch.set(orderRef, {
-        userId: currentUserId || 'guest',
-        name,
-        phone,
-        guests: Number(guests),
-        comment,
-        date,
-        time,
-        total,
-        items: cart,
-        status: 'new',
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      const bookingRef = db.collection('bookings').doc();
-      console.log('📄 Booking ref:', bookingRef.path);
-      
-      batch.set(bookingRef, {
-        name,
-        phone,
-        date,
-        time,
-        guests: Number(guests),
-        comment,
-        status: 'new',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      console.log('🚀 Отправка batch...');
-      
-      // Добавляем таймаут для batch
-      const batchTimeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Таймаут при отправке batch')), 10000)
-      );
-      
-      await Promise.race([batch.commit(), batchTimeoutPromise]);
-      console.log('✅ Batch успешно отправлен');
-
-      // Очищаем корзину
-      localStorage.setItem('cart', '[]');
-      
-      // Обновляем отображение корзины
-      const cartCount = document.getElementById('cartCount');
-      if (cartCount) cartCount.textContent = '0';
-      
-      const cartTotal = document.getElementById('cartTotal');
-      if (cartTotal) cartTotal.textContent = '0';
-
-      console.log('✅ Все операции завершены');
-      showToast('✅ Заявка успешно отправлена!');
-
-      // Закрываем модалку
-      bookingModal.classList.remove('modal--open');
-      document.body.style.overflow = "";
-      bookingForm.reset();
-
     } else {
-      console.log('⚠️ Firebase не инициализирован, симулируем сохранение');
-      console.log('📱 Данные для сохранения:', { name, phone, date, time, guests, comment, cart, total });
-      
-      // Имитация задержки
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Очищаем корзину
-      localStorage.setItem('cart', '[]');
-      
-      // Обновляем отображение корзины
-      const cartCount = document.getElementById('cartCount');
-      if (cartCount) cartCount.textContent = '0';
-      
-      const cartTotal = document.getElementById('cartTotal');
-      if (cartTotal) cartTotal.textContent = '0';
-
-      console.log('✅ Все операции завершены (симуляция)');
-      showToast('✅ Заявка успешно отправлена! (тестовый режим)');
-
-      // Закрываем модалку
-      bookingModal.classList.remove('modal--open');
-      document.body.style.overflow = "";
-      bookingForm.reset();
+      // Если Firebase нет - сохраняем в localStorage
+      saveOrderToLocalStorage(orderData);
     }
+
+    // 1. ✅ ОЧИЩАЕМ КОРЗИНУ
+    localStorage.setItem('cart', '[]');
+    
+    // Обновляем отображение корзины
+    const cartCount = document.getElementById('cartCount');
+    if (cartCount) cartCount.textContent = '0';
+    
+    const cartTotal = document.getElementById('cartTotal');
+    if (cartTotal) cartTotal.textContent = '0';
+
+    // 2. ✅ УВЕДОМЛЕНИЕ ОБ УСПЕХЕ
+    showToast('✅ Заявка успешно отправлена!');
+
+    // 3. ✅ ЗАКРЫВАЕМ ФОРМУ БРОНИРОВАНИЯ
+    bookingModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
+
+    // 4. ✅ ОЧИЩАЕМ ФОРМУ
+    bookingForm.reset();
+
+    // Очищаем комментарий от заказа
+    const commentField = document.getElementById('comment');
+    if (commentField) commentField.value = '';
+
+    console.log('✅ Все операции завершены. Заказ сохранен в истории.');
 
   } catch (error) {
-    console.error('%c❌ ОШИБКА ВО ВРЕМЯ ОТПРАВКИ:', 'color: red; font-weight: bold', error);
-    console.error('📄 Детали ошибки:', error.message);
-    console.error('📄 Стек:', error.stack);
-    console.error('📄 Имя ошибки:', error.name);
-    
-    // Проверяем специфичные ошибки Firebase
-    if (error.code) {
-      console.error('🔥 Firebase код ошибки:', error.code);
-    }
-    
+    console.error('❌ Ошибка:', error);
     showToast('❌ Ошибка при отправке заявки');
     
   } finally {
@@ -674,10 +578,30 @@ bookingForm.addEventListener('submit', async (e) => {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Отправить заявку';
     }
-    console.log('%c=== КОНЕЦ ОТПРАВКИ ===', 'color: blue; font-weight: bold');
+    console.log('=== КОНЕЦ ОТПРАВКИ ===');
   }
 });
-// ========== КОНЕЦ УЛУЧШЕННОГО ОБРАБОТЧИКА ==========
+
+// Вспомогательная функция для сохранения заказа в localStorage
+function saveOrderToLocalStorage(orderData) {
+  try {
+    // Получаем существующую историю
+    const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    
+    // Добавляем новый заказ
+    history.unshift(orderData); // Добавляем в начало массива
+    
+    // Ограничиваем историю 50 заказами
+    if (history.length > 50) history.pop();
+    
+    // Сохраняем
+    localStorage.setItem('orderHistory', JSON.stringify(history));
+    console.log('✅ Заказ сохранен в localStorage история');
+  } catch (e) {
+    console.error('Ошибка сохранения в localStorage:', e);
+  }
+}
+// ========== КОНЕЦ ИСПРАВЛЕННОГО ОБРАБОТЧИКА ==========
     // Валидация
     if (!name) {
       console.log('Ошибка: нет имени');
@@ -930,6 +854,16 @@ document.addEventListener('keydown', e => {
     closeAllModals();
   }
 });
+/* ===========================
+   ПРОСМОТР ИСТОРИИ ИЗ LOCALSTORAGE
+=========================== */
+function viewLocalHistory() {
+  const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+  console.log('📜 История заказов (localStorage):', history);
+  return history;
+}
+
+// Для просмотра истории в консоли напишите: viewLocalHistory()
 
 /* ===========================
    ЗАПУСК ПРИ ЗАГРУЗКЕ
