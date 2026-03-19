@@ -603,16 +603,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /* ===========================
-   SUBMIT БРОНИРОВАНИЯ
+   SUBMIT БРОНИРОВАНИЯ — РЕАЛЬНЫЙ РАБОЧИЙ
 =========================== */
 
 const bookingForm = document.getElementById("booking-form");
+const bookingModal = document.getElementById("bookingModal");
 
 if (bookingForm) {
   bookingForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    console.log("SUBMIT CLICKED");
+    console.log("SUBMIT CLICKED"); // ← вот это покажет, что кнопка работает
 
     const name = document.getElementById("name").value.trim();
     const phone = document.getElementById("phone").value.trim();
@@ -627,6 +628,7 @@ if (bookingForm) {
     }
 
     try {
+      // === ОТПРАВКА В FIRESTORE ===
       await firebase.firestore().collection("bookings").add({
         name,
         phone,
@@ -638,6 +640,7 @@ if (bookingForm) {
         createdAt: new Date()
       });
 
+      // === УСПЕШНО ===
       showToast("Заявка отправлена!");
 
       cart = [];
