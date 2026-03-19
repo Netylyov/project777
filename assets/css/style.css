@@ -1409,3 +1409,21 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .lang-item:hover {
   background: rgba(255,255,255,0.1);
 }
+/* === FIX: делаем окно кликабельным === */
+.booking-sheet__window {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+/* === FIX: фон НЕ должен перехватывать клики === */
+.booking-sheet {
+  pointer-events: none;
+}
+
+/* === FIX: контент внутри окна снова кликабельный === */
+.booking-sheet__content,
+.booking-sheet__close,
+#booking-form,
+#booking-form * {
+  pointer-events: auto !important;
+}
