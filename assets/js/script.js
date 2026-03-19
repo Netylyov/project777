@@ -586,7 +586,7 @@ function initProfile() {
 }
 
 /* ===========================
-   БРОНИРОВАНИЕ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+   БРОНИРОВАНИЕ (ФИНАЛЬНАЯ ИСПРАВЛЕННАЯ ВЕРСИЯ)
 =========================== */
 function initBooking() {
   console.log('📅 Инициализация бронирования...');
@@ -722,7 +722,7 @@ function initBooking() {
     });
   }
 
-  // ========== ИСПРАВЛЕННАЯ ОТПРАВКА ==========
+  // ========== ИСПРАВЛЕННАЯ ОТПРАВКА (ФОРМА ЗАКРЫВАЕТСЯ, УВЕДОМЛЕНИЕ, ОЧИСТКА КОРЗИНЫ) ==========
   bookingForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -807,11 +807,14 @@ function initBooking() {
         }
       }
 
-      // 1. 🧹 ОЧИЩАЕМ КОРЗИНУ
+      // ===== ВАЖНО: СНАЧАЛА ПОКАЗЫВАЕМ УВЕДОМЛЕНИЕ =====
+      showToast('✅ Ваш заказ оформлен!');
+      console.log('✅ Уведомление показано');
+
+      // ===== ПОТОМ ОЧИЩАЕМ КОРЗИНУ =====
       localStorage.setItem('cart', '[]');
       console.log('✅ Корзина очищена');
       
-      // 2. 🔄 ОБНОВЛЯЕМ ОТОБРАЖЕНИЕ КОРЗИНЫ
       // Обновляем счетчик на всех элементах
       document.querySelectorAll('.cart-count, #cartCount, [data-cart-count]').forEach(el => {
         if (el) {
@@ -829,52 +832,45 @@ function initBooking() {
         cartItems.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
       }
 
-      // 3. ✅ ПОКАЗЫВАЕМ УВЕДОМЛЕНИЕ
-      showToast('✅ Заявка успешно отправлена!');
-      console.log('✅ Уведомление показано');
-
-      // 4. 🚪 ЗАКРЫВАЕМ ФОРМУ БРОНИРОВАНИЯ
-      bookingModal.style.display = 'none';
-      bookingModal.classList.remove('modal--open');
-      document.body.style.overflow = "";
-      console.log('✅ Форма бронирования закрыта');
-
-      // 5. 🧹 ОЧИЩАЕМ ПОЛЯ ФОРМЫ
-      bookingForm.reset();
-      if (commentInput) commentInput.value = '';
-      
-      // Восстанавливаем дату по умолчанию
-      if (dateInput) {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        dateInput.value = tomorrow.toISOString().split('T')[0];
-      }
-      
-      // Восстанавливаем время по умолчанию
-      if (timeInput) {
-        timeInput.value = '18:00';
-      }
-      
-      // Восстанавливаем количество гостей
-      if (guestsInput) {
-        guestsInput.value = '2';
-      }
-
-      console.log('✅ Форма очищена');
-      console.log('=== ОТПРАВКА ЗАВЕРШЕНА УСПЕШНО ===');
-
-      // Принудительно обновляем корзину через небольшую задержку
+      // ===== И ТОЛЬКО ПОТОМ ЗАКРЫВАЕМ ФОРМУ =====
+      // Даем небольшую задержку, чтобы пользователь увидел уведомление
       setTimeout(() => {
-        // Проверяем что корзина действительно пуста
-        const checkCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        console.log('🔍 Проверка корзины после очистки:', checkCart);
+        // ЗАКРЫВАЕМ ФОРМУ БРОНИРОВАНИЯ
+        bookingModal.style.display = 'none';
+        bookingModal.classList.remove('modal--open');
+        document.body.style.overflow = "";
+        console.log('✅ Форма бронирования закрыта');
+
+        // ОЧИЩАЕМ ПОЛЯ ФОРМЫ
+        bookingForm.reset();
+        if (commentInput) commentInput.value = '';
         
-        // Если вдруг не очистилось - очищаем еще раз
-        if (checkCart.length > 0) {
-          console.warn('⚠️ Корзина не очистилась, пробуем снова');
-          localStorage.setItem('cart', '[]');
+        // Восстанавливаем дату по умолчанию
+        if (dateInput) {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          dateInput.value = tomorrow.toISOString().split('T')[0];
         }
-      }, 100);
+        
+        // Восстанавливаем время по умолчанию
+        if (timeInput) {
+          timeInput.value = '18:00';
+        }
+        
+        // Восстанавливаем количество гостей
+        if (guestsInput) {
+          guestsInput.value = '2';
+        }
+
+        console.log('✅ Форма очищена');
+        console.log('=== ОТПРАВКА ЗАВЕРШЕНА УСПЕШНО ===');
+
+        // Разблокируем кнопку после закрытия
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Отправить заявку';
+        }
+      }, 500); // Задержка полсекунды, чтобы уведомление было видно
 
     } catch (error) {
       console.error('❌ ОШИБКА ПРИ ОТПРАВКЕ:', error);
@@ -885,14 +881,6 @@ function initBooking() {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Отправить заявку';
       }
-    } finally {
-      // Разблокируем кнопку (на всякий случай)
-      setTimeout(() => {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Отправить заявку';
-        }
-      }, 500);
     }
   });
   // ========== КОНЕЦ ИСПРАВЛЕННОЙ ОТПРАВКИ ==========
