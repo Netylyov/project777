@@ -10,9 +10,14 @@ let currentUserId = "guest";
    ИНИЦИАЛИЗАЦИЯ FIREBASE
 =========================== */
 if (window.firebase) {
-  db = firebase.firestore();
-  auth = firebase.auth();
-  provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    db = firebase.firestore();
+    auth = firebase.auth();
+    provider = new firebase.auth.GoogleAuthProvider();
+    console.log('✅ Firebase инициализирован');
+  } catch (e) {
+    console.error('❌ Ошибка инициализации Firebase:', e);
+  }
 }
 
 /* ===========================
@@ -49,6 +54,7 @@ function initBurgerMenu() {
     burgerBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('open');
     });
+    console.log('✅ Бургер-меню инициализировано');
   }
 }
 
@@ -59,7 +65,10 @@ function initMenuFilter() {
   const filterButtons = document.querySelectorAll('.menu-categories button');
   const menuItems = document.querySelectorAll('.menu-item');
 
-  if (!filterButtons.length || !menuItems.length) return;
+  if (!filterButtons.length || !menuItems.length) {
+    console.warn('⚠️ Элементы фильтра не найдены');
+    return;
+  }
 
   filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -74,13 +83,17 @@ function initMenuFilter() {
       });
     });
   });
+  console.log('✅ Фильтр меню инициализирован');
 }
 
 /* ===========================
    КОРЗИНА
 =========================== */
 function initCart() {
+  console.log('🛒 Инициализация корзины...');
+  
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  console.log('📦 Загружена корзина:', cart);
 
   const cartModal = document.getElementById('cartModal');
   const openCart = document.getElementById('openCart');
@@ -91,7 +104,10 @@ function initCart() {
   const checkoutBtn = document.getElementById('checkoutBtn');
 
   function updateCart() {
-    if (!cartItems || !cartTotal || !cartCount) return;
+    if (!cartItems || !cartTotal || !cartCount) {
+      console.warn('⚠️ Элементы корзины не найдены');
+      return;
+    }
 
     cartItems.innerHTML = '';
     let total = 0;
@@ -113,8 +129,10 @@ function initCart() {
     cartTotal.textContent = total;
     cartCount.textContent = cart.length;
 
+    // Добавляем обработчики для кнопок удаления
     document.querySelectorAll('.remove-item').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const index = btn.dataset.index;
         cart.splice(index, 1);
         saveCart(cart);
@@ -126,7 +144,10 @@ function initCart() {
 
   // Добавление в корзину
   document.querySelectorAll('.menu-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    // Удаляем старые обработчики, чтобы не было дублирования
+    btn.removeEventListener('click', btn._handler);
+    
+    btn._handler = () => {
       const item = btn.closest('.menu-item');
       if (!item) return;
       
@@ -141,7 +162,9 @@ function initCart() {
       saveCart(cart);
       updateCart();
       showToast(`«${title}» добавлено в корзину`);
-    });
+    };
+    
+    btn.addEventListener('click', btn._handler);
   });
 
   // Открытие корзины
@@ -201,13 +224,17 @@ function initCart() {
     });
   }
 
+  // Первоначальное обновление
   updateCart();
+  console.log('✅ Корзина инициализирована');
 }
 
 /* ===========================
    ПРОФИЛЬ
 =========================== */
 function initProfile() {
+  console.log('👤 Инициализация профиля...');
+  
   const profileName = document.getElementById('profileName');
   const profilePhone = document.getElementById('profilePhone');
   const saveProfile = document.getElementById('saveProfile');
@@ -331,12 +358,16 @@ function initProfile() {
         });
     });
   }
+  
+  console.log('✅ Профиль инициализирован');
 }
 
 /* ===========================
    БРОНИРОВАНИЕ
 =========================== */
 function initBooking() {
+  console.log('📅 Инициализация бронирования...');
+  
   const bookingModal = document.getElementById('bookingModal');
   const openBookingModal = document.getElementById('openBookingModal');
   const openBookingHero = document.getElementById('openBookingHero');
@@ -345,7 +376,7 @@ function initBooking() {
   const clearBooking = document.getElementById('clearBooking');
 
   if (!bookingModal || !bookingForm) {
-    console.error('Элементы бронирования не найдены');
+    console.error('❌ Элементы бронирования не найдены');
     return;
   }
 
@@ -354,6 +385,8 @@ function initBooking() {
   const phoneInput = document.getElementById('phone');
   const dateInput = document.getElementById('date');
   const timeInput = document.getElementById('time');
+  const guestsInput = document.getElementById('guests');
+  const commentInput = document.getElementById('comment');
 
   if (nameInput) {
     nameInput.addEventListener('input', () => {
@@ -458,168 +491,39 @@ function initBooking() {
     clearBooking.addEventListener('click', (e) => {
       e.preventDefault();
       bookingForm.reset();
+      if (commentInput) commentInput.value = '';
     });
   }
-// ========== ИСПРАВЛЕННЫЙ ОБРАБОТЧИК С ПОЛНОЙ ЛОГИКОЙ ==========
-bookingForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  console.log('=== НАЧАЛО ОТПРАВКИ ===');
-  
-  const name = nameInput?.value.trim();
-  const phone = phoneInput?.value.trim();
-  const guests = document.getElementById('guests')?.value || '2';
-  const comment = document.getElementById('comment')?.value.trim() || '';
-  const date = dateInput?.value;
-  const time = timeInput?.value;
 
-  console.log('Данные формы:', { name, phone, guests, comment, date, time });
-
-  // Валидация
-  if (!name) {
-    showToast('Введите имя');
-    return;
-  }
-  if (!phone) {
-    showToast('Введите телефон');
-    return;
-  }
-  if (!date) {
-    showToast('Выберите дату');
-    return;
-  }
-  if (!time) {
-    showToast('Выберите время');
-    return;
-  }
-
-  // Блокируем кнопку
-  const submitBtn = bookingForm.querySelector('button[type="submit"]');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Отправка...';
-  }
-
-  try {
-    // Получаем корзину
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+  // ОБРАБОТЧИК ОТПРАВКИ
+  bookingForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     
-    console.log('Корзина:', cart);
-    console.log('Firebase доступен:', !!db);
-
-    // СОХРАНЯЕМ В ИСТОРИЮ (Firebase или localStorage)
-    const orderData = {
-      id: Date.now().toString(),
-      userId: currentUserId,
-      name,
-      phone,
-      guests: Number(guests),
-      comment,
-      date,
-      time,
-      total,
-      items: cart,
-      status: 'new',
-      timestamp: new Date().toISOString()
-    };
-
-    // Если есть Firebase - сохраняем туда
-    if (db) {
-      try {
-        await db.collection('orders').add({
-          ...orderData,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        console.log('✅ Заказ сохранен в Firebase');
-      } catch (firebaseError) {
-        console.error('Ошибка Firebase, сохраняем в localStorage:', firebaseError);
-        // Сохраняем в localStorage как резерв
-        saveOrderToLocalStorage(orderData);
-      }
-    } else {
-      // Если Firebase нет - сохраняем в localStorage
-      saveOrderToLocalStorage(orderData);
-    }
-
-    // 1. ✅ ОЧИЩАЕМ КОРЗИНУ
-    localStorage.setItem('cart', '[]');
+    console.log('=== НАЧАЛО ОТПРАВКИ ===');
     
-    // Обновляем отображение корзины
-    const cartCount = document.getElementById('cartCount');
-    if (cartCount) cartCount.textContent = '0';
-    
-    const cartTotal = document.getElementById('cartTotal');
-    if (cartTotal) cartTotal.textContent = '0';
+    const name = nameInput?.value.trim();
+    const phone = phoneInput?.value.trim();
+    const guests = guestsInput?.value || '2';
+    const comment = commentInput?.value.trim() || '';
+    const date = dateInput?.value;
+    const time = timeInput?.value;
 
-    // 2. ✅ УВЕДОМЛЕНИЕ ОБ УСПЕХЕ
-    showToast('✅ Заявка успешно отправлена!');
+    console.log('Данные формы:', { name, phone, guests, comment, date, time });
 
-    // 3. ✅ ЗАКРЫВАЕМ ФОРМУ БРОНИРОВАНИЯ
-    bookingModal.classList.remove('modal--open');
-    document.body.style.overflow = "";
-
-    // 4. ✅ ОЧИЩАЕМ ФОРМУ
-    bookingForm.reset();
-
-    // Очищаем комментарий от заказа
-    const commentField = document.getElementById('comment');
-    if (commentField) commentField.value = '';
-
-    console.log('✅ Все операции завершены. Заказ сохранен в истории.');
-
-  } catch (error) {
-    console.error('❌ Ошибка:', error);
-    showToast('❌ Ошибка при отправке заявки');
-    
-  } finally {
-    // Разблокируем кнопку
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Отправить заявку';
-    }
-    console.log('=== КОНЕЦ ОТПРАВКИ ===');
-  }
-});
-
-// Вспомогательная функция для сохранения заказа в localStorage
-function saveOrderToLocalStorage(orderData) {
-  try {
-    // Получаем существующую историю
-    const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-    
-    // Добавляем новый заказ
-    history.unshift(orderData); // Добавляем в начало массива
-    
-    // Ограничиваем историю 50 заказами
-    if (history.length > 50) history.pop();
-    
-    // Сохраняем
-    localStorage.setItem('orderHistory', JSON.stringify(history));
-    console.log('✅ Заказ сохранен в localStorage история');
-  } catch (e) {
-    console.error('Ошибка сохранения в localStorage:', e);
-  }
-}
-// ========== КОНЕЦ ИСПРАВЛЕННОГО ОБРАБОТЧИКА ==========
     // Валидация
     if (!name) {
-      console.log('Ошибка: нет имени');
       showToast('Введите имя');
       return;
     }
     if (!phone) {
-      console.log('Ошибка: нет телефона');
       showToast('Введите телефон');
       return;
     }
     if (!date) {
-      console.log('Ошибка: нет даты');
       showToast('Выберите дату');
       return;
     }
     if (!time) {
-      console.log('Ошибка: нет времени');
       showToast('Выберите время');
       return;
     }
@@ -639,63 +543,39 @@ function saveOrderToLocalStorage(orderData) {
       console.log('Корзина:', cart);
       console.log('Firebase доступен:', !!db);
 
+      // СОХРАНЯЕМ В ИСТОРИЮ
+      const orderData = {
+        id: Date.now().toString(),
+        userId: currentUserId,
+        name,
+        phone,
+        guests: Number(guests),
+        comment,
+        date,
+        time,
+        total,
+        items: cart,
+        status: 'new',
+        timestamp: new Date().toISOString()
+      };
+
+      // Сохраняем в Firebase если доступен
       if (db) {
-        console.log('Сохраняем в Firebase...');
-        
-        // Проверяем соединение
         try {
-          await db.collection('test').doc('test').set({ test: true });
-          console.log('✅ Соединение с Firebase работает');
-        } catch (connError) {
-          console.error('❌ Ошибка соединения с Firebase:', connError);
-          showToast('Ошибка соединения с сервером');
-          return;
+          await db.collection('orders').add({
+            ...orderData,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          console.log('✅ Заказ сохранен в Firebase');
+        } catch (firebaseError) {
+          console.error('Ошибка Firebase:', firebaseError);
+          saveOrderToLocalStorage(orderData);
         }
-
-        // Сохраняем в Firebase
-        const batch = db.batch();
-
-        const orderRef = db.collection('orders').doc();
-        console.log('Order ref:', orderRef.path);
-        
-        batch.set(orderRef, {
-          userId: currentUserId,
-          name,
-          phone,
-          guests: Number(guests),
-          comment,
-          date,
-          time,
-          total,
-          items: cart,
-          status: 'new',
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        const bookingRef = db.collection('bookings').doc();
-        console.log('Booking ref:', bookingRef.path);
-        
-        batch.set(bookingRef, {
-          name,
-          phone,
-          date,
-          time,
-          guests: Number(guests),
-          comment,
-          status: 'new',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        console.log('Отправка batch...');
-        await batch.commit();
-        console.log('✅ Batch успешно отправлен');
-
       } else {
-        console.log('Firebase нет, симулируем сохранение');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        saveOrderToLocalStorage(orderData);
       }
 
-      // Очищаем корзину
+      // ОЧИЩАЕМ КОРЗИНУ
       localStorage.setItem('cart', '[]');
       
       // Обновляем отображение корзины
@@ -705,18 +585,21 @@ function saveOrderToLocalStorage(orderData) {
       const cartTotal = document.getElementById('cartTotal');
       if (cartTotal) cartTotal.textContent = '0';
 
-      console.log('✅ Все операции завершены');
+      // УВЕДОМЛЕНИЕ
       showToast('✅ Заявка успешно отправлена!');
 
-      // Закрываем модалку
+      // ЗАКРЫВАЕМ ФОРМУ
       bookingModal.classList.remove('modal--open');
       document.body.style.overflow = "";
+
+      // ОЧИЩАЕМ ФОРМУ
       bookingForm.reset();
+      if (commentInput) commentInput.value = '';
+
+      console.log('✅ Все операции завершены');
 
     } catch (error) {
-      console.error('❌ ОШИБКА ВО ВРЕМЯ ОТПРАВКИ:', error);
-      console.error('Детали ошибки:', error.message);
-      console.error('Стек:', error.stack);
+      console.error('❌ Ошибка:', error);
       showToast('❌ Ошибка при отправке заявки');
       
     } finally {
@@ -725,69 +608,105 @@ function saveOrderToLocalStorage(orderData) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Отправить заявку';
       }
-      console.log('=== КОНЕЦ ОТПРАВКИ ===');
     }
   });
-  // ========== КОНЕЦ ИСПРАВЛЕННОГО ОБРАБОТЧИКА ==========
+
+  // Функция сохранения в localStorage
+  function saveOrderToLocalStorage(orderData) {
+    try {
+      const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+      history.unshift(orderData);
+      if (history.length > 50) history.pop();
+      localStorage.setItem('orderHistory', JSON.stringify(history));
+      console.log('✅ Заказ сохранен в localStorage');
+    } catch (e) {
+      console.error('Ошибка сохранения:', e);
+    }
+  }
+  
+  console.log('✅ Бронирование инициализировано');
 }
 
 /* ===========================
    ИСТОРИЯ ЗАКАЗОВ
 =========================== */
 function initHistory() {
+  console.log('📜 Инициализация истории...');
+  
   const historyModal = document.getElementById('historyModal');
   const openHistory = document.getElementById('openHistory');
   const openHistoryFooter = document.getElementById('openHistoryFooter');
   const closeHistory = document.getElementById('closeHistory');
   const historyList = document.getElementById('historyList');
 
-  if (!historyModal || !historyList) return;
+  if (!historyModal || !historyList) {
+    console.warn('⚠️ Элементы истории не найдены');
+    return;
+  }
 
   async function loadHistory() {
-    if (!db) {
-      historyList.innerHTML = '<p>База данных недоступна</p>';
+    const allOrders = [];
+    
+    // Из Firebase
+    if (db) {
+      try {
+        const snapshot = await db.collection('orders')
+          .where('userId', '==', currentUserId)
+          .orderBy('timestamp', 'desc')
+          .get();
+
+        snapshot.forEach(doc => {
+          const order = doc.data();
+          allOrders.push({
+            ...order,
+            id: doc.id,
+            source: 'firebase',
+            displayDate: order.timestamp?.toDate().toLocaleString('ru-RU') || '-'
+          });
+        });
+      } catch (error) {
+        console.error('Ошибка загрузки из Firebase:', error);
+      }
+    }
+    
+    // Из localStorage
+    const localHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    localHistory.forEach(order => {
+      allOrders.push({
+        ...order,
+        source: 'local',
+        displayDate: new Date(order.timestamp).toLocaleString('ru-RU')
+      });
+    });
+    
+    // Сортируем
+    allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    if (allOrders.length === 0) {
+      historyList.innerHTML = '<p>Заказов пока нет.</p>';
       return;
     }
 
-    historyList.innerHTML = '<p>Загружаем заказы...</p>';
+    historyList.innerHTML = '';
 
-    try {
-      const snapshot = await db.collection('orders')
-        .where('userId', '==', currentUserId)
-        .orderBy('timestamp', 'desc')
-        .get();
-
-      if (snapshot.empty) {
-        historyList.innerHTML = '<p>Заказов пока нет.</p>';
-        return;
-      }
-
-      historyList.innerHTML = '';
-
-      snapshot.forEach(doc => {
-        const order = doc.data();
-        const date = order.timestamp?.toDate().toLocaleString('ru-RU') || '-';
-        
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.innerHTML = `
-          <div><strong>Дата:</strong> ${date}</div>
-          <div><strong>Сумма:</strong> ${order.total} BYN</div>
-          <div><strong>Имя:</strong> ${order.name}</div>
-          <div><strong>Телефон:</strong> ${order.phone}</div>
-          <div><strong>Гостей:</strong> ${order.guests}</div>
-          <div><strong>Комментарий:</strong> ${order.comment || '-'}</div>
-          <div><strong>Позиции:</strong><br>
-            ${order.items.map(i => `• ${i.title} — ${i.price} BYN`).join('<br>')}
-          </div>
-          <hr>
-        `;
-        historyList.appendChild(div);
-      });
-    } catch (error) {
-      console.error('Ошибка загрузки истории:', error);
-      historyList.innerHTML = '<p>Ошибка загрузки истории</p>';
-    }
+    allOrders.forEach(order => {
+      const div = document.createElement('div');
+      div.className = 'history-item';
+      div.innerHTML = `
+        <div><strong>Дата заказа:</strong> ${order.displayDate}</div>
+        <div><strong>Сумма:</strong> ${order.total} BYN</div>
+        <div><strong>Имя:</strong> ${order.name}</div>
+        <div><strong>Телефон:</strong> ${order.phone}</div>
+        <div><strong>Дата брони:</strong> ${order.date} ${order.time}</div>
+        <div><strong>Гостей:</strong> ${order.guests}</div>
+        <div><strong>Комментарий:</strong> ${order.comment || '-'}</div>
+        <div><strong>Позиции:</strong><br>
+          ${order.items.map(i => `• ${i.title} — ${i.price} BYN`).join('<br>')}
+        </div>
+        <hr>
+      `;
+      historyList.appendChild(div);
+    });
   }
 
   function openHistoryModal() {
@@ -812,6 +731,8 @@ function initHistory() {
       document.body.style.overflow = '';
     }
   });
+  
+  console.log('✅ История инициализирована');
 }
 
 /* ===========================
@@ -854,21 +775,21 @@ document.addEventListener('keydown', e => {
     closeAllModals();
   }
 });
-/* ===========================
-   ПРОСМОТР ИСТОРИИ ИЗ LOCALSTORAGE
-=========================== */
-function viewLocalHistory() {
-  const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-  console.log('📜 История заказов (localStorage):', history);
-  return history;
-}
-
-// Для просмотра истории в консоли напишите: viewLocalHistory()
 
 /* ===========================
    ЗАПУСК ПРИ ЗАГРУЗКЕ
 =========================== */
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 Запуск инициализации...');
+  
+  // Проверяем наличие основных элементов
+  console.log('📄 Проверка элементов:');
+  console.log('- burgerBtn:', !!document.getElementById('burgerBtn'));
+  console.log('- cartModal:', !!document.getElementById('cartModal'));
+  console.log('- bookingModal:', !!document.getElementById('bookingModal'));
+  console.log('- profileName:', !!document.getElementById('profileName'));
+  
+  // Инициализируем все модули
   initBurgerMenu();
   initMenuFilter();
   initCart();
@@ -877,4 +798,19 @@ document.addEventListener('DOMContentLoaded', () => {
   initHistory();
   initDateRestrictions();
   initTimeValidation();
+  
+  console.log('✅ Инициализация завершена');
 });
+
+// Для отладки в консоли
+window.viewLocalHistory = function() {
+  const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+  console.log('📜 История заказов (localStorage):', history);
+  return history;
+};
+
+window.viewCart = function() {
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  console.log('🛒 Текущая корзина:', cart);
+  return cart;
+};
