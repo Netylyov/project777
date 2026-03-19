@@ -601,4 +601,46 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// === BOOKING FORM SUBMIT ===
+const bookingForm = document.getElementById("booking-form");
+const bookingModal = document.getElementById("bookingModal");
 
+bookingForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+    const guests = document.getElementById("guests").value;
+    const comment = document.getElementById("comment").value.trim();
+
+    if (!name || !phone || !date || !time) {
+        alert("Пожалуйста, заполните все обязательные поля.");
+        return;
+    }
+
+    try {
+        const db = firebase.firestore();
+
+        await db.collection("bookings").add({
+            name,
+            phone,
+            date,
+            time,
+            guests,
+            comment,
+            createdAt: new Date()
+        });
+
+        showToast("Заявка успешно отправлена!");
+
+        bookingForm.reset();
+        bookingModal.classList.remove("modal--open");
+        document.body.style.overflow = "";
+
+    } catch (err) {
+        console.error("Ошибка отправки:", err);
+        alert("Ошибка при отправке заявки. Попробуйте позже.");
+    }
+});
