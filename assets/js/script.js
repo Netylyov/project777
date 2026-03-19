@@ -461,10 +461,12 @@ function initBooking() {
     });
   }
 
-  // ОТПРАВКА ФОРМЫ - ЕДИНСТВЕННЫЙ ОБРАБОТЧИК
+  // ========== ИСПРАВЛЕННЫЙ ОБРАБОТЧИК С ОТЛАДКОЙ ==========
   bookingForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
+    
+    console.log('=== НАЧАЛО ОТПРАВКИ ===');
+    
     const name = nameInput?.value.trim();
     const phone = phoneInput?.value.trim();
     const guests = document.getElementById('guests')?.value || '2';
@@ -472,11 +474,29 @@ function initBooking() {
     const date = dateInput?.value;
     const time = timeInput?.value;
 
+    console.log('Данные формы:', { name, phone, guests, comment, date, time });
+
     // Валидация
-    if (!name) return showToast('Введите имя');
-    if (!phone) return showToast('Введите телефон');
-    if (!date) return showToast('Выберите дату');
-    if (!time) return showToast('Выберите время');
+    if (!name) {
+      console.log('Ошибка: нет имени');
+      showToast('Введите имя');
+      return;
+    }
+    if (!phone) {
+      console.log('Ошибка: нет телефона');
+      showToast('Введите телефон');
+      return;
+    }
+    if (!date) {
+      console.log('Ошибка: нет даты');
+      showToast('Выберите дату');
+      return;
+    }
+    if (!time) {
+      console.log('Ошибка: нет времени');
+      showToast('Выберите время');
+      return;
+    }
 
     // Блокируем кнопку
     const submitBtn = bookingForm.querySelector('button[type="submit"]');
@@ -489,12 +509,29 @@ function initBooking() {
       // Получаем корзину
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+      
+      console.log('Корзина:', cart);
+      console.log('Firebase доступен:', !!db);
 
       if (db) {
+        console.log('Сохраняем в Firebase...');
+        
+        // Проверяем соединение
+        try {
+          await db.collection('test').doc('test').set({ test: true });
+          console.log('✅ Соединение с Firebase работает');
+        } catch (connError) {
+          console.error('❌ Ошибка соединения с Firebase:', connError);
+          showToast('Ошибка соединения с сервером');
+          return;
+        }
+
         // Сохраняем в Firebase
         const batch = db.batch();
 
         const orderRef = db.collection('orders').doc();
+        console.log('Order ref:', orderRef.path);
+        
         batch.set(orderRef, {
           userId: currentUserId,
           name,
@@ -510,6 +547,8 @@ function initBooking() {
         });
 
         const bookingRef = db.collection('bookings').doc();
+        console.log('Booking ref:', bookingRef.path);
+        
         batch.set(bookingRef, {
           name,
           phone,
@@ -521,11 +560,13 @@ function initBooking() {
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
+        console.log('Отправка batch...');
         await batch.commit();
+        console.log('✅ Batch успешно отправлен');
+
       } else {
-        // Имитация сохранения без Firebase
-        console.log('Симуляция сохранения:', { name, phone, date, time, guests, comment, cart, total });
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('Firebase нет, симулируем сохранение');
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
       // Очищаем корзину
@@ -538,6 +579,7 @@ function initBooking() {
       const cartTotal = document.getElementById('cartTotal');
       if (cartTotal) cartTotal.textContent = '0';
 
+      console.log('✅ Все операции завершены');
       showToast('✅ Заявка успешно отправлена!');
 
       // Закрываем модалку
@@ -546,16 +588,21 @@ function initBooking() {
       bookingForm.reset();
 
     } catch (error) {
-      console.error('Ошибка при отправке:', error);
+      console.error('❌ ОШИБКА ВО ВРЕМЯ ОТПРАВКИ:', error);
+      console.error('Детали ошибки:', error.message);
+      console.error('Стек:', error.stack);
       showToast('❌ Ошибка при отправке заявки');
+      
     } finally {
       // Разблокируем кнопку
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Отправить заявку';
       }
+      console.log('=== КОНЕЦ ОТПРАВКИ ===');
     }
   });
+  // ========== КОНЕЦ ИСПРАВЛЕННОГО ОБРАБОТЧИКА ==========
 }
 
 /* ===========================
