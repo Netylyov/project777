@@ -7,7 +7,7 @@ let provider = null;
 let currentUserId = "guest";
 
 /* ===========================
-   ИНИЦИАЛИЗАЦИЯ FIREBASE
+   ИНИЦИАЛИЗАЦИЯ FIREBASE (ЕСЛИ ПОДКЛЮЧЕН)
 =========================== */
 if (window.firebase) {
   try {
@@ -25,10 +25,33 @@ if (window.firebase) {
 =========================== */
 function showToast(text) {
   const toast = document.getElementById('toast');
-  if (!toast) return;
+  if (!toast) {
+    // Создаем toast если его нет
+    const newToast = document.createElement('div');
+    newToast.id = 'toast';
+    newToast.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 9999;
+      display: none;
+    `;
+    document.body.appendChild(newToast);
+    showToast(text);
+    return;
+  }
   toast.textContent = text;
+  toast.style.display = 'block';
   toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 1500);
+  setTimeout(() => {
+    toast.style.display = 'none';
+    toast.classList.remove('show');
+  }, 2000);
 }
 
 function saveCart(cart) {
@@ -39,6 +62,7 @@ function closeAllModals() {
   const modals = document.querySelectorAll('.modal');
   modals.forEach(modal => {
     modal.classList.remove('modal--open');
+    modal.style.display = 'none';
   });
   document.body.style.overflow = "";
 }
@@ -51,10 +75,17 @@ function initBurgerMenu() {
   const mobileMenu = document.getElementById('mobileMenu');
 
   if (burgerBtn && mobileMenu) {
-    burgerBtn.addEventListener('click', () => {
+    burgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       mobileMenu.classList.toggle('open');
     });
-    console.log('✅ Бургер-меню инициализировано');
+
+    // Закрытие при клике вне меню
+    document.addEventListener('click', (e) => {
+      if (!burgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+        mobileMenu.classList.remove('open');
+      }
+    });
   }
 }
 
@@ -62,38 +93,35 @@ function initBurgerMenu() {
    ФИЛЬТР МЕНЮ
 =========================== */
 function initMenuFilter() {
-  const filterButtons = document.querySelectorAll('.menu-categories button');
-  const menuItems = document.querySelectorAll('.menu-item');
+  const filterButtons = document.querySelectorAll('.category-btn, .menu-categories button');
+  const menuItems = document.querySelectorAll('.menu-item, .dish-card');
 
-  if (!filterButtons.length || !menuItems.length) {
-    console.warn('⚠️ Элементы фильтра не найдены');
-    return;
-  }
+  if (!filterButtons.length || !menuItems.length) return;
 
   filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
+      // Убираем активный класс у всех
       filterButtons.forEach(b => b.classList.remove('active'));
+      // Добавляем текущему
       btn.classList.add('active');
 
-      const category = btn.dataset.filter;
+      const category = btn.dataset.filter || btn.dataset.category;
 
       menuItems.forEach(item => {
-        const match = category === 'all' || item.dataset.category === category;
-        item.style.display = match ? '' : 'none';
+        const match = category === 'all' || 
+                     item.dataset.category === category || 
+                     item.dataset.filter === category;
+        item.style.display = match ? 'block' : 'none';
       });
     });
   });
-  console.log('✅ Фильтр меню инициализирован');
 }
 
 /* ===========================
    КОРЗИНА
 =========================== */
 function initCart() {
-  console.log('🛒 Инициализация корзины...');
-  
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  console.log('📦 Загружена корзина:', cart);
 
   const cartModal = document.getElementById('cartModal');
   const openCart = document.getElementById('openCart');
@@ -104,96 +132,109 @@ function initCart() {
   const checkoutBtn = document.getElementById('checkoutBtn');
 
   function updateCart() {
-    if (!cartItems || !cartTotal || !cartCount) {
-      console.warn('⚠️ Элементы корзины не найдены');
-      return;
+    // Обновляем счетчик на всех элементах
+    document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
+      if (el) el.textContent = cart.length;
+    });
+
+    if (cartTotal) {
+      const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+      cartTotal.textContent = total;
     }
 
-    cartItems.innerHTML = '';
-    let total = 0;
+    if (cartItems) {
+      cartItems.innerHTML = '';
+      
+      if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
+        return;
+      }
 
-    cart.forEach((item, index) => {
-      const priceNum = Number(item.price) || 0;
-      total += priceNum;
-
-      const div = document.createElement('div');
-      div.className = 'cart-row';
-      div.innerHTML = `
-        <span>${item.title}</span>
-        <span>${priceNum} BYN</span>
-        <button class="remove-item" data-index="${index}">✕</button>
-      `;
-      cartItems.appendChild(div);
-    });
-
-    cartTotal.textContent = total;
-    cartCount.textContent = cart.length;
-
-    // Добавляем обработчики для кнопок удаления
-    document.querySelectorAll('.remove-item').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const index = btn.dataset.index;
-        cart.splice(index, 1);
-        saveCart(cart);
-        updateCart();
-        showToast('Товар удален из корзины');
+      cart.forEach((item, index) => {
+        const priceNum = Number(item.price) || 0;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <span class="cart-item-title">${item.title}</span>
+          <span class="cart-item-price">${priceNum} BYN</span>
+          <button class="remove-item" data-index="${index}">✕</button>
+        `;
+        cartItems.appendChild(div);
       });
-    });
+
+      // Добавляем обработчики удаления
+      document.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const index = btn.dataset.index;
+          cart.splice(index, 1);
+          saveCart(cart);
+          updateCart();
+          showToast('Товар удален');
+        });
+      });
+    }
   }
 
   // Добавление в корзину
-  document.querySelectorAll('.menu-btn').forEach(btn => {
-    // Удаляем старые обработчики, чтобы не было дублирования
-    btn.removeEventListener('click', btn._handler);
-    
-    btn._handler = () => {
-      const item = btn.closest('.menu-item');
+  document.querySelectorAll('.add-to-cart, .menu-btn, .order-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      const item = btn.closest('.menu-item, .dish-card, .product-card');
       if (!item) return;
       
-      const titleEl = item.querySelector('.menu-title');
-      const priceEl = item.querySelector('.menu-price');
-      if (!titleEl || !priceEl) return;
-
-      const title = titleEl.textContent.trim();
-      const price = Number(priceEl.textContent.replace(/\D/g, "")) || 0;
+      const titleEl = item.querySelector('.dish-title, .menu-title, h3, .title');
+      const priceEl = item.querySelector('.dish-price, .menu-price, .price, [data-price]');
+      
+      let title = 'Блюдо';
+      let price = 0;
+      
+      if (titleEl) title = titleEl.textContent.trim();
+      if (priceEl) {
+        price = Number(priceEl.textContent.replace(/[^\d]/g, '')) || 
+                Number(priceEl.dataset.price) || 0;
+      }
 
       cart.push({ title, price });
       saveCart(cart);
       updateCart();
-      showToast(`«${title}» добавлено в корзину`);
-    };
-    
-    btn.addEventListener('click', btn._handler);
+      showToast(`«${title}» добавлено`);
+    });
   });
 
   // Открытие корзины
   if (openCart && cartModal) {
-    openCart.addEventListener('click', () => {
+    openCart.addEventListener('click', (e) => {
+      e.preventDefault();
+      cartModal.style.display = 'flex';
       cartModal.classList.add('modal--open');
       document.body.style.overflow = "hidden";
+      updateCart();
     });
   }
 
   // Закрытие корзины
   if (closeCart && cartModal) {
     closeCart.addEventListener('click', () => {
+      cartModal.style.display = 'none';
       cartModal.classList.remove('modal--open');
       document.body.style.overflow = "";
     });
   }
 
-  // Закрытие по клику на оверлей
+  // Закрытие по клику на фон
   if (cartModal) {
-    cartModal.addEventListener('click', e => {
+    cartModal.addEventListener('click', (e) => {
       if (e.target === cartModal) {
+        cartModal.style.display = 'none';
         cartModal.classList.remove('modal--open');
         document.body.style.overflow = "";
       }
     });
   }
 
-  // Оформление заказа из корзины
+  // Оформление заказа
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
       if (cart.length === 0) {
@@ -201,40 +242,40 @@ function initCart() {
         return;
       }
 
+      // Закрываем корзину
       if (cartModal) {
+        cartModal.style.display = 'none';
         cartModal.classList.remove('modal--open');
       }
 
-      // Заполняем комментарий в форме бронирования
-      const commentField = document.getElementById('comment');
-      if (commentField) {
-        let orderText = "Заказ:\n";
-        cart.forEach(item => {
-          const priceNum = Number(item.price) || 0;
-          orderText += `• ${item.title} — ${priceNum} BYN\n`;
-        });
-        commentField.value = orderText;
-      }
+      // Формируем текст заказа
+      const orderText = cart.map(item => `• ${item.title} — ${item.price} BYN`).join('\n');
       
-      // Открываем модалку бронирования
-      const bookingModal = document.getElementById('bookingModal');
-      if (bookingModal) {
-        bookingModal.classList.add('modal--open');
-      }
+      // Открываем бронирование с заказом
+      setTimeout(() => {
+        const bookingModal = document.getElementById('bookingModal');
+        const commentField = document.getElementById('comment');
+        
+        if (commentField) {
+          commentField.value = `Заказ:\n${orderText}`;
+        }
+        
+        if (bookingModal) {
+          bookingModal.style.display = 'flex';
+          bookingModal.classList.add('modal--open');
+        }
+      }, 300);
     });
   }
 
   // Первоначальное обновление
   updateCart();
-  console.log('✅ Корзина инициализирована');
 }
 
 /* ===========================
    ПРОФИЛЬ
 =========================== */
 function initProfile() {
-  console.log('👤 Инициализация профиля...');
-  
   const profileName = document.getElementById('profileName');
   const profilePhone = document.getElementById('profilePhone');
   const saveProfile = document.getElementById('saveProfile');
@@ -254,7 +295,7 @@ function initProfile() {
       profileName.value = profileName.value
         .replace(/[^А-Яа-яЁё\s]/g, "")
         .replace(/\s+/g, " ")
-        .slice(0, 20);
+        .slice(0, 30);
     });
   }
 
@@ -265,20 +306,20 @@ function initProfile() {
 
       if (v.startsWith("375")) {
         v = v.slice(0, 12);
-        profilePhone.value =
-          "+375 " +
-          v.slice(3, 5) + " " +
-          v.slice(5, 8) + " " +
-          v.slice(8, 10) + " " +
-          v.slice(10, 12);
+        let formatted = "+375";
+        if (v.length > 3) formatted += " " + v.slice(3, 5);
+        if (v.length > 5) formatted += " " + v.slice(5, 8);
+        if (v.length > 8) formatted += " " + v.slice(8, 10);
+        if (v.length > 10) formatted += " " + v.slice(10, 12);
+        profilePhone.value = formatted;
       } else if (v.startsWith("7")) {
         v = v.slice(0, 11);
-        profilePhone.value =
-          "+7 " +
-          v.slice(1, 4) + " " +
-          v.slice(4, 7) + " " +
-          v.slice(7, 9) + " " +
-          v.slice(9, 11);
+        let formatted = "+7";
+        if (v.length > 1) formatted += " " + v.slice(1, 4);
+        if (v.length > 4) formatted += " " + v.slice(4, 7);
+        if (v.length > 7) formatted += " " + v.slice(7, 9);
+        if (v.length > 9) formatted += " " + v.slice(9, 11);
+        profilePhone.value = formatted;
       } else {
         profilePhone.value = v ? "+" + v : "";
       }
@@ -297,23 +338,20 @@ function initProfile() {
     });
   }
 
-  // Авторизация через Google
+  // Google авторизация
   if (googleLoginBtn && auth) {
     googleLoginBtn.addEventListener('click', () => {
       auth.signInWithPopup(provider)
         .then(result => {
           const user = result.user;
-
           if (user.displayName && profileName) {
             profileName.value = user.displayName;
             profile.name = user.displayName;
           }
-
           if (user.photoURL && avatar) {
             avatar.src = user.photoURL;
             avatar.style.display = 'block';
           }
-
           localStorage.setItem('profile', JSON.stringify(profile));
           showToast('Вы успешно вошли');
         })
@@ -324,7 +362,7 @@ function initProfile() {
     });
   }
 
-  // Отслеживание состояния авторизации
+  // Состояние авторизации
   if (auth) {
     auth.onAuthStateChanged(user => {
       if (user) {
@@ -341,7 +379,7 @@ function initProfile() {
     });
   }
 
-  // Выход из аккаунта
+  // Выход
   if (logoutBtn && auth) {
     logoutBtn.addEventListener('click', () => {
       auth.signOut()
@@ -353,21 +391,17 @@ function initProfile() {
           showToast('Вы вышли из аккаунта');
         })
         .catch(error => {
-          console.error('Ошибка при выходе:', error);
+          console.error('Ошибка выхода:', error);
           showToast('Ошибка при выходе');
         });
     });
   }
-  
-  console.log('✅ Профиль инициализирован');
 }
 
 /* ===========================
    БРОНИРОВАНИЕ
 =========================== */
 function initBooking() {
-  console.log('📅 Инициализация бронирования...');
-  
   const bookingModal = document.getElementById('bookingModal');
   const openBookingModal = document.getElementById('openBookingModal');
   const openBookingHero = document.getElementById('openBookingHero');
@@ -375,12 +409,9 @@ function initBooking() {
   const bookingForm = document.getElementById('booking-form');
   const clearBooking = document.getElementById('clearBooking');
 
-  if (!bookingModal || !bookingForm) {
-    console.error('❌ Элементы бронирования не найдены');
-    return;
-  }
+  if (!bookingModal || !bookingForm) return;
 
-  // Валидация полей
+  // Поля формы
   const nameInput = document.getElementById('name');
   const phoneInput = document.getElementById('phone');
   const dateInput = document.getElementById('date');
@@ -388,42 +419,40 @@ function initBooking() {
   const guestsInput = document.getElementById('guests');
   const commentInput = document.getElementById('comment');
 
+  // Валидация полей
   if (nameInput) {
     nameInput.addEventListener('input', () => {
       nameInput.value = nameInput.value
         .replace(/[^А-Яа-яЁё\s]/g, "")
         .replace(/\s+/g, " ")
-        .slice(0, 20);
+        .slice(0, 30);
     });
   }
 
   if (phoneInput) {
     phoneInput.addEventListener('input', () => {
       let v = phoneInput.value.replace(/\D/g, "");
-
       if (v.startsWith("375")) {
         v = v.slice(0, 12);
-        phoneInput.value =
-          "+375" +
-          (v.length > 3 ? " " + v.slice(3, 5) : "") +
-          (v.length > 5 ? " " + v.slice(5, 8) : "") +
-          (v.length > 8 ? " " + v.slice(8, 10) : "") +
-          (v.length > 10 ? " " + v.slice(10, 12) : "");
+        let formatted = "+375";
+        if (v.length > 3) formatted += " " + v.slice(3, 5);
+        if (v.length > 5) formatted += " " + v.slice(5, 8);
+        if (v.length > 8) formatted += " " + v.slice(8, 10);
+        if (v.length > 10) formatted += " " + v.slice(10, 12);
+        phoneInput.value = formatted;
       } else if (v.startsWith("7")) {
         v = v.slice(0, 11);
-        phoneInput.value =
-          "+7" +
-          (v.length > 1 ? " " + v.slice(1, 4) : "") +
-          (v.length > 4 ? " " + v.slice(4, 7) : "") +
-          (v.length > 7 ? " " + v.slice(7, 9) : "") +
-          (v.length > 9 ? " " + v.slice(9, 11) : "");
-      } else {
-        phoneInput.value = v ? "+" + v : "";
+        let formatted = "+7";
+        if (v.length > 1) formatted += " " + v.slice(1, 4);
+        if (v.length > 4) formatted += " " + v.slice(4, 7);
+        if (v.length > 7) formatted += " " + v.slice(7, 9);
+        if (v.length > 9) formatted += " " + v.slice(9, 11);
+        phoneInput.value = formatted;
       }
     });
   }
 
-  // Установка ограничений даты
+  // Ограничения даты
   if (dateInput) {
     const today = new Date();
     const maxDate = new Date(today);
@@ -431,84 +460,74 @@ function initBooking() {
     
     dateInput.min = today.toISOString().split('T')[0];
     dateInput.max = maxDate.toISOString().split('T')[0];
+    
+    // Устанавливаем дату по умолчанию (завтра)
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    dateInput.value = tomorrow.toISOString().split('T')[0];
   }
 
-  // Валидация времени
-  if (timeInput) {
-    timeInput.addEventListener('blur', () => {
-      if (!timeInput.value) return;
-      let [h, m] = timeInput.value.split(':').map(Number);
-      if (isNaN(h)) h = 12;
-      if (isNaN(m)) m = 0;
-      h = Math.min(23, Math.max(0, h));
-      m = Math.min(59, Math.max(0, m));
-      timeInput.value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    });
+  // Время по умолчанию
+  if (timeInput && !timeInput.value) {
+    timeInput.value = '18:00';
   }
 
   // Открытие модалки
   function openBooking() {
+    bookingModal.style.display = 'flex';
     bookingModal.classList.add('modal--open');
     document.body.style.overflow = "hidden";
 
     const profile = JSON.parse(localStorage.getItem('profile') || '{}');
     if (nameInput && profile.name) nameInput.value = profile.name;
     if (phoneInput && profile.phone) phoneInput.value = profile.phone;
-
-    // Устанавливаем дату по умолчанию (завтра)
-    if (dateInput && !dateInput.value) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      dateInput.value = tomorrow.toISOString().split('T')[0];
-    }
-
-    // Устанавливаем время по умолчанию
-    if (timeInput && !timeInput.value) {
-      timeInput.value = '18:00';
-    }
   }
 
   if (openBookingModal) openBookingModal.addEventListener('click', openBooking);
   if (openBookingHero) openBookingHero.addEventListener('click', openBooking);
 
-  // Закрытие модалки
+  // Закрытие
   if (closeBooking) {
     closeBooking.addEventListener('click', () => {
+      bookingModal.style.display = 'none';
       bookingModal.classList.remove('modal--open');
       document.body.style.overflow = "";
     });
   }
 
-  bookingModal.addEventListener('click', e => {
+  bookingModal.addEventListener('click', (e) => {
     if (e.target === bookingModal) {
+      bookingModal.style.display = 'none';
       bookingModal.classList.remove('modal--open');
       document.body.style.overflow = "";
     }
   });
 
-  // Очистка формы
+  // Очистка
   if (clearBooking) {
     clearBooking.addEventListener('click', (e) => {
       e.preventDefault();
       bookingForm.reset();
       if (commentInput) commentInput.value = '';
+      if (dateInput) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateInput.value = tomorrow.toISOString().split('T')[0];
+      }
+      if (timeInput) timeInput.value = '18:00';
     });
   }
 
-  // ОБРАБОТЧИК ОТПРАВКИ
+  // ОТПРАВКА
   bookingForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    console.log('=== НАЧАЛО ОТПРАВКИ ===');
-    
+
     const name = nameInput?.value.trim();
     const phone = phoneInput?.value.trim();
     const guests = guestsInput?.value || '2';
     const comment = commentInput?.value.trim() || '';
     const date = dateInput?.value;
     const time = timeInput?.value;
-
-    console.log('Данные формы:', { name, phone, guests, comment, date, time });
 
     // Валидация
     if (!name) {
@@ -539,11 +558,8 @@ function initBooking() {
       // Получаем корзину
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
-      
-      console.log('Корзина:', cart);
-      console.log('Firebase доступен:', !!db);
 
-      // СОХРАНЯЕМ В ИСТОРИЮ
+      // Данные заказа
       const orderData = {
         id: Date.now().toString(),
         userId: currentUserId,
@@ -559,49 +575,53 @@ function initBooking() {
         timestamp: new Date().toISOString()
       };
 
-      // Сохраняем в Firebase если доступен
+      // Сохраняем в localStorage
+      const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+      history.unshift(orderData);
+      if (history.length > 30) history.pop();
+      localStorage.setItem('orderHistory', JSON.stringify(history));
+
+      // Сохраняем в Firebase если есть
       if (db) {
         try {
           await db.collection('orders').add({
             ...orderData,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
           });
-          console.log('✅ Заказ сохранен в Firebase');
-        } catch (firebaseError) {
-          console.error('Ошибка Firebase:', firebaseError);
-          saveOrderToLocalStorage(orderData);
+        } catch (e) {
+          console.log('Firebase недоступен, сохранено только локально');
         }
-      } else {
-        saveOrderToLocalStorage(orderData);
       }
 
-      // ОЧИЩАЕМ КОРЗИНУ
+      // Очищаем корзину
       localStorage.setItem('cart', '[]');
       
-      // Обновляем отображение корзины
-      const cartCount = document.getElementById('cartCount');
-      if (cartCount) cartCount.textContent = '0';
-      
-      const cartTotal = document.getElementById('cartTotal');
-      if (cartTotal) cartTotal.textContent = '0';
+      // Обновляем счетчик
+      document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
+        if (el) el.textContent = '0';
+      });
 
-      // УВЕДОМЛЕНИЕ
+      // Уведомление
       showToast('✅ Заявка успешно отправлена!');
 
-      // ЗАКРЫВАЕМ ФОРМУ
+      // Закрываем модалку
+      bookingModal.style.display = 'none';
       bookingModal.classList.remove('modal--open');
       document.body.style.overflow = "";
 
-      // ОЧИЩАЕМ ФОРМУ
+      // Очищаем форму
       bookingForm.reset();
       if (commentInput) commentInput.value = '';
-
-      console.log('✅ Все операции завершены');
+      if (dateInput) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateInput.value = tomorrow.toISOString().split('T')[0];
+      }
+      if (timeInput) timeInput.value = '18:00';
 
     } catch (error) {
-      console.error('❌ Ошибка:', error);
-      showToast('❌ Ошибка при отправке заявки');
-      
+      console.error('Ошибка:', error);
+      showToast('❌ Ошибка при отправке');
     } finally {
       // Разблокируем кнопку
       if (submitBtn) {
@@ -610,107 +630,45 @@ function initBooking() {
       }
     }
   });
-
-  // Функция сохранения в localStorage
-  function saveOrderToLocalStorage(orderData) {
-    try {
-      const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-      history.unshift(orderData);
-      if (history.length > 50) history.pop();
-      localStorage.setItem('orderHistory', JSON.stringify(history));
-      console.log('✅ Заказ сохранен в localStorage');
-    } catch (e) {
-      console.error('Ошибка сохранения:', e);
-    }
-  }
-  
-  console.log('✅ Бронирование инициализировано');
 }
 
 /* ===========================
    ИСТОРИЯ ЗАКАЗОВ
 =========================== */
 function initHistory() {
-  console.log('📜 Инициализация истории...');
-  
   const historyModal = document.getElementById('historyModal');
   const openHistory = document.getElementById('openHistory');
   const openHistoryFooter = document.getElementById('openHistoryFooter');
   const closeHistory = document.getElementById('closeHistory');
   const historyList = document.getElementById('historyList');
 
-  if (!historyModal || !historyList) {
-    console.warn('⚠️ Элементы истории не найдены');
-    return;
-  }
+  if (!historyModal || !historyList) return;
 
-  async function loadHistory() {
-    const allOrders = [];
+  function loadHistory() {
+    const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
     
-    // Из Firebase
-    if (db) {
-      try {
-        const snapshot = await db.collection('orders')
-          .where('userId', '==', currentUserId)
-          .orderBy('timestamp', 'desc')
-          .get();
-
-        snapshot.forEach(doc => {
-          const order = doc.data();
-          allOrders.push({
-            ...order,
-            id: doc.id,
-            source: 'firebase',
-            displayDate: order.timestamp?.toDate().toLocaleString('ru-RU') || '-'
-          });
-        });
-      } catch (error) {
-        console.error('Ошибка загрузки из Firebase:', error);
-      }
-    }
-    
-    // Из localStorage
-    const localHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-    localHistory.forEach(order => {
-      allOrders.push({
-        ...order,
-        source: 'local',
-        displayDate: new Date(order.timestamp).toLocaleString('ru-RU')
-      });
-    });
-    
-    // Сортируем
-    allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-    if (allOrders.length === 0) {
-      historyList.innerHTML = '<p>Заказов пока нет.</p>';
+    if (history.length === 0) {
+      historyList.innerHTML = '<p class="no-orders">У вас пока нет заказов</p>';
       return;
     }
 
-    historyList.innerHTML = '';
-
-    allOrders.forEach(order => {
-      const div = document.createElement('div');
-      div.className = 'history-item';
-      div.innerHTML = `
-        <div><strong>Дата заказа:</strong> ${order.displayDate}</div>
-        <div><strong>Сумма:</strong> ${order.total} BYN</div>
-        <div><strong>Имя:</strong> ${order.name}</div>
-        <div><strong>Телефон:</strong> ${order.phone}</div>
-        <div><strong>Дата брони:</strong> ${order.date} ${order.time}</div>
-        <div><strong>Гостей:</strong> ${order.guests}</div>
-        <div><strong>Комментарий:</strong> ${order.comment || '-'}</div>
-        <div><strong>Позиции:</strong><br>
-          ${order.items.map(i => `• ${i.title} — ${i.price} BYN`).join('<br>')}
+    historyList.innerHTML = history.map(order => `
+      <div class="history-item">
+        <div class="history-date">${new Date(order.timestamp).toLocaleString('ru-RU')}</div>
+        <div class="history-name">${order.name} • ${order.phone}</div>
+        <div class="history-booking">${order.date} ${order.time} • ${order.guests} чел.</div>
+        <div class="history-items">
+          ${order.items.map(item => `• ${item.title} — ${item.price} BYN`).join('<br>')}
         </div>
-        <hr>
-      `;
-      historyList.appendChild(div);
-    });
+        <div class="history-total">Сумма: ${order.total} BYN</div>
+        ${order.comment ? `<div class="history-comment">Комментарий: ${order.comment}</div>` : ''}
+      </div>
+    `).join('');
   }
 
   function openHistoryModal() {
     loadHistory();
+    historyModal.style.display = 'flex';
     historyModal.classList.add('modal--open');
     document.body.style.overflow = 'hidden';
   }
@@ -720,97 +678,98 @@ function initHistory() {
 
   if (closeHistory) {
     closeHistory.addEventListener('click', () => {
+      historyModal.style.display = 'none';
       historyModal.classList.remove('modal--open');
       document.body.style.overflow = '';
     });
   }
 
-  historyModal.addEventListener('click', e => {
+  historyModal.addEventListener('click', (e) => {
     if (e.target === historyModal) {
+      historyModal.style.display = 'none';
       historyModal.classList.remove('modal--open');
       document.body.style.overflow = '';
     }
   });
+}
+
+/* ===========================
+   СТИЛИ ДЛЯ TOAST
+=========================== */
+function addToastStyles() {
+  if (document.getElementById('toast-styles')) return;
   
-  console.log('✅ История инициализирована');
+  const styles = document.createElement('style');
+  styles.id = 'toast-styles';
+  styles.textContent = `
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 10000;
+      display: none;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal--open {
+      display: flex;
+    }
+    .cart-count {
+      background: #e44d2e;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+      position: absolute;
+      top: -5px;
+      right: -5px;
+    }
+  `;
+  document.head.appendChild(styles);
 }
 
 /* ===========================
-   ОГРАНИЧЕНИЯ ДАТЫ
-=========================== */
-function initDateRestrictions() {
-  const dateInput = document.getElementById('date');
-  if (!dateInput) return;
-
-  const today = new Date();
-  const maxDate = new Date(today);
-  maxDate.setMonth(maxDate.getMonth() + 1);
-
-  dateInput.min = today.toISOString().split('T')[0];
-  dateInput.max = maxDate.toISOString().split('T')[0];
-}
-
-/* ===========================
-   ВАЛИДАЦИЯ ВРЕМЕНИ
-=========================== */
-function initTimeValidation() {
-  document.querySelectorAll('input[type="time"]').forEach(input => {
-    input.addEventListener('blur', () => {
-      if (!input.value) return;
-      let [h, m] = input.value.split(':').map(Number);
-      if (isNaN(h)) h = 0;
-      if (isNaN(m)) m = 0;
-      h = Math.min(23, Math.max(0, h));
-      m = Math.min(59, Math.max(0, m));
-      input.value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    });
-  });
-}
-
-/* ===========================
-   ЗАКРЫТИЕ ПО ESC
-=========================== */
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeAllModals();
-  }
-});
-
-/* ===========================
-   ЗАПУСК ПРИ ЗАГРУЗКЕ
+   ЗАПУСК
 =========================== */
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Запуск инициализации...');
+  // Добавляем стили
+  addToastStyles();
   
-  // Проверяем наличие основных элементов
-  console.log('📄 Проверка элементов:');
-  console.log('- burgerBtn:', !!document.getElementById('burgerBtn'));
-  console.log('- cartModal:', !!document.getElementById('cartModal'));
-  console.log('- bookingModal:', !!document.getElementById('bookingModal'));
-  console.log('- profileName:', !!document.getElementById('profileName'));
-  
-  // Инициализируем все модули
+  // Инициализация
   initBurgerMenu();
   initMenuFilter();
   initCart();
   initProfile();
   initBooking();
   initHistory();
-  initDateRestrictions();
-  initTimeValidation();
   
-  console.log('✅ Инициализация завершена');
+  console.log('✅ Сайт полностью загружен и готов к работе');
 });
 
-// Для отладки в консоли
-window.viewLocalHistory = function() {
-  const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-  console.log('📜 История заказов (localStorage):', history);
-  return history;
-};
-
-window.viewCart = function() {
-  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  console.log('🛒 Текущая корзина:', cart);
-  return cart;
+// Для отладки
+window.debug = {
+  cart: () => JSON.parse(localStorage.getItem('cart') || '[]'),
+  history: () => JSON.parse(localStorage.getItem('orderHistory') || '[]'),
+  profile: () => JSON.parse(localStorage.getItem('profile') || '{}'),
+  clear: () => {
+    localStorage.clear();
+    location.reload();
+  }
 };
