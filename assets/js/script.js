@@ -66,6 +66,114 @@ function closeAllModals() {
 }
 
 /* ===========================
+   МАСКА ТЕЛЕФОНА И ВАЛИДАЦИЯ
+=========================== */
+function initPhoneMask() {
+  function applyPhoneMask(inputElement) {
+    if (!inputElement) return;
+    
+    inputElement.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      let formatted = '';
+      
+      if (value.length === 0) {
+        e.target.value = '';
+        return;
+      }
+      
+      if (value.startsWith('375')) {
+        if (value.length <= 3) {
+          formatted = '+' + value;
+        } else if (value.length <= 5) {
+          formatted = '+' + value.slice(0, 3) + ' ' + value.slice(3);
+        } else if (value.length <= 8) {
+          formatted = '+' + value.slice(0, 3) + ' ' + value.slice(3, 5) + ' ' + value.slice(5);
+        } else if (value.length <= 10) {
+          formatted = '+' + value.slice(0, 3) + ' ' + value.slice(3, 5) + ' ' + value.slice(5, 8) + ' ' + value.slice(8);
+        } else {
+          formatted = '+' + value.slice(0, 3) + ' ' + value.slice(3, 5) + ' ' + value.slice(5, 8) + ' ' + value.slice(8, 10) + ' ' + value.slice(10, 12);
+        }
+        e.target.value = formatted.trim();
+      }
+      else if (value.startsWith('7')) {
+        if (value.length <= 1) {
+          formatted = '+' + value;
+        } else if (value.length <= 4) {
+          formatted = '+' + value.slice(0, 1) + ' ' + value.slice(1);
+        } else if (value.length <= 7) {
+          formatted = '+' + value.slice(0, 1) + ' ' + value.slice(1, 4) + ' ' + value.slice(4);
+        } else if (value.length <= 9) {
+          formatted = '+' + value.slice(0, 1) + ' ' + value.slice(1, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7);
+        } else {
+          formatted = '+' + value.slice(0, 1) + ' ' + value.slice(1, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7, 9) + ' ' + value.slice(9, 11);
+        }
+        e.target.value = formatted.trim();
+      }
+      else {
+        if (value.length <= 3) {
+          formatted = '+' + value;
+        } else if (value.length <= 6) {
+          formatted = '+' + value.slice(0, 3) + ' ' + value.slice(3);
+        } else if (value.length <= 9) {
+          formatted = '+' + value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6);
+        } else {
+          formatted = '+' + value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6, 9) + ' ' + value.slice(9, 12);
+        }
+        e.target.value = formatted.trim();
+      }
+      
+      if (e.target.value.length > 18) {
+        e.target.value = e.target.value.slice(0, 18);
+      }
+    });
+    
+    inputElement.addEventListener('keydown', function(e) {
+      const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End', 'Enter'];
+      if (allowedKeys.includes(e.key)) return;
+      if (e.key === '+' && e.target.value.length === 0) return;
+      if (!/[\d]/.test(e.key) && e.key !== '+') {
+        e.preventDefault();
+      }
+    });
+    
+    inputElement.addEventListener('blur', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length === 0) {
+        e.target.style.borderColor = 'rgba(255,255,255,0.3)';
+        return;
+      }
+      
+      if (value.startsWith('375') && value.length !== 12) {
+        e.target.style.borderColor = '#ff4757';
+        showToast('❌ Введите полный номер телефона (+375 XX XXX XX XX)');
+      } else if (value.startsWith('7') && value.length !== 11) {
+        e.target.style.borderColor = '#ff4757';
+        showToast('❌ Введите полный номер телефона (+7 XXX XXX XX XX)');
+      } else if (value.length < 9) {
+        e.target.style.borderColor = '#ff4757';
+        showToast('❌ Введите корректный номер телефона');
+      } else {
+        e.target.style.borderColor = '#4caf50';
+      }
+      
+      setTimeout(() => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.3)';
+      }, 2000);
+    });
+  }
+  
+  const phoneFields = ['profilePhone', 'phone'];
+  phoneFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      applyPhoneMask(field);
+    }
+  });
+  
+  console.log('✅ Маска телефона и валидация активированы');
+}
+
+/* ===========================
    СТИЛИ ДЛЯ TOAST И МОДАЛОК
 =========================== */
 function addGlobalStyles() {
@@ -306,6 +414,24 @@ function addGlobalStyles() {
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
+    }
+    
+    .phone-hint {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 4px;
+      display: block;
+    }
+    
+    input[type="text"]#phone,
+    input[type="text"]#profilePhone {
+      transition: border-color 0.3s ease;
+    }
+    
+    input[type="text"]#phone:focus,
+    input[type="text"]#profilePhone:focus {
+      outline: none;
+      border-color: #f7c325 !important;
     }
   `;
   document.head.appendChild(styles);
@@ -865,7 +991,6 @@ function initHistory() {
 function forceFixInterface() {
   console.log('🔧 ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ИНТЕРФЕЙСА...');
   
-  // Крестик в форме бронирования
   const closeBtn = document.getElementById('closeBooking');
   if (closeBtn) {
     closeBtn.style.cssText = `
@@ -888,7 +1013,6 @@ function forceFixInterface() {
     `;
   }
   
-  // Все кнопки btn-outline
   document.querySelectorAll('.btn-outline').forEach(btn => {
     btn.style.background = 'transparent';
     btn.style.color = '#fff';
@@ -901,25 +1025,43 @@ function forceFixInterface() {
     btn.style.transition = 'all 0.3s ease';
   });
   
-  // Специально для кнопки "Посмотреть меню"
   const viewMenuBtn = document.querySelector('.hero-buttons .btn-outline');
   if (viewMenuBtn && viewMenuBtn.textContent.includes('Посмотреть меню')) {
     viewMenuBtn.style.border = '2px solid rgba(255,255,255,0.6)';
   }
   
-  // Кнопка истории в футере
   const historyFooter = document.getElementById('openHistoryFooter');
   if (historyFooter) {
     historyFooter.style.border = '2px solid rgba(255,255,255,0.6)';
     historyFooter.style.padding = '12px 24px';
   }
   
-  // Контейнер кнопок в корзине
   const cartButtons = document.querySelector('.cart-buttons');
   if (cartButtons) {
     cartButtons.style.display = 'flex';
     cartButtons.style.gap = '10px';
     cartButtons.style.marginTop = '15px';
+  }
+  
+  const historyClose = document.getElementById('closeHistory');
+  if (historyClose) {
+    historyClose.style.cssText = `
+      position: absolute !important;
+      top: 15px !important;
+      right: 15px !important;
+      width: 34px !important;
+      height: 34px !important;
+      background: rgba(255,255,255,0.2) !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      border-radius: 50% !important;
+      color: white !important;
+      font-size: 20px !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 9999 !important;
+    `;
   }
   
   console.log('✅ ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ЗАВЕРШЕНО!');
@@ -944,6 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initProfile();
   initBooking();
   initHistory();
+  initPhoneMask();
   setTimeout(() => forceFixInterface(), 500);
   console.log('✅ Сайт загружен');
 });
@@ -954,77 +1097,3 @@ window.debug = {
   profile: () => JSON.parse(localStorage.getItem('profile') || '{}'),
   clear: () => { if (confirm('Очистить всё?')) { localStorage.clear(); location.reload(); } }
 };
-/* ===========================
-   ДОПОЛНИТЕЛЬНЫЕ ИСПРАВЛЕНИЯ ИНТЕРФЕЙСА
-=========================== */
-function fixHistoryCloseButton() {
-  console.log('🔧 Исправляем крестик в истории...');
-  
-  const historyClose = document.getElementById('closeHistory');
-  if (historyClose) {
-    historyClose.style.cssText = `
-      position: absolute !important;
-      top: 15px !important;
-      right: 15px !important;
-      left: auto !important;
-      width: 34px !important;
-      height: 34px !important;
-      background: rgba(255,255,255,0.2) !important;
-      border: 1px solid rgba(255,255,255,0.3) !important;
-      border-radius: 50% !important;
-      color: white !important;
-      font-size: 20px !important;
-      cursor: pointer !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      z-index: 9999 !important;
-    `;
-    console.log('✅ Крестик истории исправлен');
-  }
-  
-  const bookingClose = document.getElementById('closeBooking');
-  if (bookingClose) {
-    bookingClose.style.cssText = `
-      position: absolute !important;
-      top: 15px !important;
-      right: 15px !important;
-      left: auto !important;
-      width: 34px !important;
-      height: 34px !important;
-      background: rgba(255,255,255,0.2) !important;
-      border: 1px solid rgba(255,255,255,0.3) !important;
-      border-radius: 50% !important;
-      color: white !important;
-      font-size: 20px !important;
-      cursor: pointer !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      z-index: 9999 !important;
-    `;
-    console.log('✅ Крестик бронирования исправлен');
-  }
-  
-  // Все кнопки btn-outline
-  document.querySelectorAll('.btn-outline').forEach(btn => {
-    btn.style.border = '2px solid rgba(255,255,255,0.6)';
-    btn.style.background = 'transparent';
-  });
-  
-  console.log('✅ Все исправления применены');
-}
-
-// Запускаем исправления после загрузки
-setTimeout(() => {
-  fixHistoryCloseButton();
-}, 500);
-
-// Также запускаем при каждом открытии модалки истории
-const historyModal = document.getElementById('historyModal');
-if (historyModal) {
-  const observer = new MutationObserver(() => {
-    setTimeout(() => fixHistoryCloseButton(), 100);
-  });
-  observer.observe(historyModal, { attributes: true, attributeFilter: ['style', 'class'] });
-}
