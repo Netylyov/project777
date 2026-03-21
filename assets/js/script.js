@@ -5,6 +5,7 @@ let db = null;
 let auth = null;
 let provider = null;
 let currentUserId = "guest";
+let globalCartUpdateFunction = null;
 
 /* ===========================
    ИНИЦИАЛИЗАЦИЯ FIREBASE (ЕСЛИ ПОДКЛЮЧЕН)
@@ -356,7 +357,7 @@ function initMenuFilter() {
 }
 
 /* ===========================
-   КОРЗИНА (С КНОПКОЙ ОЧИСТКИ)
+   КОРЗИНА (С ЭКСПОРТОМ ФУНКЦИИ ОБНОВЛЕНИЯ)
 =========================== */
 function initCart() {
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -371,6 +372,8 @@ function initCart() {
   const clearCartBtn = document.getElementById('clearCartBtn');
 
   function updateCart() {
+    console.log('🔄 updateCart вызван, товаров в корзине:', cart.length);
+    
     if (cartCount) cartCount.textContent = cart.length;
     
     if (cartTotal) {
@@ -437,10 +440,11 @@ function initCart() {
   if (openCart && cartModal) {
     openCart.addEventListener('click', (e) => {
       e.preventDefault();
+      cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      updateCart();
       cartModal.style.display = 'flex';
       cartModal.classList.add('modal--open');
       document.body.style.overflow = "hidden";
-      updateCart();
     });
   }
 
@@ -469,10 +473,8 @@ function initCart() {
         saveCart(cart);
         updateCart();
         showToast('🛒 Корзина очищена');
-        console.log('✅ Корзина очищена');
       }
     });
-    console.log('✅ Кнопка очистки корзины подключена');
   }
 
   if (checkoutBtn) {
@@ -506,6 +508,16 @@ function initCart() {
   }
 
   updateCart();
+  
+  globalCartUpdateFunction = function() {
+    cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    updateCart();
+  };
+  
+  document.addEventListener('cartUpdated', function() {
+    cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    updateCart();
+  });
 }
 
 /* ===========================
@@ -625,7 +637,7 @@ function initProfile() {
 }
 
 /* ===========================
-   БРОНИРОВАНИЕ (С МГНОВЕННОЙ ОЧИСТКОЙ КОРЗИНЫ)
+   БРОНИРОВАНИЕ (С ПРИНУДИТЕЛЬНОЙ ОЧИСТКОЙ КОРЗИНЫ)
 =========================== */
 function initBooking() {
   console.log('📅 Инициализация бронирования...');
@@ -711,7 +723,6 @@ function initBooking() {
     });
   }
 
-  // ===== ОСНОВНОЙ ОБРАБОТЧИК С МГНОВЕННОЙ ОЧИСТКОЙ КОРЗИНЫ =====
   bookingForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -746,11 +757,9 @@ function initBooking() {
     }
 
     try {
-      // Получаем корзину ДО сохранения
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
       
-      // Сохраняем заказ в историю
       const orderData = {
         id: Date.now().toString(),
         userId: currentUserId,
@@ -770,40 +779,32 @@ function initBooking() {
       history.unshift(orderData);
       localStorage.setItem('orderHistory', JSON.stringify(history));
       
-      // ===== МГНОВЕННАЯ ОЧИСТКА КОРЗИНЫ =====
-      // 1. Очищаем localStorage
+      // ОЧИСТКА КОРЗИНЫ
       localStorage.setItem('cart', '[]');
       
-      // 2. Обновляем счетчик корзины в хедере
       const cartCount = document.getElementById('cartCount');
       if (cartCount) cartCount.textContent = '0';
       
-      // 3. Обновляем общую сумму в корзине (если модалка открыта)
       const cartTotalEl = document.getElementById('cartTotal');
       if (cartTotalEl) cartTotalEl.textContent = '0';
       
-      // 4. Очищаем список товаров в корзине (если модалка открыта)
       const cartItemsEl = document.getElementById('cartItems');
       if (cartItemsEl) {
         cartItemsEl.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
       }
       
-      // 5. Обновляем все элементы с классом cart-count
       document.querySelectorAll('.cart-count').forEach(el => {
-        if (el) el.textContent = '0';
+        el.textContent = '0';
       });
       
-      console.log('✅ Корзина полностью очищена (счетчик: 0, список: пуст)');
-
-      // Показываем уведомление
+      if (globalCartUpdateFunction) globalCartUpdateFunction();
+      
       showToast('✅ Ваш заказ оформлен!');
 
-      // Закрываем форму
       bookingModal.style.display = 'none';
       bookingModal.classList.remove('modal--open');
       document.body.style.overflow = "";
 
-      // Очищаем поля формы
       bookingForm.reset();
       if (commentInput) commentInput.value = '';
       if (dateInput) {
@@ -870,7 +871,6 @@ function initHistory() {
       localStorage.setItem('orderHistory', '[]');
       loadHistory();
       showToast('🗑️ История заказов очищена');
-      console.log('✅ История заказов очищена');
     }
   }
 
@@ -886,7 +886,6 @@ function initHistory() {
 
   if (clearHistoryBtn) {
     clearHistoryBtn.addEventListener('click', clearHistory);
-    console.log('✅ Кнопка очистки истории подключена');
   }
 
   if (closeHistory) {
@@ -904,6 +903,165 @@ function initHistory() {
       document.body.style.overflow = '';
     }
   });
+}
+
+/* ===========================
+   ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ИНТЕРФЕЙСА
+=========================== */
+function forceFixInterface() {
+  console.log('🔧 ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ИНТЕРФЕЙСА...');
+  
+  // 1. КРЕСТИК В ФОРМЕ БРОНИРОВАНИЯ - В ПРАВЫЙ УГОЛ
+  const closeBtn = document.getElementById('closeBooking');
+  if (closeBtn) {
+    closeBtn.style.cssText = `
+      position: absolute !important;
+      top: 15px !important;
+      right: 15px !important;
+      left: auto !important;
+      width: 34px !important;
+      height: 34px !important;
+      background: rgba(255,255,255,0.2) !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      border-radius: 50% !important;
+      color: white !important;
+      font-size: 20px !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 9999 !important;
+      transition: all 0.3s ease !important;
+    `;
+    console.log('✅ Крестик перемещен в правый угол');
+  }
+  
+  // 2. ВСЕМ КНОПКАМ ДОБАВЛЯЕМ РАМКИ
+  const allBtns = document.querySelectorAll('button');
+  allBtns.forEach(btn => {
+    if (btn.id === 'burgerBtn' || btn.classList.contains('cart-close') || btn.classList.contains('history-close') || btn.id === 'closeBooking') {
+      return;
+    }
+    
+    btn.style.transition = 'all 0.3s ease';
+    btn.style.cursor = 'pointer';
+    
+    if (btn.classList.contains('btn-primary') || btn.id === 'checkoutBtn' || btn.classList.contains('booking-submit')) {
+      btn.style.background = '#f7c325';
+      btn.style.color = '#000';
+      btn.style.border = '2px solid #f7c325';
+      btn.style.borderRadius = '10px';
+      btn.style.padding = '12px 24px';
+      btn.style.fontWeight = '600';
+    }
+    else if (btn.classList.contains('btn-outline') || btn.classList.contains('booking-clear') || btn.id === 'googleLoginBtn' || btn.id === 'logoutBtn') {
+      btn.style.background = 'transparent';
+      btn.style.color = '#fff';
+      btn.style.border = '1px solid rgba(255,255,255,0.5)';
+      btn.style.borderRadius = '10px';
+      btn.style.padding = '12px 24px';
+    }
+    else if (btn.classList.contains('clear-cart-btn') || btn.id === 'clearCartBtn' || btn.classList.contains('clear-history-btn') || btn.id === 'clearHistoryBtn') {
+      btn.style.background = '#ff4757';
+      btn.style.color = '#fff';
+      btn.style.border = '1px solid #ff4757';
+      btn.style.borderRadius = '10px';
+      btn.style.padding = '12px 20px';
+    }
+    else if (btn.classList.contains('menu-btn')) {
+      btn.style.background = '#f7c325';
+      btn.style.color = '#000';
+      btn.style.border = '1px solid #f7c325';
+      btn.style.borderRadius = '8px';
+      btn.style.padding = '8px 16px';
+    }
+    else if (btn.classList.contains('cart-btn')) {
+      btn.style.background = 'rgba(255,255,255,0.15)';
+      btn.style.color = '#fff';
+      btn.style.border = '1px solid rgba(255,255,255,0.5)';
+      btn.style.borderRadius = '30px';
+      btn.style.padding = '8px 16px';
+    }
+    else {
+      btn.style.background = 'transparent';
+      btn.style.color = '#fff';
+      btn.style.border = '1px solid rgba(255,255,255,0.3)';
+      btn.style.borderRadius = '8px';
+      btn.style.padding = '10px 20px';
+    }
+    
+    btn.addEventListener('mouseenter', function() {
+      if (btn.classList.contains('btn-primary') || btn.id === 'checkoutBtn' || btn.classList.contains('booking-submit')) {
+        btn.style.background = '#e0b020';
+        btn.style.transform = 'translateY(-2px)';
+        btn.style.boxShadow = '0 5px 15px rgba(247,195,37,0.3)';
+      }
+      else if (btn.classList.contains('btn-outline') || btn.classList.contains('booking-clear')) {
+        btn.style.background = 'rgba(255,255,255,0.1)';
+        btn.style.borderColor = '#f7c325';
+        btn.style.transform = 'translateY(-2px)';
+      }
+      else if (btn.classList.contains('clear-cart-btn') || btn.id === 'clearCartBtn' || btn.classList.contains('clear-history-btn') || btn.id === 'clearHistoryBtn') {
+        btn.style.background = '#ee3a4a';
+        btn.style.transform = 'translateY(-2px)';
+        btn.style.boxShadow = '0 5px 15px rgba(255,71,87,0.3)';
+      }
+      else if (btn.classList.contains('menu-btn')) {
+        btn.style.background = '#e0b020';
+        btn.style.transform = 'translateY(-2px)';
+      }
+      else if (btn.classList.contains('cart-btn')) {
+        btn.style.background = 'rgba(255,255,255,0.25)';
+        btn.style.transform = 'translateY(-2px)';
+      }
+    });
+    
+    btn.addEventListener('mouseleave', function() {
+      if (btn.classList.contains('btn-primary') || btn.id === 'checkoutBtn' || btn.classList.contains('booking-submit')) {
+        btn.style.background = '#f7c325';
+        btn.style.transform = 'translateY(0)';
+        btn.style.boxShadow = 'none';
+      }
+      else if (btn.classList.contains('btn-outline') || btn.classList.contains('booking-clear')) {
+        btn.style.background = 'transparent';
+        btn.style.borderColor = 'rgba(255,255,255,0.5)';
+        btn.style.transform = 'translateY(0)';
+      }
+      else if (btn.classList.contains('clear-cart-btn') || btn.id === 'clearCartBtn' || btn.classList.contains('clear-history-btn') || btn.id === 'clearHistoryBtn') {
+        btn.style.background = '#ff4757';
+        btn.style.transform = 'translateY(0)';
+        btn.style.boxShadow = 'none';
+      }
+      else if (btn.classList.contains('menu-btn')) {
+        btn.style.background = '#f7c325';
+        btn.style.transform = 'translateY(0)';
+      }
+      else if (btn.classList.contains('cart-btn')) {
+        btn.style.background = 'rgba(255,255,255,0.15)';
+        btn.style.transform = 'translateY(0)';
+      }
+    });
+  });
+  
+  // 3. СТИЛИ ДЛЯ КНОПКИ ИСТОРИИ В ФУТЕРЕ
+  const historyFooterBtn = document.getElementById('openHistoryFooter');
+  if (historyFooterBtn) {
+    historyFooterBtn.style.background = 'transparent';
+    historyFooterBtn.style.color = '#fff';
+    historyFooterBtn.style.border = '1px solid rgba(255,255,255,0.5)';
+    historyFooterBtn.style.borderRadius = '10px';
+    historyFooterBtn.style.padding = '12px 24px';
+  }
+  
+  // 4. СТИЛИ ДЛЯ КОНТЕЙНЕРА КНОПОК В КОРЗИНЕ
+  const cartButtons = document.querySelector('.cart-buttons');
+  if (cartButtons) {
+    cartButtons.style.display = 'flex';
+    cartButtons.style.gap = '10px';
+    cartButtons.style.marginTop = '15px';
+  }
+  
+  console.log('✅ ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ЗАВЕРШЕНО!');
 }
 
 /* ===========================
@@ -929,6 +1087,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initProfile();
   initBooking();
   initHistory();
+  
+  setTimeout(() => {
+    forceFixInterface();
+  }, 500);
   
   console.log('✅ Сайт полностью загружен и готов к работе');
 });
