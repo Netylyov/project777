@@ -418,7 +418,7 @@
             <label for="guests">Гостей</label>
             <select id="guests" required>
               <option value="1">1 гость</option>
-              <option value="2">2 гостя</option>
+              <option value="2" selected>2 гостя</option>
               <option value="3">3 гостя</option>
               <option value="4">4 гостя</option>
               <option value="5">5 гостей</option>
@@ -432,7 +432,7 @@
 
           <div class="field field-full">
             <label for="comment">Комментарий</label>
-            <textarea id="comment"></textarea>
+            <textarea id="comment" placeholder="Ваши пожелания или особые запросы..."></textarea>
           </div>
 
         </div>
@@ -448,9 +448,7 @@
   </div>
 </div>
 
-
-
-<!-- CART MODAL -->
+<!-- CART MODAL С КНОПКОЙ ОЧИСТКИ -->
 <div class="cart-modal" id="cartModal">
   <div class="cart-content">
     <button class="cart-close" id="closeCart">✕</button>
@@ -462,15 +460,21 @@
       Итого: <span id="cartTotal">0</span> BYN
     </div>
 
-    <button class="btn btn-primary" id="checkoutBtn">Оформить заказ</button>
+    <div class="cart-buttons">
+      <button id="clearCartBtn" class="clear-cart-btn">Очистить корзину</button>
+      <button class="btn btn-primary" id="checkoutBtn">Оформить заказ</button>
+    </div>
   </div>
 </div>
 
-<!-- HISTORY MODAL -->
+<!-- HISTORY MODAL С КНОПКОЙ ОЧИСТКИ -->
 <div class="history-modal" id="historyModal">
   <div class="history-content">
     <button class="history-close" id="closeHistory">✕</button>
-    <h2>История заказов</h2>
+    <div class="history-header">
+      <h2>История заказов</h2>
+      <button id="clearHistoryBtn" class="clear-history-btn">Очистить историю</button>
+    </div>
     <div id="historyList"></div>
   </div>
 </div>
@@ -501,4 +505,3 @@
 
 </body>
 </html>
-
