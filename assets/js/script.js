@@ -156,51 +156,6 @@ function addGlobalStyles() {
       color: #000;
     }
     
-    .clear-history-btn {
-      background: #ff4757;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .clear-history-btn:hover {
-      background: #ee3a4a;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
-    }
-    
-    .clear-history-btn:active {
-      transform: translateY(0);
-    }
-    
-    .clear-history-btn::before {
-      content: "🗑️";
-      font-size: 14px;
-    }
-    
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #f0f0f0;
-    }
-    
-    .history-header h2 {
-      margin: 0;
-      font-size: 24px;
-      color: #333;
-    }
-    
     .cart-count {
       background: #e44d2e;
       color: white;
@@ -312,6 +267,64 @@ function addGlobalStyles() {
       font-size: 48px;
       margin-bottom: 15px;
     }
+    
+    /* Стили для кнопок очистки */
+    .clear-cart-btn, .clear-history-btn {
+      background: #ff4757;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .clear-cart-btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .clear-history-btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .clear-cart-btn:hover, .clear-history-btn:hover {
+      background: #ee3a4a;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+    }
+    
+    .cart-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+    
+    .history-header h2 {
+      margin: 0;
+      font-size: 24px;
+      color: #fff;
+    }
   `;
   document.head.appendChild(styles);
 }
@@ -364,7 +377,7 @@ function initMenuFilter() {
 }
 
 /* ===========================
-   КОРЗИНА
+   КОРЗИНА (С КНОПКОЙ ОЧИСТКИ)
 =========================== */
 function initCart() {
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -376,6 +389,7 @@ function initCart() {
   const cartTotal = document.getElementById('cartTotal');
   const cartCount = document.getElementById('cartCount');
   const checkoutBtn = document.getElementById('checkoutBtn');
+  const clearCartBtn = document.getElementById('clearCartBtn');
 
   function updateCart() {
     document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
@@ -420,6 +434,7 @@ function initCart() {
     }
   }
 
+  // Добавление в корзину
   document.querySelectorAll('.add-to-cart, .menu-btn, .order-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -446,6 +461,7 @@ function initCart() {
     });
   });
 
+  // Открытие корзины
   if (openCart && cartModal) {
     openCart.addEventListener('click', (e) => {
       e.preventDefault();
@@ -456,6 +472,7 @@ function initCart() {
     });
   }
 
+  // Закрытие корзины
   if (closeCart && cartModal) {
     closeCart.addEventListener('click', () => {
       cartModal.style.display = 'none';
@@ -464,6 +481,7 @@ function initCart() {
     });
   }
 
+  // Закрытие по клику на фон
   if (cartModal) {
     cartModal.addEventListener('click', (e) => {
       if (e.target === cartModal) {
@@ -474,6 +492,23 @@ function initCart() {
     });
   }
 
+  // Кнопка очистки корзины
+  if (clearCartBtn) {
+    clearCartBtn.addEventListener('click', () => {
+      if (confirm('Вы уверены, что хотите очистить всю корзину?')) {
+        cart = [];
+        saveCart(cart);
+        updateCart();
+        showToast('🛒 Корзина очищена');
+        console.log('✅ Корзина очищена');
+      }
+    });
+    console.log('✅ Кнопка очистки корзины подключена');
+  } else {
+    console.warn('⚠️ Кнопка clearCartBtn не найдена в DOM');
+  }
+
+  // Оформление заказа
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
       if (cart.length === 0) {
@@ -887,6 +922,7 @@ function initHistory() {
   const openHistory = document.getElementById('openHistory');
   const openHistoryFooter = document.getElementById('openHistoryFooter');
   const closeHistory = document.getElementById('closeHistory');
+  const clearHistoryBtn = document.getElementById('clearHistoryBtn');
   const historyList = document.getElementById('historyList');
 
   if (!historyModal || !historyList) return;
@@ -927,48 +963,19 @@ function initHistory() {
     historyModal.style.display = 'flex';
     historyModal.classList.add('modal--open');
     document.body.style.overflow = 'hidden';
-    
-    setTimeout(() => {
-      const existingBtn = historyModal.querySelector('.clear-history-btn');
-      if (!existingBtn) {
-        const modalContent = historyModal.querySelector('.modal-content');
-        if (modalContent) {
-          let header = modalContent.querySelector('.history-header');
-          if (!header) {
-            const h2 = modalContent.querySelector('h2') || modalContent.querySelector('h3');
-            header = document.createElement('div');
-            header.className = 'history-header';
-            
-            if (h2) {
-              h2.style.margin = '0';
-              header.appendChild(h2.cloneNode(true));
-              h2.remove();
-            } else {
-              const title = document.createElement('h2');
-              title.textContent = 'История заказов';
-              header.appendChild(title);
-            }
-            
-            const clearBtn = document.createElement('button');
-            clearBtn.className = 'clear-history-btn';
-            clearBtn.textContent = 'Очистить историю';
-            clearBtn.onclick = clearHistory;
-            header.appendChild(clearBtn);
-            
-            modalContent.insertBefore(header, modalContent.firstChild);
-          } else {
-            const clearBtn = header.querySelector('.clear-history-btn');
-            if (clearBtn) {
-              clearBtn.onclick = clearHistory;
-            }
-          }
-        }
-      }
-    }, 100);
   }
 
+  // Обработчики событий
   if (openHistory) openHistory.addEventListener('click', openHistoryModal);
   if (openHistoryFooter) openHistoryFooter.addEventListener('click', openHistoryModal);
+
+  // Кнопка очистки истории
+  if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener('click', clearHistory);
+    console.log('✅ Кнопка очистки истории подключена');
+  } else {
+    console.warn('⚠️ Кнопка clearHistoryBtn не найдена в DOM');
+  }
 
   if (closeHistory) {
     closeHistory.addEventListener('click', () => {
