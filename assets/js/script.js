@@ -567,7 +567,7 @@ function initProfile() {
 }
 
 /* ===========================
-   БРОНИРОВАНИЕ (УПРОЩЕННАЯ РАБОЧАЯ ВЕРСИЯ)
+   БРОНИРОВАНИЕ (ПРИНУДИТЕЛЬНАЯ ВЕРСИЯ)
 =========================== */
 function initBooking() {
   console.log('📅 Инициализация бронирования...');
@@ -687,7 +687,7 @@ function initBooking() {
     });
   }
 
-  // ========== УПРОЩЕННАЯ ОТПРАВКА (РАБОЧАЯ) ==========
+  // ========== ПРИНУДИТЕЛЬНАЯ ОТПРАВКА ==========
   bookingForm.addEventListener('submit', function(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -727,85 +727,110 @@ function initBooking() {
       console.log('✅ Кнопка заблокирована');
     }
 
-    try {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+    // ===== ВЫПОЛНЯЕМ ВСЕ ДЕЙСТВИЯ ПОСЛЕДОВАТЕЛЬНО =====
+    
+    // 1. Сохраняем заказ в историю
+    console.log('📝 Шаг 1: Сохраняем заказ...');
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+    
+    const orderData = {
+      id: Date.now().toString(),
+      userId: currentUserId,
+      name,
+      phone,
+      guests: Number(guests),
+      comment,
+      date,
+      time,
+      total,
+      items: cart,
+      status: 'new',
+      timestamp: new Date().toISOString()
+    };
 
-      console.log('🛒 Корзина:', cart);
-      console.log('💰 Сумма:', total);
+    const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    history.unshift(orderData);
+    localStorage.setItem('orderHistory', JSON.stringify(history));
+    console.log('✅ Заказ сохранен');
 
-      const orderData = {
-        id: Date.now().toString(),
-        userId: currentUserId,
-        name,
-        phone,
-        guests: Number(guests),
-        comment,
-        date,
-        time,
-        total,
-        items: cart,
-        status: 'new',
-        timestamp: new Date().toISOString()
-      };
-
-      const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-      history.unshift(orderData);
-      localStorage.setItem('orderHistory', JSON.stringify(history));
-      console.log('✅ Заказ сохранен');
-
-      localStorage.setItem('cart', '[]');
-      console.log('✅ Корзина очищена');
-      
-      document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
-        if (el) el.textContent = '0';
-      });
-      
-      const cartTotal = document.getElementById('cartTotal');
-      if (cartTotal) cartTotal.textContent = '0';
-      
-      const cartItems = document.getElementById('cartItems');
-      if (cartItems) {
-        cartItems.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
+    // 2. Очищаем корзину
+    console.log('🧹 Шаг 2: Очищаем корзину...');
+    localStorage.setItem('cart', '[]');
+    console.log('✅ Корзина очищена');
+    
+    // 3. Обновляем счетчик корзины
+    console.log('🔄 Шаг 3: Обновляем счетчик...');
+    document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
+      if (el) {
+        el.textContent = '0';
+        console.log('Счетчик обновлен:', el);
       }
-
-      showToast('✅ Ваш заказ оформлен!');
-      console.log('✅ Уведомление показано');
-
-      bookingModal.style.display = 'none';
-      bookingModal.classList.remove('modal--open');
-      document.body.style.overflow = "";
-      console.log('✅ Форма закрыта');
-
-      bookingForm.reset();
-      if (commentInput) commentInput.value = '';
-      if (dateInput) {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        dateInput.value = tomorrow.toISOString().split('T')[0];
-      }
-      if (timeInput) timeInput.value = '18:00';
-      if (guestsInput) guestsInput.value = '2';
-
-      console.log('✅ Форма очищена');
-      console.log('=== ОТПРАВКА ЗАВЕРШЕНА ===');
-
-    } catch (error) {
-      console.error('❌ Ошибка:', error);
-      showToast('❌ Ошибка при отправке');
-    } finally {
-      setTimeout(() => {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Отправить заявку';
-        }
-      }, 1000);
+    });
+    
+    const cartTotalEl = document.getElementById('cartTotal');
+    if (cartTotalEl) {
+      cartTotalEl.textContent = '0';
+      console.log('Общая сумма обновлена');
     }
+    
+    const cartItemsEl = document.getElementById('cartItems');
+    if (cartItemsEl) {
+      cartItemsEl.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
+      console.log('Список корзины очищен');
+    }
+
+    // 4. Показываем уведомление
+    console.log('🔔 Шаг 4: Показываем уведомление...');
+    showToast('✅ Ваш заказ оформлен!');
+    console.log('✅ Уведомление показано');
+
+    // 5. Закрываем форму
+    console.log('🚪 Шаг 5: Закрываем форму...');
+    bookingModal.style.display = 'none';
+    bookingModal.classList.remove('modal--open');
+    document.body.style.overflow = "";
+    console.log('✅ Форма закрыта');
+
+    // 6. Очищаем поля формы
+    console.log('🧹 Шаг 6: Очищаем поля формы...');
+    bookingForm.reset();
+    if (commentInput) commentInput.value = '';
+    if (dateInput) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      dateInput.value = tomorrow.toISOString().split('T')[0];
+    }
+    if (timeInput) timeInput.value = '18:00';
+    if (guestsInput) guestsInput.value = '2';
+    console.log('✅ Форма очищена');
+
+    // 7. Разблокируем кнопку
+    setTimeout(() => {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Отправить заявку';
+        console.log('✅ Кнопка разблокирована');
+      }
+    }, 500);
+
+    console.log('=== ВСЕ ШАГИ ВЫПОЛНЕНЫ ===');
+    
+    // Принудительно обновляем страницу для корзины (если нужно)
+    setTimeout(() => {
+      // Проверяем что корзина пуста
+      const checkCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      console.log('🔍 Проверка корзины после очистки:', checkCart);
+      if (checkCart.length > 0) {
+        console.warn('⚠️ Корзина не очистилась, принудительная очистка');
+        localStorage.setItem('cart', '[]');
+        location.reload();
+      }
+    }, 200);
   });
   
   console.log('✅ Бронирование инициализировано');
 }
-
 /* ===========================
    ИСТОРИЯ ЗАКАЗОВ
 =========================== */
