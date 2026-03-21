@@ -954,3 +954,77 @@ window.debug = {
   profile: () => JSON.parse(localStorage.getItem('profile') || '{}'),
   clear: () => { if (confirm('Очистить всё?')) { localStorage.clear(); location.reload(); } }
 };
+/* ===========================
+   ДОПОЛНИТЕЛЬНЫЕ ИСПРАВЛЕНИЯ ИНТЕРФЕЙСА
+=========================== */
+function fixHistoryCloseButton() {
+  console.log('🔧 Исправляем крестик в истории...');
+  
+  const historyClose = document.getElementById('closeHistory');
+  if (historyClose) {
+    historyClose.style.cssText = `
+      position: absolute !important;
+      top: 15px !important;
+      right: 15px !important;
+      left: auto !important;
+      width: 34px !important;
+      height: 34px !important;
+      background: rgba(255,255,255,0.2) !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      border-radius: 50% !important;
+      color: white !important;
+      font-size: 20px !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 9999 !important;
+    `;
+    console.log('✅ Крестик истории исправлен');
+  }
+  
+  const bookingClose = document.getElementById('closeBooking');
+  if (bookingClose) {
+    bookingClose.style.cssText = `
+      position: absolute !important;
+      top: 15px !important;
+      right: 15px !important;
+      left: auto !important;
+      width: 34px !important;
+      height: 34px !important;
+      background: rgba(255,255,255,0.2) !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      border-radius: 50% !important;
+      color: white !important;
+      font-size: 20px !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 9999 !important;
+    `;
+    console.log('✅ Крестик бронирования исправлен');
+  }
+  
+  // Все кнопки btn-outline
+  document.querySelectorAll('.btn-outline').forEach(btn => {
+    btn.style.border = '2px solid rgba(255,255,255,0.6)';
+    btn.style.background = 'transparent';
+  });
+  
+  console.log('✅ Все исправления применены');
+}
+
+// Запускаем исправления после загрузки
+setTimeout(() => {
+  fixHistoryCloseButton();
+}, 500);
+
+// Также запускаем при каждом открытии модалки истории
+const historyModal = document.getElementById('historyModal');
+if (historyModal) {
+  const observer = new MutationObserver(() => {
+    setTimeout(() => fixHistoryCloseButton(), 100);
+  });
+  observer.observe(historyModal, { attributes: true, attributeFilter: ['style', 'class'] });
+}
