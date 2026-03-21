@@ -277,14 +277,14 @@
   <!-- BOOKING -->
   <section class="section container" id="booking">
     <h2 class="section-title">Бронирование</h2>
-    <p class="section-sub">Оставьте заявку, и мы свяжемся с вами.</p>
+      <p class="section-sub">Оставьте заявку, и мы свяжемся с вами.</p>
 
     <button class="btn btn-primary" id="openBookingModal">
       Оставить заявку
     </button>
   </section>
 
-  <!-- PROFILE -->
+  <!-- PROFILE (БЕЗ ДУБЛИРУЮЩЕЙСЯ КНОПКИ ИСТОРИИ) -->
   <section class="section container" id="profile">
     <h2 class="section-title">Мой профиль</h2>
     <p class="section-sub">Данные сохраняются в этом браузере и подставляются в заказ.</p>
@@ -322,10 +322,6 @@
 
         <div class="footer-title">Телефон</div>
         <div class="footer-muted">+375 00 0000000</div>
-
-        <button class="btn btn-outline" id="openHistory">
-          История заказов
-        </button>
       </div>
     </div>
   </section>
@@ -377,23 +373,19 @@
 
 </main>
 
-<!-- BOOKING MODAL — ЧИСТАЯ РАБОЧАЯ ВЕРСИЯ -->
+<!-- BOOKING MODAL (КРЕСТИК СПРАВА) -->
 <div id="bookingModal" class="booking-sheet">
   <div class="booking-sheet__window">
-
     <button id="closeBooking" class="booking-sheet__close">✕</button>
-
+    
     <div class="booking-sheet__content">
-
       <div class="booking-header">
         <h2>Бронирование столика</h2>
         <p>Оставьте данные — мы перезвоним и подтвердим бронь.</p>
       </div>
 
       <form id="booking-form">
-
         <div class="booking-grid">
-
           <div class="field">
             <label for="name">Имя</label>
             <input type="text" id="name" required>
@@ -434,16 +426,13 @@
             <label for="comment">Комментарий</label>
             <textarea id="comment" placeholder="Ваши пожелания или особые запросы..."></textarea>
           </div>
-
         </div>
 
         <div class="booking-footer">
           <button type="submit" class="btn booking-submit">Отправить заявку</button>
           <button type="button" id="clearBooking" class="btn btn-outline booking-clear">Очистить</button>
         </div>
-
       </form>
-
     </div>
   </div>
 </div>
