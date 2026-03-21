@@ -26,7 +26,6 @@ if (window.firebase) {
 function showToast(text) {
   const toast = document.getElementById('toast');
   if (!toast) {
-    // Создаем toast если его нет
     const newToast = document.createElement('div');
     newToast.id = 'toast';
     newToast.style.cssText = `
@@ -124,9 +123,9 @@ function addGlobalStyles() {
       background: white;
       padding: 30px;
       border-radius: 12px;
-      max-width: 500px;
+      max-width: 600px;
       width: 90%;
-      max-height: 90vh;
+      max-height: 85vh;
       overflow-y: auto;
       position: relative;
       animation: modalFadeIn 0.3s ease;
@@ -150,10 +149,56 @@ function addGlobalStyles() {
       font-size: 24px;
       cursor: pointer;
       color: #666;
+      z-index: 10;
     }
     
     .close:hover {
       color: #000;
+    }
+    
+    .clear-history-btn {
+      background: #ff4757;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .clear-history-btn:hover {
+      background: #ee3a4a;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+    }
+    
+    .clear-history-btn:active {
+      transform: translateY(0);
+    }
+    
+    .clear-history-btn::before {
+      content: "🗑️";
+      font-size: 14px;
+    }
+    
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .history-header h2 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
     }
     
     .cart-count {
@@ -204,6 +249,8 @@ function addGlobalStyles() {
       padding: 15px;
       border-bottom: 1px solid #eee;
       margin-bottom: 10px;
+      background: #fafafa;
+      border-radius: 8px;
     }
     
     .history-item:last-child {
@@ -212,45 +259,58 @@ function addGlobalStyles() {
     
     .history-date {
       color: #666;
-      font-size: 14px;
-      margin-bottom: 5px;
+      font-size: 12px;
+      margin-bottom: 8px;
     }
     
     .history-name {
       font-weight: bold;
       margin-bottom: 5px;
+      font-size: 16px;
     }
     
     .history-booking {
       color: #e44d2e;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      font-size: 14px;
     }
     
     .history-items {
       margin: 10px 0;
       padding-left: 10px;
       color: #555;
+      font-size: 13px;
     }
     
     .history-total {
       font-weight: bold;
       color: #333;
-      margin-top: 5px;
+      margin-top: 8px;
+      font-size: 15px;
     }
     
     .history-comment {
       color: #666;
       font-style: italic;
-      margin-top: 5px;
-      padding: 5px;
-      background: #f9f9f9;
-      border-radius: 4px;
+      margin-top: 8px;
+      padding: 8px;
+      background: #fff3e0;
+      border-radius: 6px;
+      font-size: 13px;
     }
     
     .no-orders {
       text-align: center;
       color: #999;
-      padding: 30px;
+      padding: 50px 20px;
+      font-size: 16px;
+    }
+    
+    .no-orders::before {
+      content: "📭";
+      display: block;
+      font-size: 48px;
+      margin-bottom: 15px;
     }
   `;
   document.head.appendChild(styles);
@@ -687,7 +747,6 @@ function initBooking() {
     });
   }
 
-  // ========== ПРИНУДИТЕЛЬНАЯ ОТПРАВКА ==========
   bookingForm.addEventListener('submit', function(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -727,9 +786,6 @@ function initBooking() {
       console.log('✅ Кнопка заблокирована');
     }
 
-    // ===== ВЫПОЛНЯЕМ ВСЕ ДЕЙСТВИЯ ПОСЛЕДОВАТЕЛЬНО =====
-    
-    // 1. Сохраняем заказ в историю
     console.log('📝 Шаг 1: Сохраняем заказ...');
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
@@ -754,12 +810,10 @@ function initBooking() {
     localStorage.setItem('orderHistory', JSON.stringify(history));
     console.log('✅ Заказ сохранен');
 
-    // 2. Очищаем корзину
     console.log('🧹 Шаг 2: Очищаем корзину...');
     localStorage.setItem('cart', '[]');
     console.log('✅ Корзина очищена');
     
-    // 3. Обновляем счетчик корзины
     console.log('🔄 Шаг 3: Обновляем счетчик...');
     document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
       if (el) {
@@ -780,19 +834,16 @@ function initBooking() {
       console.log('Список корзины очищен');
     }
 
-    // 4. Показываем уведомление
     console.log('🔔 Шаг 4: Показываем уведомление...');
     showToast('✅ Ваш заказ оформлен!');
     console.log('✅ Уведомление показано');
 
-    // 5. Закрываем форму
     console.log('🚪 Шаг 5: Закрываем форму...');
     bookingModal.style.display = 'none';
     bookingModal.classList.remove('modal--open');
     document.body.style.overflow = "";
     console.log('✅ Форма закрыта');
 
-    // 6. Очищаем поля формы
     console.log('🧹 Шаг 6: Очищаем поля формы...');
     bookingForm.reset();
     if (commentInput) commentInput.value = '';
@@ -805,7 +856,6 @@ function initBooking() {
     if (guestsInput) guestsInput.value = '2';
     console.log('✅ Форма очищена');
 
-    // 7. Разблокируем кнопку
     setTimeout(() => {
       if (submitBtn) {
         submitBtn.disabled = false;
@@ -816,23 +866,21 @@ function initBooking() {
 
     console.log('=== ВСЕ ШАГИ ВЫПОЛНЕНЫ ===');
     
-    // Принудительно обновляем страницу для корзины (если нужно)
     setTimeout(() => {
-      // Проверяем что корзина пуста
       const checkCart = JSON.parse(localStorage.getItem('cart') || '[]');
       console.log('🔍 Проверка корзины после очистки:', checkCart);
       if (checkCart.length > 0) {
         console.warn('⚠️ Корзина не очистилась, принудительная очистка');
         localStorage.setItem('cart', '[]');
-        location.reload();
       }
     }, 200);
   });
   
   console.log('✅ Бронирование инициализировано');
 }
+
 /* ===========================
-   ИСТОРИЯ ЗАКАЗОВ
+   ИСТОРИЯ ЗАКАЗОВ (С КНОПКОЙ ОЧИСТКИ)
 =========================== */
 function initHistory() {
   const historyModal = document.getElementById('historyModal');
@@ -865,11 +913,58 @@ function initHistory() {
     `).join('');
   }
 
+  function clearHistory() {
+    if (confirm('Вы уверены, что хотите удалить всю историю заказов? Это действие нельзя отменить.')) {
+      localStorage.setItem('orderHistory', '[]');
+      loadHistory();
+      showToast('🗑️ История заказов очищена');
+      console.log('✅ История заказов очищена');
+    }
+  }
+
   function openHistoryModal() {
     loadHistory();
     historyModal.style.display = 'flex';
     historyModal.classList.add('modal--open');
     document.body.style.overflow = 'hidden';
+    
+    setTimeout(() => {
+      const existingBtn = historyModal.querySelector('.clear-history-btn');
+      if (!existingBtn) {
+        const modalContent = historyModal.querySelector('.modal-content');
+        if (modalContent) {
+          let header = modalContent.querySelector('.history-header');
+          if (!header) {
+            const h2 = modalContent.querySelector('h2') || modalContent.querySelector('h3');
+            header = document.createElement('div');
+            header.className = 'history-header';
+            
+            if (h2) {
+              h2.style.margin = '0';
+              header.appendChild(h2.cloneNode(true));
+              h2.remove();
+            } else {
+              const title = document.createElement('h2');
+              title.textContent = 'История заказов';
+              header.appendChild(title);
+            }
+            
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'clear-history-btn';
+            clearBtn.textContent = 'Очистить историю';
+            clearBtn.onclick = clearHistory;
+            header.appendChild(clearBtn);
+            
+            modalContent.insertBefore(header, modalContent.firstChild);
+          } else {
+            const clearBtn = header.querySelector('.clear-history-btn');
+            if (clearBtn) {
+              clearBtn.onclick = clearHistory;
+            }
+          }
+        }
+      }
+    }, 100);
   }
 
   if (openHistory) openHistory.addEventListener('click', openHistoryModal);

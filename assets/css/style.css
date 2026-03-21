@@ -1919,3 +1919,64 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     transform: translate(-50%, 0);
   }
 }
+/* Кнопка очистки истории */
+.clear-history-btn {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clear-history-btn:hover {
+  background: #ee3a4a;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+}
+
+.clear-history-btn:active {
+  transform: translateY(0);
+}
+
+.clear-history-btn::before {
+  content: "🗑️";
+  font-size: 14px;
+}
+
+/* Заголовок истории с кнопкой */
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.history-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+/* Пустая история */
+.no-orders {
+  text-align: center;
+  color: #999;
+  padding: 50px 20px;
+  font-size: 16px;
+}
+
+.no-orders::before {
+  content: "📭";
+  display: block;
+  font-size: 48px;
+  margin-bottom: 15px;
+}
