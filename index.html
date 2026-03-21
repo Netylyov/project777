@@ -375,8 +375,8 @@
 
 <!-- BOOKING MODAL (КРЕСТИК СПРАВА) -->
 <div id="bookingModal" class="booking-sheet">
-  <div class="booking-sheet__window">
-    <button id="closeBooking" class="booking-sheet__close">✕</button>
+  <div class="booking-sheet__window" style="position: relative;">
+    <button id="closeBooking" style="position: absolute; top: 15px; right: 15px; width: 34px; height: 34px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 9999;">✕</button>
     
     <div class="booking-sheet__content">
       <div class="booking-header">
@@ -456,14 +456,14 @@
   </div>
 </div>
 
-<!-- HISTORY MODAL С КНОПКОЙ ОЧИСТКИ -->
+<!-- HISTORY MODAL С КНОПКОЙ ОЧИСТКИ И КРЕСТИКОМ СВЕРХУ СПРАВА -->
 <div class="history-modal" id="historyModal">
-  <div class="history-content">
-    <button class="history-close" id="closeHistory">✕</button>
-    <div class="history-header">
-      <h2>История заказов</h2>
-      <button id="clearHistoryBtn" class="clear-history-btn">Очистить историю</button>
+  <div class="history-content" style="position: relative;">
+    <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 50px;">
+      <h2 style="margin: 0; font-size: 24px; color: #fff;">История заказов</h2>
+      <button id="clearHistoryBtn" class="clear-history-btn" style="background: #ff4757; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">🗑️ Очистить историю</button>
     </div>
+    <button id="closeHistory" style="position: absolute; top: 15px; right: 15px; width: 34px; height: 34px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 9999;">✕</button>
     <div id="historyList"></div>
   </div>
 </div>
