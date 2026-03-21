@@ -5,7 +5,6 @@ let db = null;
 let auth = null;
 let provider = null;
 let currentUserId = "guest";
-let globalCartUpdateFunction = null; // Глобальная ссылка на функцию обновления корзины
 
 /* ===========================
    ИНИЦИАЛИЗАЦИЯ FIREBASE (ЕСЛИ ПОДКЛЮЧЕН)
@@ -357,7 +356,7 @@ function initMenuFilter() {
 }
 
 /* ===========================
-   КОРЗИНА (С ЭКСПОРТОМ ФУНКЦИИ ОБНОВЛЕНИЯ)
+   КОРЗИНА (С КНОПКОЙ ОЧИСТКИ)
 =========================== */
 function initCart() {
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -372,18 +371,13 @@ function initCart() {
   const clearCartBtn = document.getElementById('clearCartBtn');
 
   function updateCart() {
-    console.log('🔄 updateCart вызван, товаров в корзине:', cart.length);
-    
-    // Обновляем счетчик в хедере
     if (cartCount) cartCount.textContent = cart.length;
     
-    // Обновляем общую сумму
     if (cartTotal) {
       const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
       cartTotal.textContent = total;
     }
 
-    // Обновляем список товаров
     if (cartItems) {
       cartItems.innerHTML = '';
       
@@ -416,7 +410,6 @@ function initCart() {
     }
   }
 
-  // Добавление в корзину
   document.querySelectorAll('.menu-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -441,20 +434,16 @@ function initCart() {
     });
   });
 
-  // Открытие корзины
   if (openCart && cartModal) {
     openCart.addEventListener('click', (e) => {
       e.preventDefault();
-      // Обновляем корзину перед открытием
-      cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      updateCart();
       cartModal.style.display = 'flex';
       cartModal.classList.add('modal--open');
       document.body.style.overflow = "hidden";
+      updateCart();
     });
   }
 
-  // Закрытие корзины
   if (closeCart && cartModal) {
     closeCart.addEventListener('click', () => {
       cartModal.style.display = 'none';
@@ -463,7 +452,6 @@ function initCart() {
     });
   }
 
-  // Закрытие по клику на фон
   if (cartModal) {
     cartModal.addEventListener('click', (e) => {
       if (e.target === cartModal) {
@@ -474,7 +462,6 @@ function initCart() {
     });
   }
 
-  // Кнопка очистки корзины
   if (clearCartBtn) {
     clearCartBtn.addEventListener('click', () => {
       if (confirm('Вы уверены, что хотите очистить всю корзину?')) {
@@ -488,7 +475,6 @@ function initCart() {
     console.log('✅ Кнопка очистки корзины подключена');
   }
 
-  // Оформление заказа
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
       if (cart.length === 0) {
@@ -520,20 +506,6 @@ function initCart() {
   }
 
   updateCart();
-  
-  // Сохраняем функцию в глобальную переменную для внешнего доступа
-  globalCartUpdateFunction = function() {
-    console.log('🔄 Принудительное обновление корзины извне');
-    cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    updateCart();
-  };
-  
-  // Слушаем событие обновления корзины
-  document.addEventListener('cartUpdated', function() {
-    console.log('🔄 Событие обновления корзины получено');
-    cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    updateCart();
-  });
 }
 
 /* ===========================
@@ -653,7 +625,7 @@ function initProfile() {
 }
 
 /* ===========================
-   БРОНИРОВАНИЕ (С ПРИНУДИТЕЛЬНОЙ ОЧИСТКОЙ КОРЗИНЫ)
+   БРОНИРОВАНИЕ (С МГНОВЕННОЙ ОЧИСТКОЙ КОРЗИНЫ)
 =========================== */
 function initBooking() {
   console.log('📅 Инициализация бронирования...');
@@ -739,7 +711,7 @@ function initBooking() {
     });
   }
 
-  // ===== ОСНОВНОЙ ОБРАБОТЧИК С ПРИНУДИТЕЛЬНОЙ ОЧИСТКОЙ КОРЗИНЫ =====
+  // ===== ОСНОВНОЙ ОБРАБОТЧИК С МГНОВЕННОЙ ОЧИСТКОЙ КОРЗИНЫ =====
   bookingForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -798,58 +770,30 @@ function initBooking() {
       history.unshift(orderData);
       localStorage.setItem('orderHistory', JSON.stringify(history));
       
-      console.log('✅ Заказ сохранен в историю');
-      
-      // ===== ПРИНУДИТЕЛЬНАЯ ОЧИСТКА КОРЗИНЫ =====
-      console.log('🧹 НАЧИНАЕМ ПРИНУДИТЕЛЬНУЮ ОЧИСТКУ КОРЗИНЫ...');
-      
+      // ===== МГНОВЕННАЯ ОЧИСТКА КОРЗИНЫ =====
       // 1. Очищаем localStorage
       localStorage.setItem('cart', '[]');
-      console.log('✅ localStorage очищен');
       
-      // 2. Принудительно обновляем через глобальную функцию
-      if (typeof globalCartUpdateFunction === 'function') {
-        globalCartUpdateFunction();
-        console.log('✅ Вызвана глобальная функция обновления корзины');
-      }
+      // 2. Обновляем счетчик корзины в хедере
+      const cartCount = document.getElementById('cartCount');
+      if (cartCount) cartCount.textContent = '0';
       
-      // 3. Напрямую обновляем все элементы корзины
-      const cartCountEl = document.getElementById('cartCount');
-      if (cartCountEl) {
-        cartCountEl.textContent = '0';
-        console.log('✅ Счетчик корзины обновлен на 0');
-      }
-      
+      // 3. Обновляем общую сумму в корзине (если модалка открыта)
       const cartTotalEl = document.getElementById('cartTotal');
-      if (cartTotalEl) {
-        cartTotalEl.textContent = '0';
-        console.log('✅ Общая сумма обновлена на 0');
-      }
+      if (cartTotalEl) cartTotalEl.textContent = '0';
       
+      // 4. Очищаем список товаров в корзине (если модалка открыта)
       const cartItemsEl = document.getElementById('cartItems');
       if (cartItemsEl) {
         cartItemsEl.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
-        console.log('✅ Список товаров очищен');
       }
       
-      // 4. Обновляем все элементы с классом cart-count
+      // 5. Обновляем все элементы с классом cart-count
       document.querySelectorAll('.cart-count').forEach(el => {
-        el.textContent = '0';
+        if (el) el.textContent = '0';
       });
-      console.log('✅ Все элементы .cart-count обновлены');
       
-      // 5. Диспатчим событие обновления корзины
-      const cartUpdateEvent = new Event('cartUpdated');
-      document.dispatchEvent(cartUpdateEvent);
-      console.log('✅ Событие cartUpdated отправлено');
-      
-      // 6. Принудительно перезаписываем глобальную переменную если есть
-      if (window.cart && typeof window.cart === 'object') {
-        window.cart = [];
-        console.log('✅ Глобальная переменная cart обновлена');
-      }
-      
-      console.log('✅ КОРЗИНА ПОЛНОСТЬЮ ОЧИЩЕНА!');
+      console.log('✅ Корзина полностью очищена (счетчик: 0, список: пуст)');
 
       // Показываем уведомление
       showToast('✅ Ваш заказ оформлен!');
@@ -998,10 +942,5 @@ window.debug = {
       localStorage.clear();
       location.reload();
     }
-  },
-  forceCartClear: () => {
-    localStorage.setItem('cart', '[]');
-    if (globalCartUpdateFunction) globalCartUpdateFunction();
-    console.log('Принудительная очистка корзины выполнена');
   }
 };
