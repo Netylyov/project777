@@ -372,8 +372,6 @@ function initCart() {
   const clearCartBtn = document.getElementById('clearCartBtn');
 
   function updateCart() {
-    console.log('🔄 updateCart вызван, товаров в корзине:', cart.length);
-    
     if (cartCount) cartCount.textContent = cart.length;
     
     if (cartTotal) {
@@ -640,8 +638,6 @@ function initProfile() {
    БРОНИРОВАНИЕ (С ПРИНУДИТЕЛЬНОЙ ОЧИСТКОЙ КОРЗИНЫ)
 =========================== */
 function initBooking() {
-  console.log('📅 Инициализация бронирования...');
-  
   const bookingModal = document.getElementById('bookingModal');
   const openBookingModal = document.getElementById('openBookingModal');
   const openBookingHero = document.getElementById('openBookingHero');
@@ -649,10 +645,7 @@ function initBooking() {
   const bookingForm = document.getElementById('booking-form');
   const clearBooking = document.getElementById('clearBooking');
 
-  if (!bookingModal || !bookingForm) {
-    console.error('❌ Элементы бронирования не найдены');
-    return;
-  }
+  if (!bookingModal || !bookingForm) return;
 
   const nameInput = document.getElementById('name');
   const phoneInput = document.getElementById('phone');
@@ -665,24 +658,19 @@ function initBooking() {
     const today = new Date();
     const maxDate = new Date(today);
     maxDate.setMonth(maxDate.getMonth() + 1);
-    
     dateInput.min = today.toISOString().split('T')[0];
     dateInput.max = maxDate.toISOString().split('T')[0];
-    
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     dateInput.value = tomorrow.toISOString().split('T')[0];
   }
 
-  if (timeInput && !timeInput.value) {
-    timeInput.value = '18:00';
-  }
+  if (timeInput && !timeInput.value) timeInput.value = '18:00';
 
   function openBooking() {
     bookingModal.style.display = 'flex';
     bookingModal.classList.add('modal--open');
     document.body.style.overflow = "hidden";
-
     const profile = JSON.parse(localStorage.getItem('profile') || '{}');
     if (nameInput && profile.name) nameInput.value = profile.name;
     if (phoneInput && profile.phone) phoneInput.value = profile.phone;
@@ -733,22 +721,10 @@ function initBooking() {
     const date = dateInput?.value;
     const time = timeInput?.value;
 
-    if (!name) {
-      showToast('❌ Введите имя');
-      return;
-    }
-    if (!phone) {
-      showToast('❌ Введите телефон');
-      return;
-    }
-    if (!date) {
-      showToast('❌ Выберите дату');
-      return;
-    }
-    if (!time) {
-      showToast('❌ Выберите время');
-      return;
-    }
+    if (!name) return showToast('❌ Введите имя');
+    if (!phone) return showToast('❌ Введите телефон');
+    if (!date) return showToast('❌ Выберите дату');
+    if (!time) return showToast('❌ Выберите время');
 
     const submitBtn = bookingForm.querySelector('button[type="submit"]');
     if (submitBtn) {
@@ -779,32 +755,20 @@ function initBooking() {
       history.unshift(orderData);
       localStorage.setItem('orderHistory', JSON.stringify(history));
       
-      // ОЧИСТКА КОРЗИНЫ
       localStorage.setItem('cart', '[]');
-      
       const cartCount = document.getElementById('cartCount');
       if (cartCount) cartCount.textContent = '0';
-      
       const cartTotalEl = document.getElementById('cartTotal');
       if (cartTotalEl) cartTotalEl.textContent = '0';
-      
       const cartItemsEl = document.getElementById('cartItems');
-      if (cartItemsEl) {
-        cartItemsEl.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
-      }
-      
-      document.querySelectorAll('.cart-count').forEach(el => {
-        el.textContent = '0';
-      });
-      
+      if (cartItemsEl) cartItemsEl.innerHTML = '<p class="empty-cart">Корзина пуста</p>';
+      document.querySelectorAll('.cart-count').forEach(el => el.textContent = '0');
       if (globalCartUpdateFunction) globalCartUpdateFunction();
       
       showToast('✅ Ваш заказ оформлен!');
-
       bookingModal.style.display = 'none';
       bookingModal.classList.remove('modal--open');
       document.body.style.overflow = "";
-
       bookingForm.reset();
       if (commentInput) commentInput.value = '';
       if (dateInput) {
@@ -814,7 +778,6 @@ function initBooking() {
       }
       if (timeInput) timeInput.value = '18:00';
       if (guestsInput) guestsInput.value = '2';
-
     } catch (error) {
       console.error('❌ Ошибка:', error);
       showToast('❌ Ошибка при отправке');
@@ -827,8 +790,6 @@ function initBooking() {
       }, 500);
     }
   });
-  
-  console.log('✅ Бронирование инициализировано');
 }
 
 /* ===========================
@@ -846,12 +807,10 @@ function initHistory() {
 
   function loadHistory() {
     const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-    
     if (history.length === 0) {
       historyList.innerHTML = '<p class="no-orders">У вас пока нет заказов</p>';
       return;
     }
-
     historyList.innerHTML = history.map(order => `
       <div class="history-item">
         <div class="history-date">${new Date(order.timestamp).toLocaleString('ru-RU')}</div>
@@ -867,7 +826,7 @@ function initHistory() {
   }
 
   function clearHistory() {
-    if (confirm('Вы уверены, что хотите удалить всю историю заказов? Это действие нельзя отменить.')) {
+    if (confirm('Вы уверены, что хотите удалить всю историю заказов?')) {
       localStorage.setItem('orderHistory', '[]');
       loadHistory();
       showToast('🗑️ История заказов очищена');
@@ -883,11 +842,7 @@ function initHistory() {
 
   if (openHistory) openHistory.addEventListener('click', openHistoryModal);
   if (openHistoryFooter) openHistoryFooter.addEventListener('click', openHistoryModal);
-
-  if (clearHistoryBtn) {
-    clearHistoryBtn.addEventListener('click', clearHistory);
-  }
-
+  if (clearHistoryBtn) clearHistoryBtn.addEventListener('click', clearHistory);
   if (closeHistory) {
     closeHistory.addEventListener('click', () => {
       historyModal.style.display = 'none';
@@ -895,7 +850,6 @@ function initHistory() {
       document.body.style.overflow = '';
     });
   }
-
   historyModal.addEventListener('click', (e) => {
     if (e.target === historyModal) {
       historyModal.style.display = 'none';
@@ -911,7 +865,7 @@ function initHistory() {
 function forceFixInterface() {
   console.log('🔧 ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ИНТЕРФЕЙСА...');
   
-  // 1. КРЕСТИК В ФОРМЕ БРОНИРОВАНИЯ - В ПРАВЫЙ УГОЛ
+  // Крестик в форме бронирования
   const closeBtn = document.getElementById('closeBooking');
   if (closeBtn) {
     closeBtn.style.cssText = `
@@ -931,129 +885,36 @@ function forceFixInterface() {
       align-items: center !important;
       justify-content: center !important;
       z-index: 9999 !important;
-      transition: all 0.3s ease !important;
     `;
-    console.log('✅ Крестик перемещен в правый угол');
   }
   
-  // 2. ВСЕМ КНОПКАМ ДОБАВЛЯЕМ РАМКИ
-  const allBtns = document.querySelectorAll('button');
-  allBtns.forEach(btn => {
-    if (btn.id === 'burgerBtn' || btn.classList.contains('cart-close') || btn.classList.contains('history-close') || btn.id === 'closeBooking') {
-      return;
-    }
-    
-    btn.style.transition = 'all 0.3s ease';
+  // Все кнопки btn-outline
+  document.querySelectorAll('.btn-outline').forEach(btn => {
+    btn.style.background = 'transparent';
+    btn.style.color = '#fff';
+    btn.style.border = '2px solid rgba(255,255,255,0.6)';
+    btn.style.borderRadius = '10px';
+    btn.style.padding = '12px 24px';
+    btn.style.fontSize = '16px';
+    btn.style.fontWeight = '500';
     btn.style.cursor = 'pointer';
-    
-    if (btn.classList.contains('btn-primary') || btn.id === 'checkoutBtn' || btn.classList.contains('booking-submit')) {
-      btn.style.background = '#f7c325';
-      btn.style.color = '#000';
-      btn.style.border = '2px solid #f7c325';
-      btn.style.borderRadius = '10px';
-      btn.style.padding = '12px 24px';
-      btn.style.fontWeight = '600';
-    }
-    else if (btn.classList.contains('btn-outline') || btn.classList.contains('booking-clear') || btn.id === 'googleLoginBtn' || btn.id === 'logoutBtn') {
-      btn.style.background = 'transparent';
-      btn.style.color = '#fff';
-      btn.style.border = '1px solid rgba(255,255,255,0.5)';
-      btn.style.borderRadius = '10px';
-      btn.style.padding = '12px 24px';
-    }
-    else if (btn.classList.contains('clear-cart-btn') || btn.id === 'clearCartBtn' || btn.classList.contains('clear-history-btn') || btn.id === 'clearHistoryBtn') {
-      btn.style.background = '#ff4757';
-      btn.style.color = '#fff';
-      btn.style.border = '1px solid #ff4757';
-      btn.style.borderRadius = '10px';
-      btn.style.padding = '12px 20px';
-    }
-    else if (btn.classList.contains('menu-btn')) {
-      btn.style.background = '#f7c325';
-      btn.style.color = '#000';
-      btn.style.border = '1px solid #f7c325';
-      btn.style.borderRadius = '8px';
-      btn.style.padding = '8px 16px';
-    }
-    else if (btn.classList.contains('cart-btn')) {
-      btn.style.background = 'rgba(255,255,255,0.15)';
-      btn.style.color = '#fff';
-      btn.style.border = '1px solid rgba(255,255,255,0.5)';
-      btn.style.borderRadius = '30px';
-      btn.style.padding = '8px 16px';
-    }
-    else {
-      btn.style.background = 'transparent';
-      btn.style.color = '#fff';
-      btn.style.border = '1px solid rgba(255,255,255,0.3)';
-      btn.style.borderRadius = '8px';
-      btn.style.padding = '10px 20px';
-    }
-    
-    btn.addEventListener('mouseenter', function() {
-      if (btn.classList.contains('btn-primary') || btn.id === 'checkoutBtn' || btn.classList.contains('booking-submit')) {
-        btn.style.background = '#e0b020';
-        btn.style.transform = 'translateY(-2px)';
-        btn.style.boxShadow = '0 5px 15px rgba(247,195,37,0.3)';
-      }
-      else if (btn.classList.contains('btn-outline') || btn.classList.contains('booking-clear')) {
-        btn.style.background = 'rgba(255,255,255,0.1)';
-        btn.style.borderColor = '#f7c325';
-        btn.style.transform = 'translateY(-2px)';
-      }
-      else if (btn.classList.contains('clear-cart-btn') || btn.id === 'clearCartBtn' || btn.classList.contains('clear-history-btn') || btn.id === 'clearHistoryBtn') {
-        btn.style.background = '#ee3a4a';
-        btn.style.transform = 'translateY(-2px)';
-        btn.style.boxShadow = '0 5px 15px rgba(255,71,87,0.3)';
-      }
-      else if (btn.classList.contains('menu-btn')) {
-        btn.style.background = '#e0b020';
-        btn.style.transform = 'translateY(-2px)';
-      }
-      else if (btn.classList.contains('cart-btn')) {
-        btn.style.background = 'rgba(255,255,255,0.25)';
-        btn.style.transform = 'translateY(-2px)';
-      }
-    });
-    
-    btn.addEventListener('mouseleave', function() {
-      if (btn.classList.contains('btn-primary') || btn.id === 'checkoutBtn' || btn.classList.contains('booking-submit')) {
-        btn.style.background = '#f7c325';
-        btn.style.transform = 'translateY(0)';
-        btn.style.boxShadow = 'none';
-      }
-      else if (btn.classList.contains('btn-outline') || btn.classList.contains('booking-clear')) {
-        btn.style.background = 'transparent';
-        btn.style.borderColor = 'rgba(255,255,255,0.5)';
-        btn.style.transform = 'translateY(0)';
-      }
-      else if (btn.classList.contains('clear-cart-btn') || btn.id === 'clearCartBtn' || btn.classList.contains('clear-history-btn') || btn.id === 'clearHistoryBtn') {
-        btn.style.background = '#ff4757';
-        btn.style.transform = 'translateY(0)';
-        btn.style.boxShadow = 'none';
-      }
-      else if (btn.classList.contains('menu-btn')) {
-        btn.style.background = '#f7c325';
-        btn.style.transform = 'translateY(0)';
-      }
-      else if (btn.classList.contains('cart-btn')) {
-        btn.style.background = 'rgba(255,255,255,0.15)';
-        btn.style.transform = 'translateY(0)';
-      }
-    });
+    btn.style.transition = 'all 0.3s ease';
   });
   
-  // 3. СТИЛИ ДЛЯ КНОПКИ ИСТОРИИ В ФУТЕРЕ
-  const historyFooterBtn = document.getElementById('openHistoryFooter');
-  if (historyFooterBtn) {
-    historyFooterBtn.style.background = 'transparent';
-    historyFooterBtn.style.color = '#fff';
-    historyFooterBtn.style.border = '1px solid rgba(255,255,255,0.5)';
-    historyFooterBtn.style.borderRadius = '10px';
-    historyFooterBtn.style.padding = '12px 24px';
+  // Специально для кнопки "Посмотреть меню"
+  const viewMenuBtn = document.querySelector('.hero-buttons .btn-outline');
+  if (viewMenuBtn && viewMenuBtn.textContent.includes('Посмотреть меню')) {
+    viewMenuBtn.style.border = '2px solid rgba(255,255,255,0.6)';
   }
   
-  // 4. СТИЛИ ДЛЯ КОНТЕЙНЕРА КНОПОК В КОРЗИНЕ
+  // Кнопка истории в футере
+  const historyFooter = document.getElementById('openHistoryFooter');
+  if (historyFooter) {
+    historyFooter.style.border = '2px solid rgba(255,255,255,0.6)';
+    historyFooter.style.padding = '12px 24px';
+  }
+  
+  // Контейнер кнопок в корзине
   const cartButtons = document.querySelector('.cart-buttons');
   if (cartButtons) {
     cartButtons.style.display = 'flex';
@@ -1068,41 +929,28 @@ function forceFixInterface() {
    ЗАКРЫТИЕ ПО ESC
 =========================== */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeAllModals();
-  }
+  if (e.key === 'Escape') closeAllModals();
 });
 
 /* ===========================
    ЗАПУСК ПРИ ЗАГРУЗКЕ
 =========================== */
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Запуск инициализации сайта...');
-  
+  console.log('🚀 Запуск инициализации...');
   addGlobalStyles();
-  
   initBurgerMenu();
   initMenuFilter();
   initCart();
   initProfile();
   initBooking();
   initHistory();
-  
-  setTimeout(() => {
-    forceFixInterface();
-  }, 500);
-  
-  console.log('✅ Сайт полностью загружен и готов к работе');
+  setTimeout(() => forceFixInterface(), 500);
+  console.log('✅ Сайт загружен');
 });
 
 window.debug = {
   cart: () => JSON.parse(localStorage.getItem('cart') || '[]'),
   history: () => JSON.parse(localStorage.getItem('orderHistory') || '[]'),
   profile: () => JSON.parse(localStorage.getItem('profile') || '{}'),
-  clear: () => {
-    if (confirm('Очистить все данные?')) {
-      localStorage.clear();
-      location.reload();
-    }
-  }
+  clear: () => { if (confirm('Очистить всё?')) { localStorage.clear(); location.reload(); } }
 };
