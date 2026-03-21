@@ -1097,3 +1097,104 @@ window.debug = {
   profile: () => JSON.parse(localStorage.getItem('profile') || '{}'),
   clear: () => { if (confirm('Очистить всё?')) { localStorage.clear(); location.reload(); } }
 };
+/* ===========================
+   ЖЕСТКАЯ МАСКА ТЕЛЕФОНА (ПРИНУДИТЕЛЬНАЯ)
+=========================== */
+function forcePhoneMask() {
+  console.log('🔧 Устанавливаем жесткую маску для телефонов...');
+  
+  function applyStrictMask(inputElement) {
+    if (!inputElement) return;
+    
+    const newInput = inputElement.cloneNode(true);
+    inputElement.parentNode.replaceChild(newInput, inputElement);
+    
+    newInput.addEventListener('input', function(e) {
+      let value = e.target.value;
+      let numbers = value.replace(/\D/g, '');
+      if (numbers.length > 12) numbers = numbers.slice(0, 12);
+      
+      let formatted = '';
+      if (numbers.length === 0) {
+        formatted = '';
+      } 
+      else if (numbers.startsWith('375')) {
+        if (numbers.length <= 3) formatted = '+' + numbers;
+        else if (numbers.length <= 5) formatted = '+' + numbers.slice(0, 3) + ' ' + numbers.slice(3);
+        else if (numbers.length <= 8) formatted = '+' + numbers.slice(0, 3) + ' ' + numbers.slice(3, 5) + ' ' + numbers.slice(5);
+        else if (numbers.length <= 10) formatted = '+' + numbers.slice(0, 3) + ' ' + numbers.slice(3, 5) + ' ' + numbers.slice(5, 8) + ' ' + numbers.slice(8);
+        else formatted = '+' + numbers.slice(0, 3) + ' ' + numbers.slice(3, 5) + ' ' + numbers.slice(5, 8) + ' ' + numbers.slice(8, 10) + ' ' + numbers.slice(10, 12);
+      } 
+      else if (numbers.startsWith('7')) {
+        if (numbers.length <= 1) formatted = '+' + numbers;
+        else if (numbers.length <= 4) formatted = '+' + numbers.slice(0, 1) + ' ' + numbers.slice(1);
+        else if (numbers.length <= 7) formatted = '+' + numbers.slice(0, 1) + ' ' + numbers.slice(1, 4) + ' ' + numbers.slice(4);
+        else if (numbers.length <= 9) formatted = '+' + numbers.slice(0, 1) + ' ' + numbers.slice(1, 4) + ' ' + numbers.slice(4, 7) + ' ' + numbers.slice(7);
+        else formatted = '+' + numbers.slice(0, 1) + ' ' + numbers.slice(1, 4) + ' ' + numbers.slice(4, 7) + ' ' + numbers.slice(7, 9) + ' ' + numbers.slice(9, 11);
+      }
+      else {
+        if (numbers.length <= 3) formatted = '+' + numbers;
+        else if (numbers.length <= 6) formatted = '+' + numbers.slice(0, 3) + ' ' + numbers.slice(3);
+        else if (numbers.length <= 9) formatted = '+' + numbers.slice(0, 3) + ' ' + numbers.slice(3, 6) + ' ' + numbers.slice(6);
+        else formatted = '+' + numbers.slice(0, 3) + ' ' + numbers.slice(3, 6) + ' ' + numbers.slice(6, 9) + ' ' + numbers.slice(9, 12);
+      }
+      
+      e.target.value = formatted;
+    });
+    
+    newInput.addEventListener('keydown', function(e) {
+      const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End', 'Enter'];
+      if (allowedKeys.includes(e.key)) return;
+      if (!/[\d]/.test(e.key)) e.preventDefault();
+    });
+    
+    newInput.addEventListener('blur', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length === 0) return;
+      
+      if (value.startsWith('375') && value.length !== 12) {
+        e.target.style.borderColor = '#ff4757';
+        showToast('❌ Введите полный номер: +375 XX XXX XX XX');
+      } 
+      else if (value.startsWith('7') && value.length !== 11) {
+        e.target.style.borderColor = '#ff4757';
+        showToast('❌ Введите полный номер: +7 XXX XXX XX XX');
+      } 
+      else if (value.length > 0 && value.length < 9) {
+        e.target.style.borderColor = '#ff4757';
+        showToast('❌ Введите корректный номер телефона');
+      } 
+      else {
+        e.target.style.borderColor = '#4caf50';
+      }
+      
+      setTimeout(() => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.3)';
+      }, 2000);
+    });
+    
+    return newInput;
+  }
+  
+  const phoneFields = ['phone', 'profilePhone'];
+  phoneFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      applyStrictMask(field);
+      console.log(`✅ Маска для ${fieldId}`);
+    }
+  });
+  
+  const observer = new MutationObserver(() => {
+    phoneFields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (field && !field.hasAttribute('data-masked')) {
+        applyStrictMask(field);
+        field.setAttribute('data-masked', 'true');
+      }
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  
+  console.log('✅ Жесткая маска установлена');
+}
