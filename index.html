@@ -7,6 +7,18 @@
 
   <link rel="stylesheet" href="assets/css/style.css">
   
+  <!-- ПРЕДЗАГРУЗКА ВСЕХ ИЗОБРАЖЕНИЙ -->
+  <link rel="preload" as="image" href="assets/img/appetizer.jpg">
+  <link rel="preload" as="image" href="assets/img/hot_appetizer.jpg">
+  <link rel="preload" as="image" href="assets/img/sauce.jpg">
+  <link rel="preload" as="image" href="assets/img/salad.jpg">
+  <link rel="preload" as="image" href="assets/img/grill.jpg">
+  <link rel="preload" as="image" href="assets/img/side.jpg">
+  <link rel="preload" as="image" href="assets/img/meat.jpg">
+  <link rel="preload" as="image" href="assets/img/fish.jpg">
+  <link rel="preload" as="image" href="assets/img/dessert.jpg">
+  <link rel="preload" as="image" href="assets/img/drink.jpg">
+  
   <style>
     /* Дополнительные стили для мобильных отступов */
     @media (max-width: 600px) {
@@ -18,7 +30,6 @@
         padding: 0 16px !important;
         margin: 20px 0;
       }
-      
       .hero-buttons .btn {
         width: 100%;
         text-align: center;
@@ -27,19 +38,11 @@
         font-size: 16px !important;
         box-sizing: border-box;
       }
-      
-      .hero-left {
-        padding: 0 16px !important;
-      }
-      
-      .hero-left h1,
-      .hero-desc,
-      .hero-sub,
-      .hero-meta {
+      .hero-left { padding: 0 16px !important; }
+      .hero-left h1, .hero-desc, .hero-sub, .hero-meta {
         padding-left: 16px !important;
         padding-right: 16px !important;
       }
-      
       .hero-meta {
         display: flex;
         flex-wrap: wrap;
@@ -47,35 +50,13 @@
         gap: 12px;
       }
     }
-    
     @media (max-width: 480px) {
-      .hero-buttons {
-        padding: 0 12px !important;
-      }
-      
-      .hero-buttons .btn {
-        padding: 12px 16px !important;
-        font-size: 14px !important;
-      }
-      
-      .hero-left h1 {
-        font-size: 24px;
-        padding: 0 12px !important;
-      }
-      
-      .hero-desc {
-        font-size: 14px;
-        padding: 0 12px !important;
-      }
-      
-      .hero-meta {
-        padding: 0 12px !important;
-        gap: 8px;
-      }
-      
-      .hero-meta span {
-        font-size: 12px;
-      }
+      .hero-buttons { padding: 0 12px !important; }
+      .hero-buttons .btn { padding: 12px 16px !important; font-size: 14px !important; }
+      .hero-left h1 { font-size: 24px; padding: 0 12px !important; }
+      .hero-desc { font-size: 14px; padding: 0 12px !important; }
+      .hero-meta { padding: 0 12px !important; gap: 8px; }
+      .hero-meta span { font-size: 12px; }
     }
   </style>
 </head>
@@ -84,7 +65,6 @@
 
 <header>
   <div class="logo">DRUZYA</div>
-
   <nav class="nav-desktop">
     <a href="#top" class="active">Главная</a>
     <a href="#about">О ресторане</a>
@@ -93,14 +73,8 @@
     <a href="#profile">Профиль</a>
     <a href="#contacts">Контакты</a>
   </nav>
-
-  <button class="cart-btn" id="openCart">
-    🛒 <span id="cartCount">0</span>
-  </button>
-
-  <button class="burger-btn" id="burgerBtn">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="cart-btn" id="openCart">🛒 <span id="cartCount">0</span></button>
+  <button class="burger-btn" id="burgerBtn"><span></span><span></span><span></span></button>
 </header>
 
 <div class="mobile-menu" id="mobileMenu">
@@ -113,42 +87,29 @@
 </div>
 
 <main id="top">
-
-  <!-- HERO -->
   <section class="hero container">
     <div class="hero-left">
       <div class="hero-sub">RESTAURANT • LOUNGE • EVENING PLACE</div>
       <h1>Вечер, который хочется повторить</h1>
-      <p class="hero-desc">
-        DRUZYA — камерный ресторан и lounge для вечеров с друзьями, ужинов вдвоём и небольших праздников.
-      </p>
-
+      <p class="hero-desc">DRUZYA — камерный ресторан и lounge для вечеров с друзьями, ужинов вдвоём и небольших праздников.</p>
       <div class="hero-buttons">
         <button class="btn btn-primary" id="openBookingHero">Забронировать столик</button>
-        <button class="btn btn-outline" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
-          Посмотреть меню
-        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">Посмотреть меню</button>
       </div>
-
       <div class="hero-meta">
         <span>Кухня до 23:30</span>
         <span>Бар до 02:00</span>
         <span>ул. Приморская 10</span>
       </div>
     </div>
-
     <aside class="hero-right">
       <div class="hero-card-title">DRUZYA - Restaurant & Lounge</div>
-      <div class="hero-card-text">
-        Вечерний ресторан и lounge с мягким светом, продуманной музыкой и кухней, к которой хочется вернуться.
-      </div>
-
+      <div class="hero-card-text">Вечерний ресторан и lounge с мягким светом, продуманной музыкой и кухней, к которой хочется вернуться.</div>
       <div class="hero-tags">
         <span class="tag">Паназиатская кухня</span>
         <span class="tag">Авторские коктейли</span>
         <span class="tag">Lounge‑атмосфера</span>
       </div>
-
       <div class="hero-card-footer">
         <span><span class="dot"></span> Сегодня открыты</span>
         <span>Рекомендуем брони заранее</span>
@@ -156,42 +117,18 @@
     </aside>
   </section>
 
-  <!-- ABOUT -->
   <section class="section container" id="about">
     <h2 class="section-title">О ресторане</h2>
-    <p class="section-sub">
-      DRUZYA — это вечерний ресторан и lounge, где можно спокойно провести время.
-    </p>
-
+    <p class="section-sub">DRUZYA — это вечерний ресторан и lounge, где можно спокойно провести время.</p>
     <div class="about-grid">
-      <div>
-        <div class="about-text">
-          Паназиатская кухня, закуски с коктейлями и блюда, которые удобно делить на компанию.
-          <br><br>
-          • Ужин<br>
-          • Праздники<br>
-          • Вечера вдвоём<br>
-          • Сеты на компанию
-        </div>
-      </div>
-
-      <div class="about-card">
-        <h3>Форматы</h3>
-        <p>
-          Уютные вечера, небольшие праздники, романтические ужины и встречи с друзьями.
-        </p>
-      </div>
+      <div><div class="about-text">Паназиатская кухня, закуски с коктейлями и блюда, которые удобно делить на компанию.<br><br>• Ужин<br>• Праздники<br>• Вечера вдвоём<br>• Сеты на компанию</div></div>
+      <div class="about-card"><h3>Форматы</h3><p>Уютные вечера, небольшие праздники, романтические ужины и встречи с друзьями.</p></div>
     </div>
   </section>
 
-  <!-- MENU -->
   <section class="menu-section container" id="menu">
     <div class="menu-header">
-      <div>
-        <h2 class="section-title">Меню</h2>
-        <p class="section-sub">Закуски, горячее, салаты, мясо, рыба, десерты, напитки.</p>
-      </div>
-
+      <div><h2 class="section-title">Меню</h2><p class="section-sub">Закуски, горячее, салаты, мясо, рыба, десерты, напитки.</p></div>
       <div class="menu-categories">
         <button class="active" data-filter="all">Все</button>
         <button data-filter="закуски">Закуски</button>
@@ -203,349 +140,150 @@
         <button data-filter="напитки">Напитки</button>
       </div>
     </div>
-
     <div class="menu-grid">
-
-      <!-- ЗАКУСКИ -->
       <article class="menu-item" data-category="закуски">
-        <img src="assets/images/appetizer.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Холодная закуска</div>
-          <div class="menu-weight">180 г</div>
-        </div>
+        <img src="assets/img/appetizer.jpg" loading="eager" fetchpriority="high" class="menu-thumb" alt="Холодная закуска">
+        <div class="menu-title-row"><div class="menu-title">Холодная закуска</div><div class="menu-weight">180 г</div></div>
         <div class="menu-desc">Лёгкая закуска к напиткам.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">18 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">18 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
       <article class="menu-item" data-category="закуски">
-        <img src="assets/images/hot_appetizer.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Горячая закуска</div>
-          <div class="menu-weight">220 г</div>
-        </div>
+        <img src="assets/img/hot_appetizer.jpg" loading="eager" class="menu-thumb" alt="Горячая закуска">
+        <div class="menu-title-row"><div class="menu-title">Горячая закуска</div><div class="menu-weight">220 г</div></div>
         <div class="menu-desc">Подаётся горячей, идеально к вину.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">22 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">22 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
       <article class="menu-item" data-category="закуски">
-        <img src="assets/images/sauce.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Ассорти соусов</div>
-          <div class="menu-weight">90 г</div>
-        </div>
+        <img src="assets/img/sauce.jpg" loading="eager" class="menu-thumb" alt="Ассорти соусов">
+        <div class="menu-title-row"><div class="menu-title">Ассорти соусов</div><div class="menu-weight">90 г</div></div>
         <div class="menu-desc">Три фирменных соуса.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">8 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">8 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
-      <!-- САЛАТЫ -->
       <article class="menu-item" data-category="салаты">
-        <img src="assets/images/salad.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Фирменный салат</div>
-          <div class="menu-weight">250 г</div>
-        </div>
+        <img src="assets/img/salad.jpg" loading="eager" class="menu-thumb" alt="Фирменный салат">
+        <div class="menu-title-row"><div class="menu-title">Фирменный салат</div><div class="menu-weight">250 г</div></div>
         <div class="menu-desc">Свежие овощи и авторская заправка.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">16 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">16 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
-      <!-- ГОРЯЧЕЕ -->
       <article class="menu-item" data-category="горячее">
-        <img src="assets/images/grill.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Гриль‑ассорти</div>
-          <div class="menu-weight">350 г</div>
-        </div>
+        <img src="assets/img/grill.jpg" loading="eager" class="menu-thumb" alt="Гриль-ассорти">
+        <div class="menu-title-row"><div class="menu-title">Гриль‑ассорти</div><div class="menu-weight">350 г</div></div>
         <div class="menu-desc">Мясо и овощи на гриле.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">32 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">32 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
       <article class="menu-item" data-category="горячее">
-        <img src="assets/images/side.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Гарнир</div>
-          <div class="menu-weight">200 г</div>
-        </div>
+        <img src="assets/img/side.jpg" loading="eager" class="menu-thumb" alt="Гарнир">
+        <div class="menu-title-row"><div class="menu-title">Гарнир</div><div class="menu-weight">200 г</div></div>
         <div class="menu-desc">Идеальное дополнение к горячему.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">10 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">10 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
-      <!-- МЯСО -->
       <article class="menu-item" data-category="мясо">
-        <img src="assets/images/meat.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Мясное блюдо</div>
-          <div class="menu-weight">300 г</div>
-        </div>
+        <img src="assets/img/meat.jpg" loading="eager" class="menu-thumb" alt="Мясное блюдо">
+        <div class="menu-title-row"><div class="menu-title">Мясное блюдо</div><div class="menu-weight">300 г</div></div>
         <div class="menu-desc">Сочное мясо с гарниром.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">28 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">28 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
-      <!-- РЫБА -->
       <article class="menu-item" data-category="рыба">
-        <img src="assets/images/fish.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Рыбное блюдо</div>
-          <div class="menu-weight">280 г</div>
-        </div>
+        <img src="assets/img/fish.jpg" loading="eager" class="menu-thumb" alt="Рыбное блюдо">
+        <div class="menu-title-row"><div class="menu-title">Рыбное блюдо</div><div class="menu-weight">280 г</div></div>
         <div class="menu-desc">Свежая рыба, приготовленная на пару.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">26 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">26 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
-      <!-- ДЕСЕРТЫ -->
       <article class="menu-item" data-category="десерты">
-        <img src="assets/images/dessert.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Десерт</div>
-          <div class="menu-weight">150 г</div>
-        </div>
+        <img src="assets/img/dessert.jpg" loading="eager" class="menu-thumb" alt="Десерт">
+        <div class="menu-title-row"><div class="menu-title">Десерт</div><div class="menu-weight">150 г</div></div>
         <div class="menu-desc">Сладкое завершение вечера.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">14 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">14 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
-      <!-- НАПИТКИ -->
       <article class="menu-item" data-category="напитки">
-        <img src="assets/images/drink.jpg" class="menu-thumb" alt="">
-        <div class="menu-title-row">
-          <div class="menu-title">Авторский напиток</div>
-          <div class="menu-weight">250 мл</div>
-        </div>
+        <img src="assets/img/drink.jpg" loading="eager" class="menu-thumb" alt="Авторский напиток">
+        <div class="menu-title-row"><div class="menu-title">Авторский напиток</div><div class="menu-weight">250 мл</div></div>
         <div class="menu-desc">Освежающий коктейль.</div>
-        <div class="menu-bottom">
-          <div class="menu-price">12 BYN</div>
-          <button class="menu-btn">Добавить</button>
-        </div>
+        <div class="menu-bottom"><div class="menu-price">12 BYN</div><button class="menu-btn">Добавить</button></div>
       </article>
-
     </div>
   </section>
 
-  <!-- BOOKING -->
   <section class="section container" id="booking">
     <h2 class="section-title">Бронирование</h2>
-      <p class="section-sub">Оставьте заявку, и мы свяжемся с вами.</p>
-
-    <button class="btn btn-primary" id="openBookingModal">
-      Оставить заявку
-    </button>
+    <p class="section-sub">Оставьте заявку, и мы свяжемся с вами.</p>
+    <button class="btn btn-primary" id="openBookingModal">Оставить заявку</button>
   </section>
 
-  <!-- PROFILE (БЕЗ ДУБЛИРУЮЩЕЙСЯ КНОПКИ ИСТОРИИ) -->
   <section class="section container" id="profile">
     <h2 class="section-title">Мой профиль</h2>
     <p class="section-sub">Данные сохраняются в этом браузере и подставляются в заказ.</p>
-
     <div class="profile-layout">
       <div class="profile-card">
-        <button class="btn btn-outline" id="googleLoginBtn">
-          Вход через аккаунт Google
-        </button>
-
-        <label>Имя</label>
-        <input id="profileName" placeholder="Ваше имя">
-
-        <label>Телефон</label>
-        <input id="profilePhone" placeholder="+375 XX XXX XX XX">
+        <button class="btn btn-outline" id="googleLoginBtn">Вход через аккаунт Google</button>
+        <label>Имя</label><input id="profileName" placeholder="Ваше имя">
+        <label>Телефон</label><input id="profilePhone" placeholder="+375 XX XXX XX XX">
         <small class="phone-hint">Формат: +375 XX XXX XX XX или +7 XXX XXX XX XX</small>
-
-        <button class="btn btn-primary" id="saveProfile">
-          Сохранить профиль
-        </button>
-
-        <img id="profileAvatar" 
-             style="width:60px;height:60px;border-radius:50%;display:none;margin-top:10px;">
-
-        <button class="btn btn-outline" id="logoutBtn" style="display:none;margin-top:10px;">
-          Выйти
-        </button>
+        <button class="btn btn-primary" id="saveProfile">Сохранить профиль</button>
+        <img id="profileAvatar" style="width:60px;height:60px;border-radius:50%;display:none;margin-top:10px;">
+        <button class="btn btn-outline" id="logoutBtn" style="display:none;margin-top:10px;">Выйти</button>
       </div>
-
       <div class="profile-info">
-        <div class="footer-title">DRUZYA</div>
-        <div class="footer-muted">Кухня до 23:30</div>
-
-        <div class="footer-title">Адрес</div>
-        <div class="footer-muted">ул. Приморская 10</div>
-
-        <div class="footer-title">Телефон</div>
-        <div class="footer-muted">+375 00 0000000</div>
+        <div class="footer-title">DRUZYA</div><div class="footer-muted">Кухня до 23:30</div>
+        <div class="footer-title">Адрес</div><div class="footer-muted">ул. Приморская 10</div>
+        <div class="footer-title">Телефон</div><div class="footer-muted">+375 00 0000000</div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer id="contacts">
     <div class="container footer-grid">
-      <div>
-        <div class="footer-title">DRUZYA</div>
-        <div class="footer-muted">Кухня до 23:30</div>
-      </div>
-
-      <div>
-        <div class="footer-title">Адрес</div>
-        <div class="footer-muted">ул. Приморская 10</div>
-      </div>
-
-      <div>
-        <div class="footer-title">Телефон</div>
-        <div class="footer-muted">+375 00 0000000</div>
-      </div>
-
-      <button class="btn btn-outline" id="openHistoryFooter">
-        История заказов
-      </button>
+      <div><div class="footer-title">DRUZYA</div><div class="footer-muted">Кухня до 23:30</div></div>
+      <div><div class="footer-title">Адрес</div><div class="footer-muted">ул. Приморская 10</div></div>
+      <div><div class="footer-title">Телефон</div><div class="footer-muted">+375 00 0000000</div></div>
+      <button class="btn btn-outline" id="openHistoryFooter">История заказов</button>
     </div>
-
     <div class="container footer-extra" style="margin-top:30px;">
-
-      <div class="map-wrapper" style="width:100%;height:260px;border-radius:12px;overflow:hidden;">
-        <iframe
-          src="https://yandex.ru/map-widget/v1/?ll=27.561824%2C53.902496&z=14"
-          width="100%"
-          height="260"
-          frameborder="0"
-          allowfullscreen>
-        </iframe>
-      </div>
-
-      <a href="https://t.me/ТВОЙ_БОТ" 
-         class="btn btn-primary" 
-         target="_blank"
-         style="display:block;text-align:center;margin-top:20px;">
-        Написать в Telegram
-      </a>
-
+      <div class="map-wrapper" id="mapContainer" style="width:100%;height:260px;border-radius:12px;overflow:hidden;background:#1a1a1a;"></div>
+      <a href="https://t.me/ТВОЙ_БОТ" class="btn btn-primary" target="_blank" style="display:block;text-align:center;margin-top:20px;">Написать в Telegram</a>
     </div>
   </footer>
-
 </main>
 
-<!-- BOOKING MODAL (КРЕСТИК СПРАВА) -->
+<!-- BOOKING MODAL -->
 <div id="bookingModal" class="booking-sheet">
   <div class="booking-sheet__window" style="position: relative;">
     <button id="closeBooking" style="position: absolute; top: 15px; right: 15px; width: 34px; height: 34px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 9999;">✕</button>
-    
     <div class="booking-sheet__content">
-      <div class="booking-header">
-        <h2>Бронирование столика</h2>
-        <p>Оставьте данные — мы перезвоним и подтвердим бронь.</p>
-      </div>
-
+      <div class="booking-header"><h2>Бронирование столика</h2><p>Оставьте данные — мы перезвоним и подтвердим бронь.</p></div>
       <form id="booking-form">
         <div class="booking-grid">
-          <div class="field">
-            <label for="name">Имя</label>
-            <input type="text" id="name" required>
-          </div>
-
-          <div class="field">
-            <label for="phone">Телефон</label>
-            <input type="text" id="phone" maxlength="19" required placeholder="+375 XX XXX XX XX">
-            <small class="phone-hint">Формат: +375 XX XXX XX XX или +7 XXX XXX XX XX</small>
-          </div>
-
-          <div class="field">
-            <label for="date">Дата</label>
-            <input type="date" id="date" required>
-          </div>
-
-          <div class="field">
-            <label for="time">Время</label>
-            <input type="time" id="time" required>
-          </div>
-
-          <div class="field">
-            <label for="guests">Гостей</label>
-            <select id="guests" required>
-              <option value="1">1 гость</option>
-              <option value="2" selected>2 гостя</option>
-              <option value="3">3 гостя</option>
-              <option value="4">4 гостя</option>
-              <option value="5">5 гостей</option>
-              <option value="6">6 гостей</option>
-              <option value="7">7 гостей</option>
-              <option value="8">8 гостей</option>
-              <option value="9">9 гостей</option>
-              <option value="10">10 гостей</option>
-            </select>
-          </div>
-
-          <div class="field field-full">
-            <label for="comment">Комментарий</label>
-            <textarea id="comment" placeholder="Ваши пожелания или особые запросы..."></textarea>
-          </div>
+          <div class="field"><label for="name">Имя</label><input type="text" id="name" required></div>
+          <div class="field"><label for="phone">Телефон</label><input type="text" id="phone" maxlength="19" required placeholder="+375 XX XXX XX XX"><small class="phone-hint">Формат: +375 XX XXX XX XX или +7 XXX XXX XX XX</small></div>
+          <div class="field"><label for="date">Дата</label><input type="date" id="date" required></div>
+          <div class="field"><label for="time">Время</label><input type="time" id="time" required></div>
+          <div class="field"><label for="guests">Гостей</label><select id="guests" required><option value="1">1 гость</option><option value="2" selected>2 гостя</option><option value="3">3 гостя</option><option value="4">4 гостя</option><option value="5">5 гостей</option><option value="6">6 гостей</option><option value="7">7 гостей</option><option value="8">8 гостей</option><option value="9">9 гостей</option><option value="10">10 гостей</option></select></div>
+          <div class="field field-full"><label for="comment">Комментарий</label><textarea id="comment" placeholder="Ваши пожелания или особые запросы..."></textarea></div>
         </div>
-
-        <div class="booking-footer">
-          <button type="submit" class="btn booking-submit">Отправить заявку</button>
-          <button type="button" id="clearBooking" class="btn btn-outline booking-clear">Очистить</button>
-        </div>
+        <div class="booking-footer"><button type="submit" class="btn booking-submit">Отправить заявку</button><button type="button" id="clearBooking" class="btn btn-outline booking-clear">Очистить</button></div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- CART MODAL С КНОПКОЙ ОЧИСТКИ -->
+<!-- CART MODAL -->
 <div class="cart-modal" id="cartModal">
-  <div class="cart-content">
-    <button class="cart-close" id="closeCart">✕</button>
-    <h2>Корзина</h2>
-
-    <div id="cartItems"></div>
-
-    <div class="cart-total">
-      Итого: <span id="cartTotal">0</span> BYN
-    </div>
-
-    <div class="cart-buttons">
-      <button id="clearCartBtn" class="clear-cart-btn">Очистить корзину</button>
-      <button class="btn btn-primary" id="checkoutBtn">Оформить заказ</button>
-    </div>
-  </div>
+  <div class="cart-content"><button class="cart-close" id="closeCart">✕</button><h2>Корзина</h2><div id="cartItems"></div><div class="cart-total">Итого: <span id="cartTotal">0</span> BYN</div><div class="cart-buttons"><button id="clearCartBtn" class="clear-cart-btn">Очистить корзину</button><button class="btn btn-primary" id="checkoutBtn">Оформить заказ</button></div></div>
 </div>
 
-<!-- HISTORY MODAL С КНОПКОЙ ОЧИСТКИ И КРЕСТИКОМ СВЕРХУ СПРАВА -->
+<!-- HISTORY MODAL -->
 <div class="history-modal" id="historyModal">
   <div class="history-content" style="position: relative;">
-    <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 50px;">
-      <h2 style="margin: 0; font-size: 24px; color: #fff;">История заказов</h2>
-      <button id="clearHistoryBtn" class="clear-history-btn" style="background: #ff4757; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">🗑️ Очистить историю</button>
-    </div>
+    <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 50px;"><h2 style="margin: 0; font-size: 24px; color: #fff;">История заказов</h2><button id="clearHistoryBtn" class="clear-history-btn" style="background: #ff4757; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">🗑️ Очистить историю</button></div>
     <button id="closeHistory" style="position: absolute; top: 15px; right: 15px; width: 34px; height: 34px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 9999;">✕</button>
     <div id="historyList"></div>
   </div>
 </div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- FIREBASE (отложенная загрузка) -->
+<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
   const firebaseConfig = {
@@ -556,15 +294,75 @@
     messagingSenderId: "974391844735",
     appId: "1:974391844735:web:b46a3f11161626a6e1044a"
   };
-
   firebase.initializeApp(firebaseConfig);
 </script>
 
-<!-- TOAST -->
+<!-- ПРЕДЗАГРУЗКА ИЗОБРАЖЕНИЙ С ТАЙМЕРОМ 5 СЕКУНД -->
+<script>
+  (function() {
+    const images = [
+      'assets/img/appetizer.jpg',
+      'assets/img/hot_appetizer.jpg',
+      'assets/img/sauce.jpg',
+      'assets/img/salad.jpg',
+      'assets/img/grill.jpg',
+      'assets/img/side.jpg',
+      'assets/img/meat.jpg',
+      'assets/img/fish.jpg',
+      'assets/img/dessert.jpg',
+      'assets/img/drink.jpg'
+    ];
+    
+    let loaded = 0;
+    const total = images.length;
+    const startTime = Date.now();
+    
+    function checkComplete() {
+      const elapsed = (Date.now() - startTime) / 1000;
+      if (loaded === total) {
+        console.log(`✅ Все ${total} фото загружены за ${elapsed.toFixed(1)} сек`);
+      }
+    }
+    
+    images.forEach(src => {
+      const img = new Image();
+      img.onload = () => { loaded++; checkComplete(); };
+      img.onerror = () => { loaded++; checkComplete(); };
+      img.src = src;
+    });
+    
+    setTimeout(() => {
+      console.log(`⏱️ Предзагрузка завершена через 5 сек. Загружено: ${loaded}/${total}`);
+    }, 5000);
+  })();
+</script>
+
+<!-- ЛЕНИВАЯ ЗАГРУЗКА КАРТЫ -->
+<script>
+  (function() {
+    const mapContainer = document.getElementById('mapContainer');
+    if (mapContainer) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const iframe = document.createElement('iframe');
+            iframe.src = "https://yandex.ru/map-widget/v1/?ll=27.561824%2C53.902496&z=14";
+            iframe.width = "100%";
+            iframe.height = "260";
+            iframe.frameBorder = "0";
+            iframe.allowFullscreen = true;
+            mapContainer.appendChild(iframe);
+            observer.disconnect();
+            console.log('🗺️ Карта загружена');
+          }
+        });
+      });
+      observer.observe(mapContainer);
+    }
+  })();
+</script>
+
 <div id="toast"></div>
-
-<!-- MAIN SCRIPT -->
 <script src="assets/js/script.js"></script>
-
 </body>
 </html>
