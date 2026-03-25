@@ -66,7 +66,7 @@ function closeAllModals() {
 }
 
 /* ===========================
-   СИНХРОНИЗАЦИЯ С FIREBASE
+   СИНХРОНИЗАЦИЯ С FIREBASE (ОПЦИОНАЛЬНО, БЕЗ БЕСКОНЕЧНЫХ ВЫЗОВОВ)
 =========================== */
 async function saveProfileToFirebase(profile) {
   if (!auth || !currentUserId || currentUserId === "guest") return;
@@ -79,20 +79,6 @@ async function saveProfileToFirebase(profile) {
   } catch (error) {
     console.error('❌ Ошибка синхронизации профиля:', error);
   }
-}
-
-async function loadProfileFromFirebase() {
-  if (!auth || !currentUserId || currentUserId === "guest") return null;
-  try {
-    const doc = await db.collection('users').doc(currentUserId).get();
-    if (doc.exists && doc.data().profile) {
-      console.log('✅ Профиль загружен из Firebase');
-      return doc.data().profile;
-    }
-  } catch (error) {
-    console.error('❌ Ошибка загрузки профиля:', error);
-  }
-  return null;
 }
 
 async function saveCartToFirebase(cart) {
@@ -108,20 +94,6 @@ async function saveCartToFirebase(cart) {
   }
 }
 
-async function loadCartFromFirebase() {
-  if (!auth || !currentUserId || currentUserId === "guest") return null;
-  try {
-    const doc = await db.collection('users').doc(currentUserId).get();
-    if (doc.exists && doc.data().cart) {
-      console.log('✅ Корзина загружена из Firebase');
-      return doc.data().cart;
-    }
-  } catch (error) {
-    console.error('❌ Ошибка загрузки корзины:', error);
-  }
-  return null;
-}
-
 async function saveHistoryToFirebase(history) {
   if (!auth || !currentUserId || currentUserId === "guest") return;
   try {
@@ -135,88 +107,55 @@ async function saveHistoryToFirebase(history) {
   }
 }
 
-async function loadHistoryFromFirebase() {
-  if (!auth || !currentUserId || currentUserId === "guest") return null;
+// ОДНОРАЗОВАЯ СИНХРОНИЗАЦИЯ (без бесконечных циклов)
+async function syncAllDataOnce() {
+  if (!auth || !currentUserId || currentUserId === "guest") return;
+  
+  console.log('🔄 Одноразовая синхронизация с Firebase...');
+  
   try {
     const doc = await db.collection('users').doc(currentUserId).get();
-    if (doc.exists && doc.data().orderHistory) {
-      console.log('✅ История загружена из Firebase');
-      return doc.data().orderHistory;
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.profile) {
+        localStorage.setItem('profile', JSON.stringify(data.profile));
+        const profileName = document.getElementById('profileName');
+        const profilePhone = document.getElementById('profilePhone');
+        if (profileName && data.profile.name) profileName.value = data.profile.name;
+        if (profilePhone && data.profile.phone) profilePhone.value = data.profile.phone;
+      }
+      if (data.cart && data.cart.length > 0) {
+        localStorage.setItem('cart', JSON.stringify(data.cart));
+        if (globalCartUpdateFunction) globalCartUpdateFunction();
+      }
+      if (data.orderHistory && data.orderHistory.length > 0) {
+        const localHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+        const merged = [...data.orderHistory];
+        localHistory.forEach(order => {
+          if (!merged.some(m => m.id === order.id)) merged.push(order);
+        });
+        merged.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        localStorage.setItem('orderHistory', JSON.stringify(merged));
+      }
     }
   } catch (error) {
-    console.error('❌ Ошибка загрузки истории:', error);
+    console.error('Ошибка синхронизации:', error);
   }
-  return null;
-}
-
-async function syncAllData() {
-  if (!auth || !currentUserId || currentUserId === "guest") {
-    console.log('👤 Гость, синхронизация не требуется');
-    return;
-  }
-  
-  console.log('🔄 Начинаем синхронизацию с Firebase...');
-  
-  const firebaseProfile = await loadProfileFromFirebase();
-  const firebaseCart = await loadCartFromFirebase();
-  const firebaseHistory = await loadHistoryFromFirebase();
-  
-  const localProfile = JSON.parse(localStorage.getItem('profile') || '{}');
-  const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-  const localHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-  
-  if (firebaseProfile && Object.keys(firebaseProfile).length > 0) {
-    localStorage.setItem('profile', JSON.stringify(firebaseProfile));
-    const profileName = document.getElementById('profileName');
-    const profilePhone = document.getElementById('profilePhone');
-    if (profileName && firebaseProfile.name) profileName.value = firebaseProfile.name;
-    if (profilePhone && firebaseProfile.phone) profilePhone.value = firebaseProfile.phone;
-    console.log('📱 Профиль синхронизирован из Firebase');
-  } else if (localProfile && Object.keys(localProfile).length > 0) {
-    await saveProfileToFirebase(localProfile);
-    console.log('☁️ Профиль отправлен в Firebase');
-  }
-  
-  if (firebaseCart && firebaseCart.length > 0) {
-    localStorage.setItem('cart', JSON.stringify(firebaseCart));
-    if (globalCartUpdateFunction) globalCartUpdateFunction();
-    console.log('🛒 Корзина синхронизирована из Firebase');
-  } else if (localCart && localCart.length > 0) {
-    await saveCartToFirebase(localCart);
-    console.log('☁️ Корзина отправлена в Firebase');
-  }
-  
-  let mergedHistory = [];
-  if (firebaseHistory && firebaseHistory.length > 0) mergedHistory = [...firebaseHistory];
-  if (localHistory && localHistory.length > 0) {
-    localHistory.forEach(localOrder => {
-      if (!mergedHistory.some(fbOrder => fbOrder.id === localOrder.id)) mergedHistory.push(localOrder);
-    });
-  }
-  mergedHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  
-  if (mergedHistory.length > 0) {
-    localStorage.setItem('orderHistory', JSON.stringify(mergedHistory));
-    await saveHistoryToFirebase(mergedHistory);
-    console.log('📜 История синхронизирована');
-  }
-  
   console.log('✅ Синхронизация завершена');
 }
 
 /* ===========================
-   ЖЕСТКАЯ МАСКА ТЕЛЕФОНА
+   ЖЕСТКАЯ МАСКА ТЕЛЕФОНА (БЕЗ БЕСКОНЕЧНОГО ЦИКЛА)
 =========================== */
 function forcePhoneMask() {
   console.log('🔧 Устанавливаем жесткую маску для телефонов...');
   
   function applyStrictMask(inputElement) {
-    if (!inputElement) return;
+    if (!inputElement || inputElement.hasAttribute('data-masked')) return;
     
-    const newInput = inputElement.cloneNode(true);
-    inputElement.parentNode.replaceChild(newInput, inputElement);
+    inputElement.setAttribute('data-masked', 'true');
     
-    newInput.addEventListener('input', function(e) {
+    inputElement.addEventListener('input', function(e) {
       let numbers = e.target.value.replace(/\D/g, '');
       if (numbers.length > 12) numbers = numbers.slice(0, 12);
       
@@ -245,13 +184,13 @@ function forcePhoneMask() {
       e.target.value = formatted;
     });
     
-    newInput.addEventListener('keydown', function(e) {
+    inputElement.addEventListener('keydown', function(e) {
       const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End', 'Enter'];
       if (allowedKeys.includes(e.key)) return;
       if (!/[\d]/.test(e.key)) e.preventDefault();
     });
     
-    newInput.addEventListener('blur', function(e) {
+    inputElement.addEventListener('blur', function(e) {
       let value = e.target.value.replace(/\D/g, '');
       if (value.length === 0) return;
       
@@ -274,7 +213,6 @@ function forcePhoneMask() {
         e.target.style.borderColor = 'rgba(255,255,255,0.3)';
       }, 2000);
     });
-    return newInput;
   }
   
   const phoneFields = ['phone', 'profilePhone'];
@@ -286,16 +224,6 @@ function forcePhoneMask() {
     }
   });
   
-  const observer = new MutationObserver(() => {
-    phoneFields.forEach(fieldId => {
-      const field = document.getElementById(fieldId);
-      if (field && !field.hasAttribute('data-masked')) {
-        applyStrictMask(field);
-        field.setAttribute('data-masked', 'true');
-      }
-    });
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
   console.log('✅ Жесткая маска установлена');
 }
 
@@ -501,7 +429,6 @@ function initCart() {
       document.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', () => {
           cart.splice(btn.dataset.index, 1); saveCart(cart); updateCart(); showToast('Товар удален');
-          if (auth && currentUserId !== "guest") saveCartToFirebase(cart);
         });
       });
     }
@@ -574,11 +501,11 @@ function initProfile() {
       profile = { name: profileName ? profileName.value : "", phone: profilePhone ? profilePhone.value : "" };
       localStorage.setItem('profile', JSON.stringify(profile));
       if (auth && currentUserId !== "guest") await saveProfileToFirebase(profile);
-      showToast('Профиль сохранён и синхронизирован');
+      showToast('Профиль сохранён');
     });
   }
-  if (googleLoginBtn && auth) googleLoginBtn.addEventListener('click', () => { auth.signInWithPopup(provider).then(async result => { const user = result.user; if (user.displayName && profileName) { profileName.value = user.displayName; profile.name = user.displayName; } if (user.photoURL && avatar) { avatar.src = user.photoURL; avatar.style.display = 'block'; } localStorage.setItem('profile', JSON.stringify(profile)); await syncAllData(); showToast('Вы успешно вошли'); }).catch(error => { console.error(error); showToast('Ошибка при входе'); }); });
-  if (auth) auth.onAuthStateChanged(async user => { if (user) { currentUserId = user.uid; if (logoutBtn) logoutBtn.style.display = 'block'; if (user.photoURL && avatar) { avatar.src = user.photoURL; avatar.style.display = 'block'; } await syncAllData(); } else { currentUserId = "guest"; if (logoutBtn) logoutBtn.style.display = 'none'; } });
+  if (googleLoginBtn && auth) googleLoginBtn.addEventListener('click', () => { auth.signInWithPopup(provider).then(async result => { const user = result.user; if (user.displayName && profileName) { profileName.value = user.displayName; profile.name = user.displayName; } if (user.photoURL && avatar) { avatar.src = user.photoURL; avatar.style.display = 'block'; } localStorage.setItem('profile', JSON.stringify(profile)); await syncAllDataOnce(); showToast('Вы успешно вошли'); }).catch(error => { console.error(error); showToast('Ошибка при входе'); }); });
+  if (auth) auth.onAuthStateChanged(async user => { if (user) { currentUserId = user.uid; if (logoutBtn) logoutBtn.style.display = 'block'; if (user.photoURL && avatar) { avatar.src = user.photoURL; avatar.style.display = 'block'; } await syncAllDataOnce(); } else { currentUserId = "guest"; if (logoutBtn) logoutBtn.style.display = 'none'; } });
   if (logoutBtn && auth) logoutBtn.addEventListener('click', () => { auth.signOut().then(() => { localStorage.removeItem('profile'); if (profileName) profileName.value = ''; if (profilePhone) profilePhone.value = ''; if (avatar) avatar.style.display = 'none'; showToast('Вы вышли из аккаунта'); }); });
 }
 
