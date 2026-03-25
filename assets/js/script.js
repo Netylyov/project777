@@ -1198,38 +1198,3 @@ function forcePhoneMask() {
   
   console.log('✅ Жесткая маска установлена');
 }
-
-/* ===========================
-   УВЕДОМЛЕНИЕ (TOAST) НА 5 СЕКУНД
-=========================== */
-function showToast(text) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.9);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      z-index: 10000;
-      font-size: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      display: none;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-    `;
-    document.body.appendChild(toast);
-  }
-  toast.textContent = text;
-  toast.style.display = 'block';
-  
-  // Убираем уведомление через 5 секунд
-  setTimeout(() => {
-    toast.style.display = 'none';
-  }, 5000);
-}
