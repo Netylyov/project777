@@ -8,16 +8,16 @@
   <link rel="stylesheet" href="assets/css/style.css">
   
   <!-- ПРЕДЗАГРУЗКА ВСЕХ ИЗОБРАЖЕНИЙ -->
-  <link rel="preload" as="image" href="assets/img/appetizer.jpg">
-  <link rel="preload" as="image" href="assets/img/hot_appetizer.jpg">
-  <link rel="preload" as="image" href="assets/img/sauce.jpg">
-  <link rel="preload" as="image" href="assets/img/salad.jpg">
-  <link rel="preload" as="image" href="assets/img/grill.jpg">
-  <link rel="preload" as="image" href="assets/img/side.jpg">
-  <link rel="preload" as="image" href="assets/img/meat.jpg">
-  <link rel="preload" as="image" href="assets/img/fish.jpg">
-  <link rel="preload" as="image" href="assets/img/dessert.jpg">
-  <link rel="preload" as="image" href="assets/img/drink.jpg">
+  <link rel="preload" as="image" href="assets/images/appetizer.jpg">
+  <link rel="preload" as="image" href="assets/images/hot_appetizer.jpg">
+  <link rel="preload" as="image" href="assets/images/sauce.jpg">
+  <link rel="preload" as="image" href="assets/images/salad.jpg">
+  <link rel="preload" as="image" href="assets/images/grill.jpg">
+  <link rel="preload" as="image" href="assets/images/side.jpg">
+  <link rel="preload" as="image" href="assets/images/meat.jpg">
+  <link rel="preload" as="image" href="assets/images/fish.jpg">
+  <link rel="preload" as="image" href="assets/images/dessert.jpg">
+  <link rel="preload" as="image" href="assets/images/">
   
   <style>
     /* Дополнительные стили для мобильных отступов */
@@ -344,46 +344,6 @@
     appId: "1:974391844735:web:b46a3f11161626a6e1044a"
   };
   firebase.initializeApp(firebaseConfig);
-</script>
-
-<!-- ПРЕДЗАГРУЗКА ИЗОБРАЖЕНИЙ С ТАЙМЕРОМ 5 СЕКУНД -->
-<script>
-  (function() {
-    const images = [
-      'assets/images/appetizer.jpg',
-      'assets/images/hot_appetizer.jpg',
-      'assets/images/sauce.jpg',
-      'assets/images/salad.jpg',
-      'assets/images/grill.jpg',
-      'assets/images/side.jpg',
-      'assets/images/meat.jpg',
-      'assets/images/fish.jpg',
-      'assets/images/dessert.jpg',
-      'assets/images/drink.jpg'
-    ];
-    
-    let loaded = 0;
-    const total = images.length;
-    const startTime = Date.now();
-    
-    function checkComplete() {
-      const elapsed = (Date.now() - startTime) / 1000;
-      if (loaded === total) {
-        console.log(`✅ Все ${total} фото загружены за ${elapsed.toFixed(1)} сек`);
-      }
-    }
-    
-    images.forEach(src => {
-      const img = new Image();
-      img.onload = () => { loaded++; checkComplete(); };
-      img.onerror = () => { loaded++; checkComplete(); };
-      img.src = src;
-    });
-    
-    setTimeout(() => {
-      console.log(`⏱️ Предзагрузка завершена через 5 сек. Загружено: ${loaded}/${total}`);
-    }, 5000);
-  })();
 </script>
 
 <!-- ЛЕНИВАЯ ЗАГРУЗКА КАРТЫ -->
